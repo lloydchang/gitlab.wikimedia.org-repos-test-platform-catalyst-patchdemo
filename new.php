@@ -415,10 +415,13 @@ if ( $hasOOUI ) {
 	$mainPage .= "\n\nThis wiki was built with OOUI patches so you can also view the [{{SERVER}}{{SCRIPTPATH}}/build/ooui/demos patched '''OOUI Demos'''].";
 }
 
+// FIXME: Building the Codex docs is disabled because the build process runs out of memory
+/*
 $hasCodex = in_array( 'design/codex', $allowedRepos, true );
 if ( $hasCodex ) {
 	$mainPage .= "\n\nThis wiki was built with Codex patches, so you can also view the [{{SERVER}}{{SCRIPTPATH}}/build/codex/docs patched '''Codex demos and documentation'''].";
 }
+*/
 
 $mainPage .= "\n\n;Branch: $branchDesc";
 $mainPage .= "\n;Applied patches:";

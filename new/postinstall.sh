@@ -58,13 +58,20 @@ fi
 if [ -d $PATCHDEMO/wikis/$NAME/w/build/codex ]; then
 	cd $PATCHDEMO/wikis/$NAME/w/build/codex
 	npm ci
-	CODEX_DOC_ROOT=$SERVERPATH/wikis/$NAME/w/build/codex/docs npm run build-all
+	# FIXME: don't build the docs for now, since the docs build process runs out of memory
+	#CODEX_DOC_ROOT=$SERVERPATH/wikis/$NAME/w/build/codex/docs npm run build-all
+	npm run -w @wikimedia/codex-design-tokens build
+	npm run -w @wikimedia/codex-icons build
+	npm run -w @wikimedia/codex build
+	npm run -w @wikimedia/codex-search build
 	cd $PATCHDEMO
 	cp -r $PATCHDEMO/wikis/$NAME/w/build/codex/packages/codex/dist/* $PATCHDEMO/wikis/$NAME/w/resources/lib/codex/
 	cp -r $PATCHDEMO/wikis/$NAME/w/build/codex/packages/codex-search/dist/* $PATCHDEMO/wikis/$NAME/w/resources/lib/codex-search/
-	cp -r $PATCHDEMO/wikis/$NAME/w/build/codex/packages/codex-icons/dist/codex-icons.json $PATCHDEMO/wikis/$NAME/w/resources/lib/codex-icons/
+	cp -r $PATCHDEMO/wikis/$NAME/w/build/codex/packages/codex-icons/dist/{codex-icons.json,codex-icon-paths.less} $PATCHDEMO/wikis/$NAME/w/resources/lib/codex-icons/
+	cp -r $PATCHDEMO/wikis/$NAME/w/build/codex/packages/codex-design-tokens/theme-wikimedia-*.less $PATCHDEMO/wikis/$NAME/w/resources/lib/codex-design-tokens/
 	# Make docs available at /w/build/codex/docs/
-	mv $PATCHDEMO/wikis/$NAME/w/build/codex/packages/codex-docs/docs/.vitepress/dist $PATCHDEMO/wikis/$NAME/w/build/codex/docs
+	# FIXME: don't do this for now, since we can't build the docs without crashing
+	#mv $PATCHDEMO/wikis/$NAME/w/build/codex/packages/codex-docs/docs/.vitepress/dist $PATCHDEMO/wikis/$NAME/w/build/codex/docs
 fi
 
 # grant FlaggedRevs editor rights to the default account
