@@ -1,0 +1,22 @@
+test-php:
+
+  stage: test
+  image:
+    name: docker-registry.wikimedia.org/releng/composer-test-php74:0.1.2
+    entrypoint: [ "" ]
+  allow_failure: false
+  script:
+    - composer install --prefer-dist --no-progress --no-suggest
+    - composer run-script test
+
+test-nodejs:
+
+  stage: test
+  image:
+    name: docker-registry.wikimedia.org/releng/node16-test:0.2.1
+    entrypoint: [ "" ]
+  allow_failure: false
+  script:
+    - npm ci
+    - npm run build --if-present
+    - npm test
