@@ -25,7 +25,8 @@
 - mediawiki/extensions/Collection
 - mediawiki/extensions/CommonsMetadata
 - mediawiki/extensions/ConfirmEdit
-- mediawiki/extensions/ContentTranslation
+# Without cxserver this isn't much use most of the time
+# - mediawiki/extensions/ContentTranslation
 - mediawiki/extensions/Disambiguator
 - mediawiki/extensions/DiscussionTools
 - mediawiki/extensions/DismissableSiteNotice
