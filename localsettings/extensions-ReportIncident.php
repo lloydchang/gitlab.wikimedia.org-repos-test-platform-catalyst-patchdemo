@@ -1,4 +1,4 @@
 <?php
 
-$wgReportIncidentRecipientEmails = [ 'a@example.com', 'Patch_Demo@localhost' ];
+$wgReportIncidentRecipientEmails = [ 'a@example.com' ];
 $wgReportIncidentEmailFromAddress = 'b@example.com';
