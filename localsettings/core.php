@@ -66,3 +66,8 @@ $wgLocaltimezone = 'UTC';
 
 // Enable watchlist expiry feature
 $wgWatchlistExpiry = true;
+
+// Run jobs very eagerly during web requests,
+// so that I don't have to figure out job runners
+$wgJobRunRate = 100;
+$wgRunJobsAsync = true;
