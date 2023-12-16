@@ -416,6 +416,7 @@ if ( $hasOOUI ) {
 }
 
 // FIXME: Building the Codex docs is disabled because the build process runs out of memory
+$hasCodex = false;
 /*
 $hasCodex = in_array( 'design/codex', $allowedRepos, true );
 if ( $hasCodex ) {
