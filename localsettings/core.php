@@ -71,3 +71,6 @@ $wgWatchlistExpiry = true;
 // so that I don't have to figure out job runners
 $wgJobRunRate = 100;
 $wgRunJobsAsync = true;
+
+// Disable localisation cache, takes up too much disk space (#554)
+$wgLocalisationCacheConf['storeClass'] = 'LCStoreNull';
