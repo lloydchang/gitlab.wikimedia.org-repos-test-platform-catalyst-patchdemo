@@ -63,10 +63,8 @@ if [ -d $PATCHDEMO/wikis/$NAME/w/build/codex ]; then
 	npm run -w @wikimedia/codex-design-tokens build
 	npm run -w @wikimedia/codex-icons build
 	npm run -w @wikimedia/codex build
-	npm run -w @wikimedia/codex-search build
 	cd $PATCHDEMO
 	cp -r $PATCHDEMO/wikis/$NAME/w/build/codex/packages/codex/dist/* $PATCHDEMO/wikis/$NAME/w/resources/lib/codex/
-	cp -r $PATCHDEMO/wikis/$NAME/w/build/codex/packages/codex-search/dist/* $PATCHDEMO/wikis/$NAME/w/resources/lib/codex-search/
 	cp -r $PATCHDEMO/wikis/$NAME/w/build/codex/packages/codex-icons/dist/{codex-icons.json,codex-icon-paths.less} $PATCHDEMO/wikis/$NAME/w/resources/lib/codex-icons/
 	cp -r $PATCHDEMO/wikis/$NAME/w/build/codex/packages/codex-design-tokens/theme-wikimedia-*.less $PATCHDEMO/wikis/$NAME/w/resources/lib/codex-design-tokens/
 	# Make docs available at /w/build/codex/docs/
