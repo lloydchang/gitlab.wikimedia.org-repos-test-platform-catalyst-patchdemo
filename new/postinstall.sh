@@ -66,7 +66,7 @@ if [ -d $PATCHDEMO/wikis/$NAME/w/build/codex ]; then
 	cd $PATCHDEMO
 	cp -r $PATCHDEMO/wikis/$NAME/w/build/codex/packages/codex/dist/* $PATCHDEMO/wikis/$NAME/w/resources/lib/codex/
 	cp -r $PATCHDEMO/wikis/$NAME/w/build/codex/packages/codex-icons/dist/{codex-icons.json,codex-icon-paths.less} $PATCHDEMO/wikis/$NAME/w/resources/lib/codex-icons/
-	cp -r $PATCHDEMO/wikis/$NAME/w/build/codex/packages/codex-design-tokens/theme-wikimedia-*.less $PATCHDEMO/wikis/$NAME/w/resources/lib/codex-design-tokens/
+	cp -r $PATCHDEMO/wikis/$NAME/w/build/codex/packages/codex-design-tokens/dist/theme-wikimedia-*.less $PATCHDEMO/wikis/$NAME/w/resources/lib/codex-design-tokens/
 	# Make docs available at /w/build/codex/docs/
 	# FIXME: don't do this for now, since we can't build the docs without crashing
 	#mv $PATCHDEMO/wikis/$NAME/w/build/codex/packages/codex-docs/docs/.vitepress/dist $PATCHDEMO/wikis/$NAME/w/build/codex/docs
