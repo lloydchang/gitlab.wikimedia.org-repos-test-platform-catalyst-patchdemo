@@ -73,6 +73,7 @@ mediawiki/extensions/SpamBlacklist extensions/SpamBlacklist
 mediawiki/extensions/StopForumSpam extensions/StopForumSpam
 mediawiki/extensions/SyntaxHighlight_GeSHi extensions/SyntaxHighlight_GeSHi
 mediawiki/extensions/TemplateData extensions/TemplateData
+mediawiki/extensions/TemplateSandbox extensions/TemplateSandbox
 mediawiki/extensions/TemplateStyles extensions/TemplateStyles
 mediawiki/extensions/TemplateWizard extensions/TemplateWizard
 mediawiki/extensions/TextExtracts extensions/TextExtracts
