@@ -83,6 +83,7 @@ function abandon( string $errHtml ) {
 			pd.installProgressField.fieldWidget.setDisabled( true );
 			pd.installProgressField.fieldWidget.popPending();
 			pd.installProgressField.setErrors( [ new OO.ui.HtmlSnippet( $errJson ) ] );
+			document.title = 'Patch demo - Failed';
 			pd.notify( 'Your PatchDemo wiki failed to build', $errJson );
 		</script>
 EOT;
@@ -97,12 +98,14 @@ function set_progress( float $pc, string $label ) {
 		<script>
 			pd.installProgressField.fieldWidget.setProgress( $pc );
 			pd.installProgressField.setLabel( $labelJson );
+			document.title = 'Patch demo - ' + Math.round( $pc ) + '%';
 		</script>
 EOT;
 	if ( (int)$pc === 100 ) {
 		echo <<<EOT
 		<script>
 			pd.installProgressField.fieldWidget.popPending();
+			document.title = 'Patch demo - Done!';
 			pd.openWiki.setDisabled( false );
 			pd.notify( 'Your PatchDemo wiki is ready!' );
 		</script>
