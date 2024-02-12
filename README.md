@@ -29,33 +29,33 @@ Tested on Debian 11.
 
 FAQ
 ----
-**Can you delete a wiki when you are done with it?**
+### Can you delete a wiki when you are done with it?
 
 Yes. For any wiki you create, you will see a `Delete` link in the `Action` column of the table of previously generated wikis on the main page. We advise you to delete the wikis you create when you are finished with them and/or when the patch you created the wiki to test is merged.
 
-**How long do the Patch demo wiki instances last for?**
+### How long do the Patch demo wiki instances last for?
 
 There is no definitive time after which wikis will automatically be deleted. With this said, we make no guarantees about how long they will continue to exist. A Patch demo wiki you've created could be deleted if we need to free up disk space to create space for new ones.
 
-**Can Patch demo wikis be named?**
+### Can Patch demo wikis be named?
 
 Wikis can not been named *within* Patch demo. Wikis are listed within Patch demo by the creator and the list of patches (potentially multiple) used to create it. They are also assigned a random hash, which becomes part of the URL.
 
-**Is it possible to add extensions that are in development?**
+### Is it possible to add extensions that are in development?
 
 These will be considered on a case-by-case basis, but will generally be allowed as long as they don't interfere with other teams' ability to test in a production-like environment.
 
-**What if I don't like the above restrictions?**
+### What if I don't like the above restrictions?
 
 You can run your own version of the entire Patch demo website. Get yourself a server and follow the [Setup](#setup) instructions above, or convince an engineer near you to do it.
 
 The public https://patchdemo.wmflabs.org/ website runs on an `g2.cores8.ram16.disk160` instance at [Wikimedia Cloud VPS](https://wikitech.wikimedia.org/wiki/Portal:Cloud_VPS).
 
-**Is it possible to add patches for extension not just core? And skins?**
+### Is it possible to add patches for extension not just core? And skins?
 
 Yes, patches for many extensions and skins are supported (mostly those included in MediaWiki releases, or enabled on all Wikimedia wikis), as well as Parsoid. Check out the list under "Choose extensions to enable" in the interface.
 
-**What happens to a Patch demo wiki when the underlying patch is updated?**
+### What happens to a Patch demo wiki when the underlying patch is updated?
 
 Nothing. Once created, the wikis are never updated. New versions of the selected patches are not applied, and neither are patches merged into master. If you want to test a newer version of the patch, create a new wiki with it.
 
