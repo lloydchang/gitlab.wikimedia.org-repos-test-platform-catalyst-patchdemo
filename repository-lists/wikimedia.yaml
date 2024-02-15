@@ -78,6 +78,7 @@
 - mediawiki/extensions/PageImages
 - mediawiki/extensions/PageViewInfo
 - mediawiki/extensions/ParserFunctions
+- mediawiki/extensions/ParserMigration
 - mediawiki/extensions/PdfHandler
 - mediawiki/extensions/Poem
 - mediawiki/extensions/PoolCounter
