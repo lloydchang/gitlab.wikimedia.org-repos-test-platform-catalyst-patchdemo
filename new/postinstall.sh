@@ -35,6 +35,14 @@ do
 	mysql -u patchdemo -ppatchdemo patchdemo_$NAME < $PATCHDEMO/sql-perwiki/$sql
 done
 
+# JSDoc build (ignore errors on earlier MediaWiki versions)
+cd $PATCHDEMO/wikis/$NAME/w
+npm ci || true
+npm run doc || true
+# remove node_modules afterwards, they take up infinite disk space and won't be needed any more
+rm -rf $PATCHDEMO/wikis/$NAME/w/node_modules || true
+cd $PATCHDEMO
+
 # OOUI build
 if [ -d $PATCHDEMO/wikis/$NAME/w/build/ooui ]; then
 	cd $PATCHDEMO/wikis/$NAME/w/build/ooui

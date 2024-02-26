@@ -413,6 +413,10 @@ if ( $landingPage ) {
 	$mainPage .= "\n\nThe designated landing page for this wiki is [{{SERVER}}{{ARTICLEPATH}}/../$landingPage $landingPage].";
 }
 
+// TODO: Only add this message if the doc has actually been generated
+// (it will be missing on older MediaWiki versions, but we won't know until later in this script)
+$mainPage .= "\n\nYou can also view the [{{SERVER}}{{SCRIPTPATH}}/docs/js patched JSDoc documentation].";
+
 $hasOOUI = in_array( 'oojs/ui', $allowedRepos, true );
 if ( $hasOOUI ) {
 	$mainPage .= "\n\nThis wiki was built with OOUI patches so you can also view the [{{SERVER}}{{SCRIPTPATH}}/build/ooui/demos patched '''OOUI Demos'''].";
