@@ -44,7 +44,7 @@ window.PatchSelectWidget.prototype.getTagInfoFromInput = function ( value ) {
 	value = value || this.input.getValue();
 
 	// eslint-disable-next-line security/detect-non-literal-regexp
-	const gerritUrlPattern = new RegExp( pd.config.gerritUrl + '.*?/([0-9]+(?:/[0-9]+)?)/?$' );
+	const gerritUrlPattern = new RegExp( pd.config.gerritUrl + '.*?/([0-9]+(?:/[0-9]+)?)/?(?:\\?.*)?$' );
 
 	value = value.trim();
 
