@@ -239,6 +239,17 @@ echo new OOUI\FormLayout( [
 				),
 				new OOUI\FieldLayout(
 					new OOUI\CheckboxInputWidget( [
+						'name' => 'docs',
+						'value' => 1,
+						'selected' => false
+					] ),
+					[
+						'label' => "Build core documentation",
+						'align' => 'left',
+					]
+				),
+				new OOUI\FieldLayout(
+					new OOUI\CheckboxInputWidget( [
 						'name' => 'tempuser',
 						'value' => 1,
 						'selected' => false

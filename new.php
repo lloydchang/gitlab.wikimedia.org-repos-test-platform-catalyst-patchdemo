@@ -24,6 +24,7 @@ $patches = trim( $_POST['patches'] );
 $announce = !empty( $_POST['announce'] );
 $landingPage = trim( $_POST['landingPage'] ) ? trim( $_POST['landingPage'] ) : null;
 $language = trim( $_POST['language'] );
+$buildDocs = !empty( $_POST['docs'] );
 
 $wiki = substr( md5( $branch . $patches . time() ), 0, 10 );
 $server = get_server();
@@ -413,9 +414,11 @@ if ( $landingPage ) {
 	$mainPage .= "\n\nThe designated landing page for this wiki is [{{SERVER}}{{ARTICLEPATH}}/../$landingPage $landingPage].";
 }
 
-// TODO: Only add this message if the doc has actually been generated
-// (it will be missing on older MediaWiki versions, but we won't know until later in this script)
-$mainPage .= "\n\nYou can also view the [{{SERVER}}{{SCRIPTPATH}}/docs/js patched JSDoc documentation].";
+if ( $buildDocs ) {
+	// TODO: Only add this message if the doc has successfully been generated
+	// (it will be missing on older MediaWiki versions, but we won't know until later in this script)
+	$mainPage .= "\n\nYou can also view the [{{SERVER}}{{SCRIPTPATH}}/docs/js patched JSDoc documentation].";
+}
 
 $hasOOUI = in_array( 'oojs/ui', $allowedRepos, true );
 if ( $hasOOUI ) {
@@ -633,6 +636,7 @@ $error = shell_echo( __DIR__ . '/new/postinstall.sh',
 		'USE_PROXY' => $useProxy,
 		'USE_TEMPUSER' => !empty( $_POST['tempuser'] ),
 		'USE_INSTANT_COMMONS' => $useInstantCommons,
+		'BUILD_DOCS' => $buildDocs,
 		'REPOSITORIES' => $reposString,
 		// May be required for npm (e.g. if using nvm)
 		'EXTRA_PATH' => implode( ':', $config['extraPaths'] ),
