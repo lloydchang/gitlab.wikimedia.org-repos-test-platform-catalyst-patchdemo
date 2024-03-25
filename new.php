@@ -468,27 +468,33 @@ $baseEnv = [
 
 $start = 5;
 $end = 40;
-$n = 1;
+$n = 0;
 $repoProgress = $start;
 $repoCount = count( $repos );
 
+$cmds = [];
+$envs = [];
 foreach ( $repos as $source => $target ) {
-	set_progress( $repoProgress, "Updating repositories ($n/$repoCount)..." );
-
-	check_connection();
-	$error = shell_echo( __DIR__ . '/new/updaterepos.sh',
-		$baseEnv + [
-			'REPO_SOURCE' => $source,
-		]
-	);
-
-	if ( $error ) {
-		abandon( "Could not update repository <em>$source</em>" );
-	}
-
-	$repoProgress += ( $end - $start ) / $repoCount;
-	$n++;
+	$cmds[] = __DIR__ . '/new/updaterepos.sh';
+	$envs[] = $baseEnv + [
+		'REPO_SOURCE' => $source,
+	];
 }
+
+set_progress( $repoProgress, "Updating repositories ($n/$repoCount)..." );
+
+check_connection();
+shell_echo_multi(
+	$cmds, $envs,
+	static function () use ( $start, $end, &$n, $repoProgress, $repoCount ) {
+		$repoProgress += ( $end - $start ) / $repoCount;
+		$n++;
+		set_progress( $repoProgress, "Updating repositories ($n/$repoCount)..." );
+	},
+	static function ( int $error, $cmd, $env ) {
+		abandon( "Could not update repository <em>{$env['REPO_SOURCE']}</em>" );
+	}
+);
 
 // Just creates empty folders so no need for progress update
 check_connection();
@@ -499,27 +505,45 @@ if ( $error ) {
 
 $start = 40;
 $end = 60;
-$n = 1;
+$n = 0;
 $repoProgress = $start;
 $repoCount = count( $repos );
-foreach ( $repos as $source => $target ) {
-	set_progress( $repoProgress, "Checking out repositories ($n/$repoCount)..." );
 
-	check_connection();
-	$error = shell_echo( __DIR__ . '/new/checkout.sh',
-		$baseEnv + [
+$cmds = [];
+$envs = [];
+foreach ( $repos as $source => $target ) {
+	$cmd = __DIR__ . '/new/checkout.sh';
+	$env = $baseEnv + [
 		'BRANCH' => $repoSpecificBranches[$source] ?? $branch,
 		'REPO_SOURCE' => $source,
 		'REPO_TARGET' => $target,
-		]
-	);
-	if ( $error ) {
-		abandon( "Could not check out repository <em>$source</em>" );
+	];
+	if ( $source !== 'mediawiki/core' && $source !== 'mediawiki/extensions/VisualEditor' ) {
+		$cmds[] = $cmd;
+		$envs[] = $env;
+	} else {
+		// Update core synchronously before extensions.
+		// Also update VE synchronously to avoid a race with the submodule lib/ve.
+		$error = shell_echo( $cmd, $env );
+		if ( $error ) {
+			abandon( "Could not check out <em>$source</em>" );
+		}
 	}
-
-	$repoProgress += ( $end - $start ) / $repoCount;
-	$n++;
 }
+
+set_progress( $repoProgress, "Checking out repositories ($n/$repoCount)..." );
+
+shell_echo_multi(
+	$cmds, $envs,
+	static function () use ( $start, $end, &$n, $repoProgress, $repoCount ) {
+		$repoProgress += ( $end - $start ) / $repoCount;
+		$n++;
+		set_progress( $repoProgress, "Checking out repositories ($n/$repoCount)..." );
+	},
+	static function ( int $error, $cmd, $env ) {
+		abandon( "Could not check out repository <em>{$env['REPO_SOURCE']}</em>" );
+	}
+);
 
 // TODO: Make this a loop
 set_progress( 60, 'Fetching submodules...' );
@@ -546,6 +570,7 @@ foreach ( $commands as $i => $command ) {
 
 $start = 65;
 $end = 75;
+$n = 0;
 $composerInstallRepos = Yaml::parse( file_get_contents( __DIR__ . '/repository-lists/composerinstall.yaml' ) );
 // Filter down to repos which are being installed
 $composerInstallRepos = array_values( array_filter(
@@ -556,23 +581,31 @@ $composerInstallRepos = array_values( array_filter(
 ) );
 $repoProgress = $start;
 $repoCount = count( $composerInstallRepos );
-foreach ( $composerInstallRepos as $i => $repo ) {
-	$n = $i + 1;
-	set_progress( $repoProgress, "Fetching dependencies ($n/$repoCount)..." );
-	check_connection();
-	$error = shell_echo( __DIR__ . '/new/composerinstall.sh',
-		$baseEnv + [
-			// Variable used by composer itself, not our script
-			'COMPOSER_HOME' => __DIR__ . '/composer',
-			'REPO_TARGET' => $repos[$repo],
-		]
-	);
-	if ( $error ) {
-		abandon( "Could not fetch dependencies for <em>$repo</em>" );
-	}
 
-	$repoProgress += ( $end - $start ) / $repoCount;
+$cmds = [];
+$envs = [];
+foreach ( $composerInstallRepos as $repo ) {
+	$cmds[] = __DIR__ . '/new/composerinstall.sh';
+	$envs[] = $baseEnv + [
+		// Variable used by composer itself, not our script
+		'COMPOSER_HOME' => __DIR__ . '/composer',
+		'REPO_TARGET' => $repos[$repo],
+	];
 }
+
+set_progress( $repoProgress, "Fetching dependencies ($n/$repoCount)..." );
+
+shell_echo_multi(
+	$cmds, $envs,
+	static function () use ( $start, $end, &$n, $repoProgress, $repoCount ) {
+		$repoProgress += ( $end - $start ) / $repoCount;
+		$n++;
+		set_progress( $repoProgress, "Fetching dependencies ($n/$repoCount)..." );
+	},
+	static function ( int $error, $cmd, $env ) {
+		abandon( "Could not fetch dependencies for <em>{$env['REPO_SOURCE']}</em>" );
+	}
+);
 
 set_progress( 75, 'Installing your wiki...' );
 

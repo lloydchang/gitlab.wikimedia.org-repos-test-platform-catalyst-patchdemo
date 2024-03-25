@@ -355,6 +355,53 @@ function shell_echo( string $cmd, array $env = [] ): int {
 	return $error;
 }
 
+function shell_echo_multi( array $cmds, array $envs = [], callable $cb = null, callable $errorCb = null ): int {
+	echo '<pre>';
+
+	$processes = [];
+	foreach ( $cmds as $i => $cmd ) {
+		$env = $envs[ $i ];
+		$prefix = '';
+		foreach ( $env as $key => $value ) {
+			$value = escapeshellarg( $value );
+			$prefix .= "$key=$value ";
+		}
+		echo htmlspecialchars( "$prefix$cmd\n" );
+
+		$process = Process::fromShellCommandline( $cmd, null, $env );
+		$process->setTimeout( null );
+		$process->setPty( true );
+		$process->start( static function ( $type, $buffer ) {
+			global $ansiConverter;
+			echo $ansiConverter->convert( $buffer );
+		} );
+		$processes[] = $process;
+	}
+
+	$done = 0;
+	$total = count( $processes );
+	while ( $done < $total ) {
+		// Poll for finished processes every 500ms
+		usleep( 500 );
+
+		foreach ( $processes as $i => $process ) {
+			if ( $process && !$process->isRunning() ) {
+				$error = $process->getExitCode();
+				$processes[ $i ] = null;
+				$done++;
+				if ( $error && $errorCb ) {
+					$errorCb( $error, $cmds[ $i ], $envs[ $i ] );
+				}
+				if ( $cb ) {
+					$cb();
+				}
+			}
+		}
+	}
+	echo '</pre>';
+	return $error;
+}
+
 function shell( $cmd, array $env = [] ): ?string {
 	$process = Process::fromShellCommandline( $cmd, null, $env );
 	$process->setTimeout( null );
