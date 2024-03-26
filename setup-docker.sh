@@ -3,11 +3,6 @@ sudo apt-get install apache2 default-mysql-server php libapache2-mod-php php-mys
 # dependencies of our system
 sudo apt-get install composer npm unzip rdfind curl
 
-#Node 18
-sudo curl -fsSL https://deb.nodesource.com/setup_18.x | bash - &&\
-sudo apt-get update
-
-
 # Update NPM
 sudo npm install npm@latest
 # Let www-data run NPM
@@ -54,9 +49,9 @@ chmod u+x /etc/cron.monthly/patchdemo-optimize
 
 # PHP settings
 echo "
-; set session expiration to 2 weeks (default is 24 minutes???), cookie expiration too
-session.gc_maxlifetime = 1209600
-session.cookie_lifetime = 1209600
+; set session expiration to a month (default is 24 minutes???), cookie expiration too
+session.gc_maxlifetime = 2592000
+session.cookie_lifetime = 2592000
 
 ; double the default memory limit
 memory_limit = 256M
@@ -66,13 +61,6 @@ memory_limit = 256M
 echo "<Directory /var/www/html>
 Options -Indexes
 AllowOverride All
-
-# Workaround for some weird MediaWiki bug involving MobileFrontend and UrlShortener sending it into
-# infinite redirect loop that makes scraper bots hammer the site to death (#603)
-RewriteOptions Inherit
-RewriteEngine On
-RewriteCond \"%{QUERY_STRING}\" \"UrlShortener\"
-RewriteRule \".\"               \"-\"   [F,L]
 </Directory>" > /etc/apache2/sites-available/patchdemo.conf
 
 # Support Parsoid URLs for pages with slashes in the title.
