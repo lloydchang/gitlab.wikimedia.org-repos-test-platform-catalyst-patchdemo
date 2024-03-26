@@ -6,7 +6,7 @@ sudo apt-get install composer npm unzip rdfind curl
 #Node 18
 sudo curl -fsSL https://deb.nodesource.com/setup_18.x | bash - &&\
 sudo apt-get update
-
+sudo apt-get install -y nodejs
 
 # Update NPM
 sudo npm install npm@latest

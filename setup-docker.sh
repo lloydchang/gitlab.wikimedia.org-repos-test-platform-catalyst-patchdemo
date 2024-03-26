@@ -1,41 +1,38 @@
-# dependencies of MediaWiki
-sudo apt-get install apache2 default-mysql-server php libapache2-mod-php php-mysql php-intl php-xml php-mbstring php-curl php-gd php-wikidiff2 imagemagick librsvg2-bin lame
-# dependencies of our system
-sudo apt-get install composer npm unzip rdfind curl
+#!/bin/bash
 
 # Update NPM
-sudo npm install npm@latest
+npm install npm@latest
 # Let www-data run NPM
-sudo mkdir -p /var/www/.npm /var/www/.config
-sudo chown www-data: /var/www/.npm /var/www/.config
+mkdir -p /var/www/.npm /var/www/.config
+chown www-data: /var/www/.npm /var/www/.config
 # We used to run NPM as root
-sudo chown -R www-data: node_modules
+chown -R www-data: node_modules
 
 # create master copies of repositories
-sudo mkdir -p repositories
-sudo chown www-data: repositories
+mkdir -p repositories
+chown www-data: repositories
 cd repositories
 while IFS=' ' read -r repo dir; do
-	sudo -u www-data git clone --no-checkout https://gerrit.wikimedia.org/r/$repo.git $repo
+	sudo -u www-data git clone --depth 1 --no-checkout https://gerrit.wikimedia.org/r/$repo.git $repo
 done < ../repository-lists/all.txt
 cd ..
 
 # Composer wants a directory for itself (COMPOSER_HOME)
-sudo mkdir -p composer
-sudo chown www-data: composer
+mkdir -p composer
+chown www-data: composer
 
 # Create folder for wikis
-sudo mkdir -p wikis
-sudo chown www-data: wikis
+mkdir -p wikis
+chown www-data: wikis
 
 # Create a database user that is allowed to create databases for each wiki,
 # and the central patchdemo database
-sudo mysql -u root --password='' < sql/user.sql
+mysql -u root --password='' < sql/user.sql
 # Create the central patchdemo database
-sudo mysql -u patchdemo --password='patchdemo' < sql/patchdemo.sql
+mysql -u patchdemo --password='patchdemo' < sql/patchdemo.sql
 
 # dependencies for the website
-composer install --no-dev
+composer install --no-interaction --no-dev
 sudo -u www-data npm ci --production
 
 # setup daily cron job to deduplicate files
@@ -43,8 +40,9 @@ echo "#!/bin/bash
 $(readlink -f deduplicate.sh)" > /etc/cron.daily/patchdemo-deduplicate
 chmod u+x /etc/cron.daily/patchdemo-deduplicate
 # setup monthly cron job to optimize databases and free disk space
+mkdir -p /etc/cron.monthly
 echo "#!/bin/bash
-sudo mysqlcheck --optimize --all-databases -u root --password=''" > /etc/cron.monthly/patchdemo-optimize
+mysqlcheck --optimize --all-databases -u root --password=''" > /etc/cron.monthly/patchdemo-optimize
 chmod u+x /etc/cron.monthly/patchdemo-optimize
 
 # PHP settings
@@ -76,7 +74,9 @@ grep -q "AllowEncodedSlashes NoDecode" /etc/apache2/sites-available/000-default.
 	sed -i "/<\/VirtualHost>/i\
 	AllowEncodedSlashes NoDecode" /etc/apache2/sites-available/000-default.conf
 
-sudo a2ensite patchdemo
+a2ensite patchdemo
 # enable mod_rewrite
-sudo a2enmod rewrite
-sudo systemctl restart apache2
+a2enmod rewrite
+chgrp -R www-data /var/log/apache2
+chmod g+rwxs /var/log/apache2
+
