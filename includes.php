@@ -356,25 +356,14 @@ function shell_echo( string $cmd, array $env = [] ): int {
 }
 
 function shell_echo_multi( array $cmds, array $envs = [], callable $cb = null, callable $errorCb = null ): int {
-	echo '<pre>';
+	global $ansiConverter;
 
 	$processes = [];
 	foreach ( $cmds as $i => $cmd ) {
-		$env = $envs[ $i ];
-		$prefix = '';
-		foreach ( $env as $key => $value ) {
-			$value = escapeshellarg( $value );
-			$prefix .= "$key=$value ";
-		}
-		echo htmlspecialchars( "$prefix$cmd\n" );
-
-		$process = Process::fromShellCommandline( $cmd, null, $env );
+		$process = Process::fromShellCommandline( $cmd, null, $envs[ $i ] );
 		$process->setTimeout( null );
 		$process->setPty( true );
-		$process->start( static function ( $type, $buffer ) {
-			global $ansiConverter;
-			echo $ansiConverter->convert( $buffer );
-		} );
+		$process->start();
 		$processes[] = $process;
 	}
 
@@ -386,7 +375,17 @@ function shell_echo_multi( array $cmds, array $envs = [], callable $cb = null, c
 
 		foreach ( $processes as $i => $process ) {
 			if ( $process && !$process->isRunning() ) {
+				$env = $envs[ $i ];
+				$prefix = '';
+				foreach ( $env as $key => $value ) {
+					$value = escapeshellarg( $value );
+					$prefix .= "$key=$value ";
+				}
 				$error = $process->getExitCode();
+				echo '<pre>';
+				echo htmlspecialchars( "$prefix$cmd\n" );
+				echo $ansiConverter->convert( $process->getOutput() );
+				echo '</pre>';
 				$processes[ $i ] = null;
 				$done++;
 				if ( $error && $errorCb ) {
@@ -398,7 +397,6 @@ function shell_echo_multi( array $cmds, array $envs = [], callable $cb = null, c
 			}
 		}
 	}
-	echo '</pre>';
 	return $error;
 }
 
