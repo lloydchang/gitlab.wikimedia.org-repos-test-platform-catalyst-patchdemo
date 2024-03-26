@@ -3,11 +3,6 @@ sudo apt-get install apache2 default-mysql-server php libapache2-mod-php php-mys
 # dependencies of our system
 sudo apt-get install composer npm unzip rdfind curl
 
-#Node 18
-sudo curl -fsSL https://deb.nodesource.com/setup_18.x | bash - &&\
-sudo apt-get update
-
-
 # Update NPM
 sudo npm install npm@latest
 # Let www-data run NPM
