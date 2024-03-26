@@ -64,30 +64,14 @@ ignore_user_abort( true );
 insert_wiki_data( $wiki, $creator, $created, $branchDesc, $landingPage );
 
 function warn( string $warnHtml ) {
-	$warnJson = json_encode( $warnHtml );
-	echo <<<EOT
-		<script>
-			pd.installProgressField.setWarnings(
-				pd.installProgressField.warnings.concat(
-					[ new OO.ui.HtmlSnippet( $warnJson ) ]
-				)
-			);
-		</script>
-EOT;
+	$warnJson = json_encode_clean( $warnHtml );
+	echo "<script>pd.warn( $warnJson );</script>";
 }
 
 function abandon( string $errHtml ) {
 	global $wiki;
 	$errJson = json_encode_clean( $errHtml );
-	echo <<<EOT
-		<script>
-			pd.installProgressField.fieldWidget.setDisabled( true );
-			pd.installProgressField.fieldWidget.popPending();
-			pd.installProgressField.setErrors( [ new OO.ui.HtmlSnippet( $errJson ) ] );
-			document.title = 'Patch demo - Failed';
-			pd.notify( 'Your PatchDemo wiki failed to build', $errJson );
-		</script>
-EOT;
+	echo "<script>pd.abandon( $errJson );</script>";
 	delete_wiki( $wiki );
 	die( $errHtml );
 }
@@ -95,24 +79,7 @@ EOT;
 function set_progress( float $pc, string $label ) {
 	echo '<p>' . htmlspecialchars( $label ) . '</p>';
 	$labelJson = json_encode_clean( $label );
-	echo <<<EOT
-		<script>
-			pd.installProgressField.fieldWidget.setProgress( $pc );
-			pd.installProgressField.setLabel( $labelJson );
-			document.title = 'Patch demo - ' + Math.round( $pc ) + '%';
-		</script>
-EOT;
-	if ( (int)$pc === 100 ) {
-		echo <<<EOT
-		<script>
-			pd.installProgressField.fieldWidget.popPending();
-			document.title = 'Patch demo - Done!';
-			pd.openWiki.setDisabled( false );
-			pd.notify( 'Your PatchDemo wiki is ready!' );
-		</script>
-EOT;
-	}
-
+	echo "<script>pd.setProgress( $pc, $labelJson );</script>";
 	ob_flush();
 }
 
