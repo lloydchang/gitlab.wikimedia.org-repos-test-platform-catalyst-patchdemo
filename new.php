@@ -489,7 +489,7 @@ set_progress( $repoProgress, "Updating repositories ($n/$repoCount)..." );
 check_connection();
 shell_echo_multi(
 	$cmds, $envs,
-	static function () use ( $start, $end, &$n, $repoProgress, $repoCount ) {
+	static function () use ( $start, $end, &$n, &$repoProgress, $repoCount ) {
 		$repoProgress += ( $end - $start ) / $repoCount;
 		$n++;
 		set_progress( $repoProgress, "Updating repositories ($n/$repoCount)..." );
@@ -538,7 +538,7 @@ set_progress( $repoProgress, "Checking out repositories ($n/$repoCount)..." );
 
 shell_echo_multi(
 	$cmds, $envs,
-	static function () use ( $start, $end, &$n, $repoProgress, $repoCount ) {
+	static function () use ( $start, $end, &$n, &$repoProgress, $repoCount ) {
 		$repoProgress += ( $end - $start ) / $repoCount;
 		$n++;
 		set_progress( $repoProgress, "Checking out repositories ($n/$repoCount)..." );
@@ -600,7 +600,7 @@ set_progress( $repoProgress, "Fetching dependencies ($n/$repoCount)..." );
 
 shell_echo_multi(
 	$cmds, $envs,
-	static function () use ( $start, $end, &$n, $repoProgress, $repoCount ) {
+	static function () use ( $start, $end, &$n, &$repoProgress, $repoCount ) {
 		$repoProgress += ( $end - $start ) / $repoCount;
 		$n++;
 		set_progress( $repoProgress, "Fetching dependencies ($n/$repoCount)..." );
