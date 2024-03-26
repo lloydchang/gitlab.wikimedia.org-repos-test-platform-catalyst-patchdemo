@@ -402,3 +402,26 @@ summary > .oo-ui-labelElement-label:not( .oo-ui-inline-help ) {
 .consoleLog :last-child {
 	margin-bottom: 0;
 }
+
+.logPrefix,
+.logCmd {
+	font-weight: bold;
+	display: inline-block;
+}
+
+.logPrefix {
+	color: #ddf;
+}
+
+.logCmd {
+	color: #bfb;
+	margin-bottom: 0.5em;
+}
+
+.logPrefix::before {
+	content: '> ';
+}
+
+.logCmd::before {
+	content: '  ';
+}

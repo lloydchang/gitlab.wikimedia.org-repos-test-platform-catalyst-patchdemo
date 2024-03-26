@@ -334,15 +334,19 @@ function format_duration( int $time ): string {
 		$time . 's';
 }
 
-function shell_echo( string $cmd, array $env = [] ): int {
-	echo '<pre>';
-
+function format_log_command( string $cmd, array $env = [] ): string {
 	$prefix = '';
 	foreach ( $env as $key => $value ) {
 		$value = escapeshellarg( $value );
 		$prefix .= "$key=$value ";
 	}
-	echo htmlspecialchars( "$prefix$cmd\n" );
+	return '<span class="logPrefix">' . htmlspecialchars( $prefix ) . '</span> \\' . "\n" .
+		'<span class="logCmd">' . htmlspecialchars( $cmd ) . '</span>' . "\n";
+}
+
+function shell_echo( string $cmd, array $env = [] ): int {
+	echo '<pre>';
+	echo format_log_command( $cmd, $env );
 
 	$process = Process::fromShellCommandline( $cmd, null, $env );
 	$process->setTimeout( null );
@@ -375,15 +379,9 @@ function shell_echo_multi( array $cmds, array $envs = [], callable $cb = null, c
 
 		foreach ( $processes as $i => $process ) {
 			if ( $process && !$process->isRunning() ) {
-				$env = $envs[ $i ];
-				$prefix = '';
-				foreach ( $env as $key => $value ) {
-					$value = escapeshellarg( $value );
-					$prefix .= "$key=$value ";
-				}
 				$error = $process->getExitCode();
 				echo '<pre>';
-				echo htmlspecialchars( "$prefix$cmd\n" );
+				echo format_log_command( $cmd, $envs[ $i ] );
 				echo $ansiConverter->convert( $process->getOutput() );
 				echo '</pre>';
 				$processes[ $i ] = null;
