@@ -10,7 +10,9 @@
 - mediawiki/extensions/BounceHandler
 - mediawiki/extensions/Campaigns
 - mediawiki/extensions/CategoryTree
-- mediawiki/extensions/CentralAuth
+# We don't have a real wiki farm, just a minimal installation separate for each wiki, which
+# doesn't really resemble production and complicates things a lot, so turn it off by default.
+# - mediawiki/extensions/CentralAuth
 - mediawiki/extensions/CentralNotice
 - mediawiki/extensions/CharInsert
 - mediawiki/extensions/CheckUser
