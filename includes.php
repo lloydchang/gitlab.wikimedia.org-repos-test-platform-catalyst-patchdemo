@@ -27,7 +27,9 @@ $is404 = basename( $_SERVER['SCRIPT_NAME'] ) === '404.php';
 
 include_once 'oauth.php';
 
-$mysqli = new mysqli( 'localhost', 'patchdemo', 'patchdemo', 'patchdemo' );
+// get the service name of mariadb from the environment variables
+$mysqli = new mysqli( getenv('DB_HOST'), getenv('DB_USER'), getenv('DB_PASS'),
+    getenv('DB_DATABASE') );
 if ( $mysqli->connect_error ) {
 	die( $mysqli->connect_error );
 }
