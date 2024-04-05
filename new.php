@@ -621,6 +621,10 @@ $error = shell_echo( __DIR__ . '/new/install.sh',
 		'LANGUAGE' => $language,
 		'REPOSITORIES' => $reposString,
 		'DEFAULT_SKIN' => $defaultSkin,
+        'DB_USER' => getenv('DB_USER'),
+        'DB_PASS' => getenv('DB_PASS'),
+        'DB_DATABASE' => getenv('DB_DATABASE'),
+        'DB_HOST' => getenv('DB_HOST'),
 	]
 );
 if ( $error ) {
@@ -643,6 +647,10 @@ $error = shell_echo( __DIR__ . '/new/postinstall.sh',
 		// Variable used by composer itself, not our script
 		'COMPOSER_HOME' => __DIR__ . '/composer',
 		'SERVERPATH' => $serverPath,
+        'DB_USER' => getenv('DB_USER'),
+        'DB_PASS' => getenv('DB_PASS'),
+        'DB_DATABASE' => getenv('DB_DATABASE'),
+        'DB_HOST' => getenv('DB_HOST'),
 	]
 );
 if ( $error ) {

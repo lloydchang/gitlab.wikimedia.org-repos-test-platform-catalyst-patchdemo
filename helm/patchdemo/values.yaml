@@ -28,10 +28,7 @@ mariadb:
     rootPassword: ewATHm5lxB
   initdbScripts:
     setup.sql: |
-      CREATE USER IF NOT EXISTS 'patchdemo'@'localhost' IDENTIFIED BY 'patchdemo';
-      GRANT ALL PRIVILEGES ON `patchdemo%`.* TO 'patchdemo'@'localhost';
-      FLUSH PRIVILEGES;
-      
+      GRANT ALL PRIVILEGES ON `patchdemo%`.* TO 'patchdemo'@'%';
       CREATE DATABASE IF NOT EXISTS patchdemo;
       USE patchdemo;
 

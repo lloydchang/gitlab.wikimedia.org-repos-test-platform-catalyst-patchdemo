@@ -434,7 +434,11 @@ function delete_wiki( string $wiki, string $serverUri = null ): ?string {
 	$error = shell_echo( __DIR__ . '/deletewiki.sh',
 		[
 			'PATCHDEMO' => __DIR__,
-			'WIKI' => $wiki
+			'WIKI' => $wiki,
+            'DB_USER' => getenv('DB_USER'),
+            'DB_PASS' => getenv('DB_PASS'),
+            'DB_DATABASE' => getenv('DB_DATABASE'),
+            'DB_HOST' => getenv('DB_HOST'),
 		]
 	);
 	if ( $error ) {
