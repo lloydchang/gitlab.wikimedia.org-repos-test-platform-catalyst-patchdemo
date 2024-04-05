@@ -2,3 +2,4 @@ composer/
 repositories/
 vendor/
 wikis/
+helm/
