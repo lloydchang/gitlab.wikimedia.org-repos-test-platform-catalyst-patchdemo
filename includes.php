@@ -28,8 +28,8 @@ $is404 = basename( $_SERVER['SCRIPT_NAME'] ) === '404.php';
 include_once 'oauth.php';
 
 // get the service name of mariadb from the environment variables
-$mysqli = new mysqli( getenv('DB_HOST'), getenv('DB_USER'), getenv('DB_PASS'),
-	getenv('DB_DATABASE') );
+$mysqli = new mysqli( getenv( 'DB_HOST' ), getenv( 'DB_USER' ), getenv( 'DB_PASS' ),
+	getenv( 'DB_DATABASE' ) );
 if ( $mysqli->connect_error ) {
 	die( $mysqli->connect_error );
 }
@@ -119,18 +119,18 @@ function get_wiki_data_from_row( array $data ): array {
 	// Decode JSON
 	$data['patches'] = json_decode( $data['patches'] ?: '' ) ?: [];
 	$data['announcedTasks'] = json_decode( $data['announcedTasks'] ?: '' ) ?: [];
-	$data['repos'] = json_decode( $data['repos'] ?: '', true ) ?: [ 'preset' => 'unknown' ];
+	$data['repos'] = json_decode( $data['repos'] ?: '', true ) ?: ['preset' => 'unknown'];
 
 	// Populate patch list
 	$patchList = [];
 	$linkedTasks = [];
 	if ( $data['patches'] ) {
 		foreach ( $data['patches'] as $patch ) {
-			[ $r, $p ] = explode( ',', $patch );
+			[$r, $p] = explode( ',', $patch );
 			$patchData = get_patch_data( $r, $p );
 			$patchList[$patch] = $patchData;
 
-			get_linked_tasks( $patchData[ 'message' ], $linkedTasks );
+			get_linked_tasks( $patchData['message'], $linkedTasks );
 		}
 	}
 	$data['patchList'] = $patchList;
@@ -155,7 +155,7 @@ function get_wiki_link( string $wiki, ?string $landingPage, bool $ready = true )
 	}
 	return (
 		'<a href="' . htmlspecialchars( get_wiki_url( $wiki, $landingPage ) ) . ' " title="' . $wiki . '">' .
-			substr( $wiki, 0, 10 ) .
+		substr( $wiki, 0, 10 ) .
 		'</a>'
 	);
 }
@@ -190,8 +190,8 @@ function get_patch_data( $r, $p ): array {
 		$message = '';
 		$commitData = gerrit_query( "changes/$r/revisions/$p/commit" );
 		if ( $commitData ) {
-			$subject = $commitData[ 'subject' ];
-			$message = $commitData[ 'message' ];
+			$subject = $commitData['subject'];
+			$message = $commitData['message'];
 		}
 
 		// Update cache
@@ -306,17 +306,17 @@ function format_patch_list( array $patchList, ?string $branch, bool &$closed = f
 			$status = 'DNM';
 		}
 		$statuses[] = $status;
-		$title = $patchData['patch'] . ': ' . $patchData[ 'subject' ];
+		$title = $patchData['patch'] . ': ' . $patchData['subject'];
 
 		return '<a href="' . $config['gerritUrl'] . '/r/c/' . $patchData['r'] . '/' . $patchData['p'] . '" title="' . htmlspecialchars( $title ) . '" class="status-' . $status . '">' .
 			htmlspecialchars( $title ) .
-		'</a>';
+			'</a>';
 	}, $patchList ) );
 
 	$closed = all_closed( $statuses );
 
 	return ( $patches ?: '<em>No patches</em>' ) .
-			( $branch && $branch !== 'master' ? '<br>Branch: ' . $branch : '' );
+		( $branch && $branch !== 'master' ? '<br>Branch: ' . $branch : '' );
 }
 
 function format_linked_tasks( array $linkedTasks ): string {
@@ -362,7 +362,7 @@ function shell_echo_multi( array $cmds, array $envs = [], callable $cb = null, c
 
 	$processes = [];
 	foreach ( $cmds as $i => $cmd ) {
-		$env = $envs[ $i ];
+		$env = $envs[$i];
 		$prefix = '';
 		foreach ( $env as $key => $value ) {
 			$value = escapeshellarg( $value );
@@ -389,10 +389,10 @@ function shell_echo_multi( array $cmds, array $envs = [], callable $cb = null, c
 		foreach ( $processes as $i => $process ) {
 			if ( $process && !$process->isRunning() ) {
 				$error = $process->getExitCode();
-				$processes[ $i ] = null;
+				$processes[$i] = null;
 				$done++;
 				if ( $error && $errorCb ) {
-					$errorCb( $error, $cmds[ $i ], $envs[ $i ] );
+					$errorCb( $error, $cmds[$i], $envs[$i] );
 				}
 				if ( $cb ) {
 					$cb();
@@ -435,10 +435,10 @@ function delete_wiki( string $wiki, string $serverUri = null ): ?string {
 		[
 			'PATCHDEMO' => __DIR__,
 			'WIKI' => $wiki,
-			'DB_USER' => getenv('DB_USER'),
-			'DB_PASS' => getenv('DB_PASS'),
-			'DB_DATABASE' => getenv('DB_DATABASE'),
-			'DB_HOST' => getenv('DB_HOST'),
+			'DB_USER' => getenv( 'DB_USER' ),
+			'DB_PASS' => getenv( 'DB_PASS' ),
+			'DB_DATABASE' => getenv( 'DB_DATABASE' ),
+			'DB_HOST' => getenv( 'DB_HOST' ),
 		]
 	);
 	if ( $error ) {
@@ -499,8 +499,8 @@ function get_repo_data( string $pathPrefix = 'w/' ): array {
 	$repos = [];
 
 	foreach ( explode( "\n", trim( $data ) ) as $line ) {
-		[ $repo, $path ] = explode( ' ', $line );
-		$repos[ $repo ] = $pathPrefix . $path;
+		[$repo, $path] = explode( ' ', $line );
+		$repos[$repo] = $pathPrefix . $path;
 	}
 
 	return $repos;
@@ -551,13 +551,13 @@ function can_admin(): bool {
 		return true;
 	}
 	$username = $user ? $user->username : null;
-	$admins = $config[ 'oauth' ][ 'admins' ];
+	$admins = $config['oauth']['admins'];
 	return $username && in_array( $username, $admins, true );
 }
 
 function user_link( string $username ): string {
 	global $config;
-	$base = preg_replace( '/(.*\/index.php).*/i', '$1', $config[ 'oauth' ][ 'url' ] );
+	$base = preg_replace( '/(.*\/index.php).*/i', '$1', $config['oauth']['url'] );
 	return '<a href="' . $base . '?title=' . urlencode( 'User:' . $username ) . '" target="_blank">' . $username . '</a>';
 }
 
@@ -567,7 +567,7 @@ function is_trusted_user( string $email ): bool {
 	$config = str_replace( '!!merge', 'merge', $config );
 	$data = Yaml::parse( $config );
 
-	$emailPatterns = $data[ 'pipelines' ][0][ 'trigger' ][ 'gerrit' ][ 0 ][ 'email' ];
+	$emailPatterns = $data['pipelines'][0]['trigger']['gerrit'][0]['email'];
 
 	foreach ( $emailPatterns as $pattern ) {
 		if ( preg_match( '/' . $pattern . '/', $email ) ) {
@@ -612,7 +612,7 @@ function get_known_pages(): array {
 	$pages = [
 		'Main Page'
 	];
-	foreach ( [ 'Alice', 'Bob', 'Patch Demo', 'Mallory' ] as $username ) {
+	foreach ( ['Alice', 'Bob', 'Patch Demo', 'Mallory'] as $username ) {
 		$pages[] = 'User:' . $username;
 		$pages[] = 'User talk:' . $username;
 	}
@@ -647,7 +647,7 @@ function get_known_pages(): array {
 		$stmt->execute();
 		$res = $stmt->get_result();
 		while ( $data = $res->fetch_assoc() ) {
-			$page = str_replace( '_', ' ', trim( $data[ 'landingPage' ] ) );
+			$page = str_replace( '_', ' ', trim( $data['landingPage'] ) );
 			if ( !in_array( $page, $pages, true ) ) {
 				$pages[] = $page;
 			}

@@ -118,29 +118,29 @@ EOT;
 
 echo new OOUI\FieldsetLayout( [
 	'label' => null,
-	'classes' => [ 'installForm' ],
+	'classes' => ['installForm'],
 	'items' => [
 		new OOUI\FieldLayout(
 			new OOUI\ProgressBarWidget(),
 			[
 				'align' => 'top',
 				'label' => 'Installing...',
-				'classes' => [ 'installProgressField' ],
+				'classes' => ['installProgressField'],
 				'infusable' => true,
 			]
 		),
 		new OOUI\FieldLayout(
 			new OOUI\ButtonWidget( [
 				'label' => 'Open wiki',
-				'flags' => [ 'progressive', 'primary' ],
+				'flags' => ['progressive', 'primary'],
 				'href' => get_wiki_url( $wiki, $landingPage ),
 				'disabled' => true,
-				'classes' => [ 'openWiki' ],
+				'classes' => ['openWiki'],
 				'infusable' => true,
 			] ),
 			[
 				'align' => 'inline',
-				'classes' => [ 'openWikiField' ],
+				'classes' => ['openWikiField'],
 				'label' => "When complete, use this button to open your wiki ($wiki)",
 				'help' => new OOUI\HtmlSnippet( <<<EOT
 					You can log in as the following users using the password <code>patchdemo1</code>
@@ -150,7 +150,8 @@ echo new OOUI\FieldsetLayout( [
 						<li><code>Bob</code></li>
 						<li><code>Mallory</code> <em>(blocked)</em></li>
 					</ul>
-				EOT ),
+				EOT
+				),
 				'helpInline' => true,
 			]
 		),
@@ -230,7 +231,7 @@ foreach ( $patches as $i => &$patch ) {
 	$id = $data[0]['id'];
 
 	$repos = get_repo_data();
-	if ( !isset( $repos[ $repo ] ) ) {
+	if ( !isset( $repos[$repo] ) ) {
 		$repoHtml = htmlentities( $repo );
 		if ( $i < $initialPatchCount ) {
 			// Patch requested by the user, so show an error
@@ -241,11 +242,11 @@ foreach ( $patches as $i => &$patch ) {
 			continue;
 		}
 	}
-	$path = $repos[ $repo ];
+	$path = $repos[$repo];
 	$usedRepos[] = $repo;
 
 	if (
-		$config[ 'requireVerified' ] &&
+		$config['requireVerified'] &&
 		( $data[0]['labels']['Verified']['approved']['_account_id'] ?? null ) !== 75 &&
 		// Admin override
 		!( $canAdmin && isset( $_POST['adminVerified'] ) )
@@ -271,7 +272,7 @@ foreach ( $patches as $i => &$patch ) {
 					'type' => 'submit',
 					'label' => 'Bypass verification',
 					'icon' => 'unLock',
-					'flags' => [ 'destructive', 'primary' ],
+					'flags' => ['destructive', 'primary'],
 				] );
 				echo '</form>';
 			}
@@ -291,7 +292,7 @@ foreach ( $patches as $i => &$patch ) {
 	];
 
 	$relatedChanges = [];
-	$relatedChanges[] = [ $data[0]['_number'], $data[0]['revisions'][$revision]['_number'] ];
+	$relatedChanges[] = [$data[0]['_number'], $data[0]['revisions'][$revision]['_number']];
 
 	// Look at all commits in this patch's tree for cross-repo dependencies to add
 	$data = gerrit_query( "changes/$id/revisions/$revision/related", true );
@@ -301,12 +302,12 @@ foreach ( $patches as $i => &$patch ) {
 	foreach ( $data['changes'] as $change ) {
 		if ( $foundCurr ) {
 			// Querying by change number is allegedly deprecated, but the /related API doesn't return the 'id'
-			$relatedChanges[] = [ $change['_change_number'], $change['_revision_number'] ];
+			$relatedChanges[] = [$change['_change_number'], $change['_revision_number']];
 		}
 		$foundCurr = $foundCurr || $change['commit']['commit'] === $revision;
 	}
 
-	foreach ( $relatedChanges as [ $c, $r ] ) {
+	foreach ( $relatedChanges as [$c, $r] ) {
 		$data = gerrit_query( "changes/$c/revisions/$r/commit", true );
 		check_connection();
 
@@ -322,10 +323,10 @@ foreach ( $patches as $i => &$patch ) {
 
 $wikiName = "Patch demo (" . trim(
 	// Add branch name if it's not master, or if there are no patches
-	( $branchDesc !== 'master' || !$patchesApplied ? $branchDesc : '' ) . ' ' .
-	// Add list of patches
-	implode( ' ', $patchesApplied )
-) . ")";
+		( $branchDesc !== 'master' || !$patchesApplied ? $branchDesc : '' ) . ' ' .
+		// Add list of patches
+		implode( ' ', $patchesApplied )
+	) . ")";
 
 // Update DB record with patches applied
 wiki_add_patches( $wiki, $patchesApplied );
@@ -341,7 +342,7 @@ if ( $_POST['preset'] === 'custom' ) {
 	// Only store full list if used
 	$repoValue['repos'] = $_POST['repos'];
 } else {
-	$allowedRepos = get_repo_presets()[ $_POST['preset'] ];
+	$allowedRepos = get_repo_presets()[$_POST['preset']];
 }
 
 // Update DB record with repose used.
@@ -351,7 +352,7 @@ wiki_add_repos( $wiki, $repoValue );
 $allowedRepos = array_merge( $allowedRepos, $usedRepos );
 
 $useProxy = !empty( $_POST['proxy'] );
-$useInstantCommons = !empty( $_POST['instantCommons' ] );
+$useInstantCommons = !empty( $_POST['instantCommons'] );
 // When proxying, always enable MobileFrontend and its content provider
 if ( $useProxy ) {
 	// Doesn't matter if this appears twice
@@ -447,7 +448,7 @@ foreach ( $patchesApplied as $patch ) {
 	$data = gerrit_query( "changes/$r/revisions/$p/commit", true );
 	check_connection();
 	if ( $data ) {
-		$t = $t . ': ' . $data[ 'subject' ];
+		$t = $t . ': ' . $data['subject'];
 		get_linked_tasks( $data['message'], $linkedTasks );
 	}
 
@@ -480,8 +481,8 @@ $envs = [];
 foreach ( $repos as $source => $target ) {
 	$cmds[] = __DIR__ . '/new/updaterepos.sh';
 	$envs[] = $baseEnv + [
-		'REPO_SOURCE' => $source,
-	];
+			'REPO_SOURCE' => $source,
+		];
 }
 
 set_progress( $repoProgress, "Updating repositories ($n/$repoCount)..." );
@@ -517,10 +518,10 @@ $envs = [];
 foreach ( $repos as $source => $target ) {
 	$cmd = __DIR__ . '/new/checkout.sh';
 	$env = $baseEnv + [
-		'BRANCH' => $repoSpecificBranches[$source] ?? $branch,
-		'REPO_SOURCE' => $source,
-		'REPO_TARGET' => $target,
-	];
+			'BRANCH' => $repoSpecificBranches[$source] ?? $branch,
+			'REPO_SOURCE' => $source,
+			'REPO_TARGET' => $target,
+		];
 	if ( $source !== 'mediawiki/core' && $source !== 'mediawiki/extensions/VisualEditor' ) {
 		$cmds[] = $cmd;
 		$envs[] = $env;
@@ -590,10 +591,10 @@ $envs = [];
 foreach ( $composerInstallRepos as $repo ) {
 	$cmds[] = __DIR__ . '/new/composerinstall.sh';
 	$envs[] = $baseEnv + [
-		// Variable used by composer itself, not our script
-		'COMPOSER_HOME' => __DIR__ . '/composer',
-		'REPO_TARGET' => $repos[$repo],
-	];
+			// Variable used by composer itself, not our script
+			'COMPOSER_HOME' => __DIR__ . '/composer',
+			'REPO_TARGET' => $repos[$repo],
+		];
 }
 
 set_progress( $repoProgress, "Fetching dependencies ($n/$repoCount)..." );
@@ -621,10 +622,10 @@ $error = shell_echo( __DIR__ . '/new/install.sh',
 		'LANGUAGE' => $language,
 		'REPOSITORIES' => $reposString,
 		'DEFAULT_SKIN' => $defaultSkin,
-		'DB_USER' => getenv('DB_USER'),
-		'DB_PASS' => getenv('DB_PASS'),
-		'DB_DATABASE' => getenv('DB_DATABASE'),
-		'DB_HOST' => getenv('DB_HOST'),
+		'DB_USER' => getenv( 'DB_USER' ),
+		'DB_PASS' => getenv( 'DB_PASS' ),
+		'DB_DATABASE' => getenv( 'DB_DATABASE' ),
+		'DB_HOST' => getenv( 'DB_HOST' ),
 	]
 );
 if ( $error ) {
@@ -647,10 +648,10 @@ $error = shell_echo( __DIR__ . '/new/postinstall.sh',
 		// Variable used by composer itself, not our script
 		'COMPOSER_HOME' => __DIR__ . '/composer',
 		'SERVERPATH' => $serverPath,
-		'DB_USER' => getenv('DB_USER'),
-		'DB_PASS' => getenv('DB_PASS'),
-		'DB_DATABASE' => getenv('DB_DATABASE'),
-		'DB_HOST' => getenv('DB_HOST'),
+		'DB_USER' => getenv( 'DB_USER' ),
+		'DB_PASS' => getenv( 'DB_PASS' ),
+		'DB_DATABASE' => getenv( 'DB_DATABASE' ),
+		'DB_HOST' => getenv( 'DB_HOST' ),
 	]
 );
 if ( $error ) {
