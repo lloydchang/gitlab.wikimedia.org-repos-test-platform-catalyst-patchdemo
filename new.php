@@ -118,29 +118,29 @@ EOT;
 
 echo new OOUI\FieldsetLayout( [
 	'label' => null,
-	'classes' => ['installForm'],
+	'classes' => [ 'installForm' ],
 	'items' => [
 		new OOUI\FieldLayout(
 			new OOUI\ProgressBarWidget(),
 			[
 				'align' => 'top',
 				'label' => 'Installing...',
-				'classes' => ['installProgressField'],
+				'classes' => [ 'installProgressField' ],
 				'infusable' => true,
 			]
 		),
 		new OOUI\FieldLayout(
 			new OOUI\ButtonWidget( [
 				'label' => 'Open wiki',
-				'flags' => ['progressive', 'primary'],
+				'flags' => [ 'progressive', 'primary' ],
 				'href' => get_wiki_url( $wiki, $landingPage ),
 				'disabled' => true,
-				'classes' => ['openWiki'],
+				'classes' => [ 'openWiki' ],
 				'infusable' => true,
 			] ),
 			[
 				'align' => 'inline',
-				'classes' => ['openWikiField'],
+				'classes' => [ 'openWikiField' ],
 				'label' => "When complete, use this button to open your wiki ($wiki)",
 				'help' => new OOUI\HtmlSnippet( <<<EOT
 					You can log in as the following users using the password <code>patchdemo1</code>
@@ -272,7 +272,7 @@ foreach ( $patches as $i => &$patch ) {
 					'type' => 'submit',
 					'label' => 'Bypass verification',
 					'icon' => 'unLock',
-					'flags' => ['destructive', 'primary'],
+					'flags' => [ 'destructive', 'primary' ],
 				] );
 				echo '</form>';
 			}
@@ -292,7 +292,7 @@ foreach ( $patches as $i => &$patch ) {
 	];
 
 	$relatedChanges = [];
-	$relatedChanges[] = [$data[0]['_number'], $data[0]['revisions'][$revision]['_number']];
+	$relatedChanges[] = [ $data[0]['_number'], $data[0]['revisions'][$revision]['_number'] ];
 
 	// Look at all commits in this patch's tree for cross-repo dependencies to add
 	$data = gerrit_query( "changes/$id/revisions/$revision/related", true );
@@ -302,12 +302,12 @@ foreach ( $patches as $i => &$patch ) {
 	foreach ( $data['changes'] as $change ) {
 		if ( $foundCurr ) {
 			// Querying by change number is allegedly deprecated, but the /related API doesn't return the 'id'
-			$relatedChanges[] = [$change['_change_number'], $change['_revision_number']];
+			$relatedChanges[] = [ $change['_change_number'], $change['_revision_number'] ];
 		}
 		$foundCurr = $foundCurr || $change['commit']['commit'] === $revision;
 	}
 
-	foreach ( $relatedChanges as [$c, $r] ) {
+	foreach ( $relatedChanges as [ $c, $r ] ) {
 		$data = gerrit_query( "changes/$c/revisions/$r/commit", true );
 		check_connection();
 

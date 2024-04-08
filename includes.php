@@ -119,14 +119,14 @@ function get_wiki_data_from_row( array $data ): array {
 	// Decode JSON
 	$data['patches'] = json_decode( $data['patches'] ?: '' ) ?: [];
 	$data['announcedTasks'] = json_decode( $data['announcedTasks'] ?: '' ) ?: [];
-	$data['repos'] = json_decode( $data['repos'] ?: '', true ) ?: ['preset' => 'unknown'];
+	$data['repos'] = json_decode( $data['repos'] ?: '', true ) ?: [ 'preset' => 'unknown' ];
 
 	// Populate patch list
 	$patchList = [];
 	$linkedTasks = [];
 	if ( $data['patches'] ) {
 		foreach ( $data['patches'] as $patch ) {
-			[$r, $p] = explode( ',', $patch );
+			[ $r, $p ] = explode( ',', $patch );
 			$patchData = get_patch_data( $r, $p );
 			$patchList[$patch] = $patchData;
 
@@ -499,7 +499,7 @@ function get_repo_data( string $pathPrefix = 'w/' ): array {
 	$repos = [];
 
 	foreach ( explode( "\n", trim( $data ) ) as $line ) {
-		[$repo, $path] = explode( ' ', $line );
+		[ $repo, $path ] = explode( ' ', $line );
 		$repos[$repo] = $pathPrefix . $path;
 	}
 
@@ -612,7 +612,7 @@ function get_known_pages(): array {
 	$pages = [
 		'Main Page'
 	];
-	foreach ( ['Alice', 'Bob', 'Patch Demo', 'Mallory'] as $username ) {
+	foreach ( [ 'Alice', 'Bob', 'Patch Demo', 'Mallory' ] as $username ) {
 		$pages[] = 'User:' . $username;
 		$pages[] = 'User talk:' . $username;
 	}
