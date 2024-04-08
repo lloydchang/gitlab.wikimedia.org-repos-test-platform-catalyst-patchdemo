@@ -29,7 +29,7 @@ include_once 'oauth.php';
 
 // get the service name of mariadb from the environment variables
 $mysqli = new mysqli( getenv('DB_HOST'), getenv('DB_USER'), getenv('DB_PASS'),
-    getenv('DB_DATABASE') );
+	getenv('DB_DATABASE') );
 if ( $mysqli->connect_error ) {
 	die( $mysqli->connect_error );
 }
@@ -435,10 +435,10 @@ function delete_wiki( string $wiki, string $serverUri = null ): ?string {
 		[
 			'PATCHDEMO' => __DIR__,
 			'WIKI' => $wiki,
-            'DB_USER' => getenv('DB_USER'),
-            'DB_PASS' => getenv('DB_PASS'),
-            'DB_DATABASE' => getenv('DB_DATABASE'),
-            'DB_HOST' => getenv('DB_HOST'),
+			'DB_USER' => getenv('DB_USER'),
+			'DB_PASS' => getenv('DB_PASS'),
+			'DB_DATABASE' => getenv('DB_DATABASE'),
+			'DB_HOST' => getenv('DB_HOST'),
 		]
 	);
 	if ( $error ) {
