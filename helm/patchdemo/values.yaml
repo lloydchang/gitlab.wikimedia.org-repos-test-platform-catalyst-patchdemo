@@ -25,7 +25,7 @@ mariadb:
     database: patchdemo
     username: patchdemo
     password: patchdemo
-    rootPassword: ewATHm5lxB
+    rootPassword: secretpassword
   initdbScripts:
     setup.sql: |
       GRANT ALL PRIVILEGES ON `patchdemo%`.* TO 'patchdemo'@'%';
