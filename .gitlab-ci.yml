@@ -1,5 +1,12 @@
-test-php:
+include:
+  - project: 'repos/releng/kokkuri'
+    file: 'includes/images.yaml'
 
+stages:
+  - test
+  - publish
+
+test-php:
   stage: test
   image:
     name: docker-registry.wikimedia.org/releng/composer-test-php74:0.1.2
@@ -10,7 +17,6 @@ test-php:
     - composer run-script test
 
 test-nodejs:
-
   stage: test
   image:
     name: docker-registry.wikimedia.org/releng/node16-test:0.2.1
@@ -20,3 +26,16 @@ test-nodejs:
     - npm ci
     - npm run build --if-present
     - npm test
+
+publish:
+  stage: publish
+  variables:
+    PUBLISH_IMAGE_TAG: ${CI_COMMIT_SHORT_SHA}
+    PUBLISH_IMAGE_EXTRA_TAGS: latest
+
+  extends: .kokkuri:build-and-publish-image
+  tags:
+    - trusted
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED
+
