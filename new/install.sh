@@ -2,14 +2,15 @@
 set -ex
 
 # make database
-mysql -u patchdemo --password=patchdemo -e "CREATE DATABASE patchdemo_$NAME";
+mysql -u $DB_USER --password=$DB_PASS -h $DB_HOST -e "CREATE DATABASE ${DB_DATABASE}_$NAME";
 
 # install
 cd $PATCHDEMO/wikis/$NAME/w
 php $PATCHDEMO/wikis/$NAME/w/maintenance/install.php \
---dbname=patchdemo_$NAME \
---dbuser=patchdemo \
---dbpass=patchdemo \
+--dbname=${DB_DATABASE}_$NAME \
+--dbuser=$DB_USER \
+--dbpass=$DB_PASS \
+--dbserver=$DB_HOST \
 --confpath=$PATCHDEMO/wikis/$NAME/w \
 --server="$SERVER" \
 --scriptpath="$SERVERPATH/wikis/$NAME/w" \

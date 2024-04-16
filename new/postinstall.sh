@@ -32,7 +32,7 @@ fi
 # run arbitrary SQL
 for sql in $(find $PATCHDEMO/sql-perwiki -name "*.sql" -not -type d -printf '%P\n')
 do
-	mysql -u patchdemo -ppatchdemo patchdemo_$NAME < $PATCHDEMO/sql-perwiki/$sql
+	mysql -u $DB_USER -p=$DB_PASS -h $DB_HOST ${DB_DATABASE}_$NAME < $PATCHDEMO/sql-perwiki/$sql
 done
 
 # JSDoc build (ignore errors on earlier MediaWiki versions)

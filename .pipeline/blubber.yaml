@@ -1,0 +1,24 @@
+# syntax=docker-registry.wikimedia.org/repos/releng/blubber/buildkit:v0.20.0
+version: v4
+variants:
+  patchdemo:
+    lives:
+      uid: 33
+      gid: 33
+      as: www-data
+    base: docker-registry.wikimedia.org/dev/patchdemo-bookworm-node18-php82-apache2:0.0.1-1
+    builders:
+      - custom:
+          command: [cd /var/www/html && /var/www/html/setup-docker.sh]
+          requirements:
+            - from: local
+              source: .
+              destination: /var/www/html
+    runs:
+      uid: 33
+      gid: 33
+      as: www-data
+      environment:
+        HOME: /var/www/html/
+
+

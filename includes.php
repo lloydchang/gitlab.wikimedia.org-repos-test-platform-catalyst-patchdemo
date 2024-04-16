@@ -35,7 +35,9 @@ $is404 = basename( $_SERVER['SCRIPT_NAME'] ) === '404.php';
 
 include_once 'Authentication.php';
 
-$mysqli = new mysqli( 'localhost', 'patchdemo', 'patchdemo', 'patchdemo' );
+// get the service name of mariadb from the environment variables
+$mysqli = new mysqli( getenv( 'DB_HOST' ), getenv( 'DB_USER' ), getenv( 'DB_PASS' ),
+	getenv( 'DB_DATABASE' ) );
 if ( $mysqli->connect_error ) {
 	error( $mysqli->connect_error );
 }
@@ -454,7 +456,11 @@ function delete_wiki( string $wiki, string $serverUri = null ): ?string {
 	$error = shell_echo( __DIR__ . '/deletewiki.sh',
 		[
 			'PATCHDEMO' => __DIR__,
-			'WIKI' => $wiki
+			'WIKI' => $wiki,
+			'DB_USER' => getenv( 'DB_USER' ),
+			'DB_PASS' => getenv( 'DB_PASS' ),
+			'DB_DATABASE' => getenv( 'DB_DATABASE' ),
+			'DB_HOST' => getenv( 'DB_HOST' ),
 		]
 	);
 	if ( $error ) {
