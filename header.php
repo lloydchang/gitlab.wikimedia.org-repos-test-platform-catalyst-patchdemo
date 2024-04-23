@@ -38,6 +38,11 @@ echo '
 							''
 							) .
 					'</div>
+					<div class="source">
+						Free disk space:
+							<strong>' . patchdemo_db_space() . ' GB</strong> (database) /
+							<strong>' . patchdemo_file_space() . ' GB</strong> (files)
+					</div>
 				</div>
 			</div>
 		</header>
