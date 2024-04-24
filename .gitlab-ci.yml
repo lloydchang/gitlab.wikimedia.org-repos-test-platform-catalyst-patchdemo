@@ -57,8 +57,9 @@ deploy:
         --set ingress.enabled=true \
         --set mariadb.auth.username=${DB_USER} \
         --set mariadb.auth.password=${DB_PASS} \
-        --set app.db.host=${DB_HOST} \
-        --set mariadb.auth.database=${DB_DATABASE}
+        --set mariadb.auth.rootPassword=${DB_ROOT_PASS} \
+        --set mariadb.auth.database=${DB_DATABASE} \
+        --set app.db.host=${DB_HOST}
   tags: [ trusted ]
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED
