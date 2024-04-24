@@ -51,9 +51,9 @@ chmod u+x /etc/cron.monthly/patchdemo-optimize
 
 # PHP settings
 echo "
-; set session expiration to a month (default is 24 minutes???), cookie expiration too
-session.gc_maxlifetime = 2592000
-session.cookie_lifetime = 2592000
+; set session expiration to 2 weeks (default is 24 minutes???), cookie expiration too
+session.gc_maxlifetime = 1209600
+session.cookie_lifetime = 1209600
 
 ; double the default memory limit
 memory_limit = 256M
