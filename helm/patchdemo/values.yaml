@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: patchdemo-test
+  repository: docker-registry.wikimedia.org/repos/qte/catalyst/patchdemo
   tag: latest
   pullPolicy: IfNotPresent
 
@@ -11,7 +11,7 @@ service:
 
 ingress:
   enabled: false
-  hostname: catalyst.wmcloud.org
+  hostname: patchdemo.catalyst.wmcloud.org
 
 app:
   db:

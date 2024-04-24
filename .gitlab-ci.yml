@@ -55,7 +55,6 @@ deploy:
         --set image.tag=${CI_COMMIT_SHORT_SHA} \
         --set service.type=ClusterIP \
         --set ingress.enabled=true \
-        --set ingress.hostname=catalyst.wmcloud.org \
         --set mariadb.auth.username=${DB_USER} \
         --set mariadb.auth.password=${DB_PASS} \
         --set app.db.host=${DB_HOST} \
