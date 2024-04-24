@@ -61,6 +61,6 @@ deploy:
         --set mariadb.auth.password=${DB_PASS} \
         --set app.db.host=${DB_HOST} \
         --set mariadb.auth.database=${DB_DATABASE} \
-  tags: [ api-deploy-agent ]
+  tags: [ trusted ]
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED
