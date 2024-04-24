@@ -8,7 +8,6 @@ use Symfony\Component\Yaml\Yaml;
 ini_set( 'display_errors', 1 );
 ini_set( 'display_startup_errors', 1 );
 error_reporting( E_ALL );
-session_start();
 include_once './vendor/autoload.php';
 
 include 'config.default.php';
@@ -25,7 +24,7 @@ if ( $basePath === '/' ) {
 }
 $is404 = basename( $_SERVER['SCRIPT_NAME'] ) === '404.php';
 
-include_once 'oauth.php';
+include_once 'Authentication.php';
 
 $mysqli = new mysqli( 'localhost', 'patchdemo', 'patchdemo', 'patchdemo' );
 if ( $mysqli->connect_error ) {
@@ -524,27 +523,6 @@ function get_branches_sorted( string $repo ): array {
 	return $branches;
 }
 
-function can_delete( string $creator = null ): bool {
-	global $user, $useOAuth;
-	if ( !$useOAuth ) {
-		// Unauthenticated site
-		return true;
-	}
-	$username = $user ? $user->username : null;
-	return ( $username && $username === $creator ) || can_admin();
-}
-
-function can_admin(): bool {
-	global $config, $user, $useOAuth;
-	if ( !$useOAuth ) {
-		// Unauthenticated site
-		return true;
-	}
-	$username = $user ? $user->username : null;
-	$admins = $config[ 'oauth' ][ 'admins' ];
-	return $username && in_array( $username, $admins, true );
-}
-
 function user_link( string $username ): string {
 	global $config;
 	$base = preg_replace( '/(.*\/index.php).*/i', '$1', $config[ 'oauth' ][ 'url' ] );
@@ -597,7 +575,7 @@ function get_repo_presets(): array {
 }
 
 function get_known_pages(): array {
-	global $user, $mysqli;
+	global $mysqli;
 
 	$pages = [
 		'Main Page'
@@ -623,7 +601,8 @@ function get_known_pages(): array {
 		}
 	}
 
-	if ( $user ) {
+	$auth = Authentication::getInstance();
+	if ( $auth->isSignedIn() ) {
 		// Fetch previously used landing pages
 		$stmt = $mysqli->prepare( '
 			SELECT DISTINCT landingPage
@@ -633,7 +612,7 @@ function get_known_pages(): array {
 		if ( !$stmt ) {
 			die( $mysqli->error );
 		}
-		$stmt->bind_param( 's', $user->username );
+		$stmt->bind_param( 's', $auth->getUserName() );
 		$stmt->execute();
 		$res = $stmt->get_result();
 		while ( $data = $res->fetch_assoc() ) {
@@ -682,28 +661,6 @@ function get_server_path(): string {
 		throw new Error( 'Can\'t access server variables from CLI.' );
 	}
 	return preg_replace( '`/[^/]*$`', '', $_SERVER['REQUEST_URI'] );
-}
-
-function get_csrf_token(): string {
-	global $useOAuth;
-	if ( !$useOAuth ) {
-		return '';
-	}
-	if ( empty( $_SESSION['csrf_token'] ) ) {
-		$_SESSION['csrf_token'] = bin2hex( random_bytes( 32 ) );
-	}
-	return $_SESSION['csrf_token'];
-}
-
-function check_csrf_token( string $token ): bool {
-	global $useOAuth;
-	if ( !$useOAuth ) {
-		return true;
-	}
-	if ( empty( $_SESSION['csrf_token'] ) ) {
-		return false;
-	}
-	return $_SESSION['csrf_token'] === $token;
 }
 
 function json_encode_clean( $value ) {

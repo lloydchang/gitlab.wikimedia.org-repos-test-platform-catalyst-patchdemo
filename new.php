@@ -8,12 +8,13 @@ include "header.php";
 
 ob_implicit_flush( true );
 
-if ( $useOAuth && !$user ) {
-	echo oauth_signin_prompt();
+$auth = Authentication::getInstance();
+if ( $auth->canSignIn() ) {
+	echo $auth->signInPrompt();
 	die();
 }
 
-if ( !isset( $_POST['csrf_token'] ) || !check_csrf_token( $_POST['csrf_token'] ) ) {
+if ( !isset( $_POST['csrf_token'] ) || !$auth->checkCsrfToken( $_POST['csrf_token'] ) ) {
 	die( "Invalid session." );
 }
 
@@ -32,10 +33,8 @@ $serverPath = get_server_path();
 
 $branchDesc = preg_replace( '/^origin\//', '', $branch );
 
-$creator = $user ? $user->username : '';
+$creator = $auth->getUserName() ?? '';
 $created = time();
-
-$canAdmin = can_admin();
 
 $branches = get_branches_sorted( 'mediawiki/core' );
 
@@ -215,14 +214,14 @@ foreach ( $patches as $i => &$patch ) {
 		$config[ 'requireVerified' ] &&
 		( $data[0]['labels']['Verified']['approved']['_account_id'] ?? null ) !== 75 &&
 		// Admin override
-		!( $canAdmin && isset( $_POST['adminVerified'] ) )
+		!( $auth->canAdmin() && isset( $_POST['adminVerified'] ) )
 	) {
 		// The patch doesn't have V+2, check if the uploader is trusted
 		$uploaderId = $data[0]['revisions'][$revision]['uploader']['_account_id'];
 		$uploader = gerrit_query( 'accounts/' . $uploaderId, true );
 		check_connection();
 		if ( !is_trusted_user( $uploader['email'] ) ) {
-			if ( $canAdmin ) {
+			if ( $auth->canAdmin() ) {
 				echo '<form method="POST" action=""><input type="hidden" name="adminVerified" value="1">';
 				foreach ( $_POST as $k => $v ) {
 					if ( is_array( $v ) ) {

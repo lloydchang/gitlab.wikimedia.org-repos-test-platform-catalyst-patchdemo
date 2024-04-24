@@ -2,6 +2,8 @@
 
 OOUI\Theme::setSingleton( new OOUI\WikimediaUITheme() );
 
+$auth = Authentication::getInstance();
+
 echo '<!DOCTYPE html>
 <html lang="en" class="client-nojs">
 	<head>
@@ -25,15 +27,15 @@ echo '<!DOCTYPE html>
 			<div class="headerInner">
 				<h1><a class="logo" href="' . $basePath . '/."><span>Patch demo</span></a></h1>
 				<div class="sourceAndUser">';
-if ( $user ) {
-	echo "<div class='user'>Logged in as <b>{$user->username}</b> [<a href='?logout'>Log out</a>]</div>";
+if ( $auth->isSignedIn() ) {
+	echo "<div class='user'>Logged in as <b>{$auth->getUserName()}</b> [<a href='?logout'>Log out</a>]</div>";
 }
 echo '
 					<div class="source">
 						<a href="https://gitlab.wikimedia.org/repos/ci-tools/patchdemo">Source code</a>
 						&bullet;
 						<a href="https://gitlab.wikimedia.org/repos/ci-tools/patchdemo/-/issues">Issues</a>' .
-						( can_admin() ?
+						( $auth->canAdmin() ?
 							' &bullet; <a href="editcounts.php">Edit counts</a>' :
 							''
 							) .

@@ -3,10 +3,11 @@ require_once "includes.php";
 
 include "header.php";
 
-if ( !can_admin() ) {
+$auth = Authentication::getInstance();
+if ( !$auth->canAdmin() ) {
 	echo 'Access denied.';
-	if ( $useOAuth && !$user ) {
-		echo oauth_signin_prompt();
+	if ( $auth->canSignIn() ) {
+		echo $auth->signInPrompt();
 	}
 	return;
 }

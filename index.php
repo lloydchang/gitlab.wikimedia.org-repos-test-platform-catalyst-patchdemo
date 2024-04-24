@@ -24,7 +24,8 @@ $presetLabels = [
 	]
 ];
 
-$canCreate = !$useOAuth || $user;
+$auth = Authentication::getInstance();
+$canCreate = !$auth->useOauth() || $auth->isSignedIn();
 $branches = get_branches_sorted( 'mediawiki/core' );
 
 $branchOptions = array_map( static function ( $branch ) {
@@ -292,7 +293,7 @@ echo new OOUI\FormLayout( [
 				new OOUI\FieldLayout(
 					new OOUI\HiddenInputWidget( [
 						'name' => 'csrf_token',
-						'value' => get_csrf_token(),
+						'value' => $auth->getCsrfToken(),
 					] )
 				),
 			] )
@@ -301,13 +302,13 @@ echo new OOUI\FormLayout( [
 ] );
 
 if ( !$canCreate ) {
-	echo oauth_signin_prompt();
+	echo $auth->signInPrompt();
 }
 ?>
 <br/>
 <h3>Previously generated wikis</h3>
 <?php
-if ( $user ) {
+if ( $auth->isSignedIn() ) {
 	echo new OOUI\FieldLayout(
 		new OOUI\CheckboxInputWidget( [
 			'infusable' => true,
@@ -325,9 +326,8 @@ if ( $user ) {
 $rows = '';
 $anyCanDelete = false;
 $closedWikis = 0;
-$canAdmin = can_admin();
 $wikiPatches = [];
-$username = $user ? $user->username : null;
+$username = $auth->getUserName();
 
 $stmt = $mysqli->prepare( '
 	SELECT wiki, creator, UNIX_TIMESTAMP( created ) created, patches, branch, repos, announcedTasks, landingPage, timeToCreate, deleted, ready
@@ -357,7 +357,7 @@ while ( $data = $results->fetch_assoc() ) {
 	$linkedTasks = format_linked_tasks( $wikiData['linkedTaskList'] );
 
 	$creator = $wikiData[ 'creator' ] ?? '';
-	$canDelete = can_delete( $creator );
+	$canDelete = $auth->canDelete( $creator );
 	$anyCanDelete = $anyCanDelete || $canDelete;
 
 	if ( !$shownMyWikis && $creator === $username ) {
@@ -434,8 +434,8 @@ while ( $data = $results->fetch_assoc() ) {
 		'<td data-label="Linked tasks" class="linkedTasks">' . $linkedTasks . '</td>' .
 		'<td data-label="Repos" class="repos">' . $repos . '</td>' .
 		'<td data-label="Time" class="date">' . date( 'Y-m-d H:i:s', $wikiData[ 'created' ] ) . '</td>' .
-		( $useOAuth ? '<td data-label="Creator">' . ( $creator ? user_link( $creator ) : '?' ) . '</td>' : '' ) .
-		( $canAdmin ? '<td data-label="Time to create">' . ( $wikiData['timeToCreate'] ? format_duration( $wikiData['timeToCreate'] ) : '' ) . '</td>' : '' ) .
+		( $auth->useOAuth() ? '<td data-label="Creator">' . ( $creator ? user_link( $creator ) : '?' ) . '</td>' : '' ) .
+		( $auth->canAdmin() ? '<td data-label="Time to create">' . ( $wikiData['timeToCreate'] ? format_duration( $wikiData['timeToCreate'] ) : '' ) . '</td>' : '' ) .
 		( count( $actions ) ?
 			'<td data-label="Actions">' . implode( '&nbsp;&middot;&nbsp;', $actions ) . '</td>' :
 			'<!-- EMPTY ACTIONS -->'
@@ -473,8 +473,8 @@ echo '<table class="wikis">' .
 		'<th>Linked tasks<br /><em>✓=Resolved ✗=Declined/Invalid</em></th>' .
 		'<th>Repos</th>' .
 		'<th>Time</th>' .
-		( $useOAuth ? '<th>Creator</th>' : '' ) .
-		( $canAdmin ? '<th><abbr title="Time to create">TTC</abbr></th>' : '' ) .
+		( $auth->useOAuth() ? '<th>Creator</th>' : '' ) .
+		( $auth->canAdmin() ? '<th><abbr title="Time to create">TTC</abbr></th>' : '' ) .
 		( $anyCanDelete ? '<th>Actions</th>' : '' ) .
 	'</tr>' .
 	$rows .
