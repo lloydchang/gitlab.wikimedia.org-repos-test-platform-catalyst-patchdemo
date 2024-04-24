@@ -1,0 +1,19 @@
+{{- if .Values.ingress.enabled -}}
+{{- $fullName := include "patchdemo.fullname" . -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}
+spec:
+  rules:
+  - host: {{ .Values.ingress.hostname }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}
+            port:
+              number: 80
+{{- end }}

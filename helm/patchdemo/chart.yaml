@@ -1,0 +1,9 @@
+apiVersion: v2
+name: patchdemo
+description: A Helm chart for the patchdemo application
+version: 0.1.0
+
+dependencies:
+  - name: mariadb
+    version: 17.0.1
+    repository: https://charts.bitnami.com/bitnami

@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "patchdemo.fullname" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "patchdemo.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "patchdemo.fullname" . }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: DB_USER
+              value: "{{ .Values.mariadb.auth.username }}"
+            - name: DB_PASS
+              value: "{{ .Values.mariadb.auth.password }}"
+            - name: DB_HOST
+              value: "{{ .Release.Name }}-{{ .Values.app.db.host }}"
+            - name: DB_DATABASE
+              value: "{{ .Values.mariadb.auth.database }}"
+
+

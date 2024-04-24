@@ -5,6 +5,7 @@ include:
 stages:
   - test
   - publish
+  - deploy
 
 test-php:
   stage: test
@@ -37,5 +38,29 @@ publish:
   extends: .kokkuri:build-and-publish-image
   tags:
     - trusted
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED
+
+deploy:
+  stage: deploy
+  image:
+    name: docker-registry.wikimedia.org/repos/abstract-wiki/ci-images/helm
+    entrypoint: [ "" ]
+  script:
+    - kubectl config use-context repos/qte/catalyst/catalyst-api:api-deploy-agent
+    - git clone https://gitlab.wikimedia.org/repos/qte/catalyst/patchdemo.git
+    - helm repo add bitnami https://charts.bitnami.com/bitnami
+    - |
+      helm upgrade --install --dependency-update --namespace patchdemo --create-namespace \
+        patchdemo ./patchdemo/helm/patchdemo \
+        --set image.tag=${CI_COMMIT_SHORT_SHA}
+        --set service.type=ClusterIP \
+        --set ingress.enabled=true \
+        --set ingress.hostname=catalyst.wmcloud.org \
+        --set mariadb.auth.username=${DB_USER} \
+        --set mariadb.auth.password=${DB_PASS} \
+        --set app.db.host=${DB_HOST} \
+        --set mariadb.auth.database=${DB_DATABASE} \
+  tags: [ api-deploy-agent ]
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED

@@ -3,3 +3,4 @@ repositories/
 vendor/
 wikis/
 helm/
+.gitlab-ci.yml
