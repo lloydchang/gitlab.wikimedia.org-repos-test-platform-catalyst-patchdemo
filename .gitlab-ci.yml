@@ -62,3 +62,6 @@ deploy:
   tags: [ trusted ]
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED
+  environment:
+    name: production
+
