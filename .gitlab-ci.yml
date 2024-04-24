@@ -48,11 +48,10 @@ deploy:
     entrypoint: [ "" ]
   script:
     - kubectl config use-context repos/qte/catalyst/catalyst-api:api-deploy-agent
-    - git clone https://gitlab.wikimedia.org/repos/qte/catalyst/patchdemo.git
     - helm repo add bitnami https://charts.bitnami.com/bitnami
     - |
       helm upgrade --install --dependency-update --namespace patchdemo --create-namespace \
-        patchdemo ./patchdemo/helm/patchdemo \
+        patchdemo ./helm/patchdemo \
         --set image.tag=${CI_COMMIT_SHORT_SHA}
         --set service.type=ClusterIP \
         --set ingress.enabled=true \
