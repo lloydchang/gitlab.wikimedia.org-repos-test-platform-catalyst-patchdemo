@@ -52,14 +52,14 @@ deploy:
     - |
       helm upgrade --install --dependency-update --namespace patchdemo --create-namespace \
         patchdemo ./helm/patchdemo \
-        --set image.tag=${CI_COMMIT_SHORT_SHA}
+        --set image.tag=${CI_COMMIT_SHORT_SHA} \
         --set service.type=ClusterIP \
         --set ingress.enabled=true \
         --set ingress.hostname=catalyst.wmcloud.org \
         --set mariadb.auth.username=${DB_USER} \
         --set mariadb.auth.password=${DB_PASS} \
         --set app.db.host=${DB_HOST} \
-        --set mariadb.auth.database=${DB_DATABASE} \
+        --set mariadb.auth.database=${DB_DATABASE}
   tags: [ trusted ]
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED
