@@ -27,6 +27,8 @@ Tested on Debian 11.
 * Run `sudo setup.sh`
 * Visit http://localhost in your browser
 
+For deployment on Wikmedia's Cloud VPS, read this [additional documentation](WMCS.md).
+
 FAQ
 ----
 ### Can you delete a wiki when you are done with it?
