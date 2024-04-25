@@ -612,7 +612,8 @@ function get_known_pages(): array {
 		if ( !$stmt ) {
 			die( $mysqli->error );
 		}
-		$stmt->bind_param( 's', $auth->getUserName() );
+		$username = $auth->getUserName();
+		$stmt->bind_param( 's', $username );
 		$stmt->execute();
 		$res = $stmt->get_result();
 		while ( $data = $res->fetch_assoc() ) {
