@@ -4,6 +4,8 @@
 
 With **Patch demo** you can quickly spin up a MediaWiki instance running a particular patch from Wikimedia Gerrit. (An idea was first described in [T76245](https://phabricator.wikimedia.org/T76245).)
 
+A public instance is available at <https://patchdemo.wmflabs.org/>. You will need a Wikimedia account to use it.
+
 This project is not secure. You should only install it in disposable virtual machines, and maybe have some monitoring in place in case someone starts mining bitcoin on them.
 
 While a token effort has been made to avoid remote code execution vulnerabilities, the whole point of the project is to allow your users to execute arbitrary code on the demo wikis, and the wikis are not isolated.
@@ -50,8 +52,6 @@ These will be considered on a case-by-case basis, but will generally be allowed 
 ### What if I don't like the above restrictions?
 
 You can run your own version of the entire Patch demo website. Get yourself a server and follow the [Setup](#setup) instructions above, or convince an engineer near you to do it.
-
-The public https://patchdemo.wmflabs.org/ website runs on an `g2.cores8.ram16.disk160` instance at [Wikimedia Cloud VPS](https://wikitech.wikimedia.org/wiki/Portal:Cloud_VPS).
 
 ### Is it possible to add patches for extension not just core? And skins?
 
