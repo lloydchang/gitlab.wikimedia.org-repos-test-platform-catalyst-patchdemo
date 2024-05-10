@@ -54,6 +54,12 @@ $wgLogos = [
 $wgFavicon = "$wgResourceBasePath/favicon.ico";
 // Legacy logo setting for older releases
 $wgLogo = "$wgResourceBasePath/logo.svg";
+// Add a button for a convenient link back to the wiki management interface
+$wgFooterIcons['patchdemo']['patchdemo'] = [
+	'src' => "$wgResourceBasePath/poweredby.svg",
+	'url' => "$basePath/../..",
+	'alt' => 'This is a Patch demo wiki',
+];
 
 // Email settings
 $wgAllowHTMLEmail = true;
