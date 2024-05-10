@@ -154,6 +154,6 @@ cp $PATCHDEMO/images/wordmark.svg $PATCHDEMO/wikis/$NAME/w/
 cp $PATCHDEMO/images/favicon.ico $PATCHDEMO/wikis/$NAME/w/
 
 # Populate ORES database if selected
-if [ -d $PATCHDEMO/wikis/$NAME/w/extensions/ORES ]; then
+if [ -f $PATCHDEMO/wikis/$NAME/w/extensions/ORES/maintenance/PopulateDatabase.php ]; then
 	php $PATCHDEMO/wikis/$NAME/w/extensions/ORES/maintenance/PopulateDatabase.php
 fi
