@@ -27,7 +27,7 @@ function convert_wiki_to_db( string $wiki ) {
 	$creator = trim( get_if_file_exists( 'wikis/' . $wiki . '/creator.txt' ) ?? '' );
 	$created = intval( trim( get_if_file_exists( 'wikis/' . $wiki . '/created.txt' ) ?? time() ) );
 
-	insert_wiki_data( $wiki, $creator, $created, '' );
+	insert_wiki_data( $wiki, $creator, $created, '', null );
 	wiki_add_patches( $wiki, $patches );
 }
 
