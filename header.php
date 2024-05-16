@@ -28,7 +28,8 @@ echo '<!DOCTYPE html>
 				<h1><a class="logo" href="' . $basePath . '/."><span>Patch demo</span></a></h1>
 				<div class="sourceAndUser">';
 if ( $auth->isSignedIn() ) {
-	echo "<div class='user'>Logged in as <b>{$auth->getUserName()}</b> [<a href='?logout'>Log out</a>]</div>";
+	echo '<div class="user">Logged in as <b>' . htmlspecialchars( $auth->getUserName() ) .
+		'</b> [<a href="?logout">Log out</a>]</div>';
 }
 echo '
 					<div class="source">
