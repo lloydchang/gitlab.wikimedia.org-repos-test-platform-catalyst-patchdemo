@@ -29,5 +29,7 @@ spec:
               value: "{{ .Release.Name }}-{{ .Values.app.db.host }}"
             - name: DB_DATABASE
               value: "{{ .Values.mariadb.auth.database }}"
+            - name: CATALYST_API_URL
+              value: "{{ .Values.app.catalystApiUrl }}"
 
 

@@ -595,6 +595,37 @@ function post_phab_comment( string $id, string $comment ) {
 	}
 }
 
+function request_chart_from_catalyst( string $chart ): array {
+	$catalystUrl = getenv( 'CATALYST_API_URL' );
+	// Suppress warning if request fails
+	// phpcs:ignore
+	$resp = @file_get_contents( $catalystUrl . '/charts/' . $chart );
+	if ( $resp === false ) {
+		return [];
+	}
+	return json_decode( $resp, true );
+}
+
+function get_catalyst_repos(): array {
+	$mediawikiChartValues = request_chart_from_catalyst( 'mediawiki' );
+	if ( count( $mediawikiChartValues ) < 1 ) {
+		return [];
+	}
+	$extensions = array_keys( $mediawikiChartValues['defaultValues']['extensions'] );
+	array_walk( $extensions, static function ( &$extension, $key, $prefix )
+	{
+		$extension = "$prefix/$extension";
+	}, 'mediawiki/extensions' );
+	$skins = array_keys( $mediawikiChartValues['defaultValues']['skins'] );
+
+	array_walk( $skins, static function ( &$skin, $key, $prefix )
+	{
+		$skin = "$prefix/$skin";
+	}, 'mediawiki/skins' );
+
+	return array_merge( $skins, $extensions, [ "mediawiki/core" ] );
+}
+
 function get_repo_presets(): array {
 	$presets = [];
 

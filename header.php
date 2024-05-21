@@ -46,6 +46,10 @@ echo '
 							<strong>' . patchdemo_db_space() . ' GB</strong> (database) /
 							<strong>' . patchdemo_file_space() . ' GB</strong> (files)
 					</div>
+					<div id="catalystHeader" class="source" hidden>
+						<strong>The Kubernetes (Catalyst) backend is currently experimental, and does not support 
+						every skin, extension, and option.</strong>
+					</div>
 				</div>
 			</div>
 		</header>

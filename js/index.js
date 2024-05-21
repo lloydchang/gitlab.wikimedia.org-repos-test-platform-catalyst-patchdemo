@@ -96,10 +96,11 @@
 		}
 
 		const presetInput = OO.ui.infuse( $( '.form-preset' ) );
+		const backendInput = OO.ui.infuse( $( '.form-backend' ) );
 		const reposInput = OO.ui.infuse( $( '.form-repos' ) );
 		const reposField = OO.ui.infuse( $( '.form-repos-field' ) );
 		const branchSelect = OO.ui.infuse( $( '.form-branch' ) );
-		const presetSelect = OO.ui.infuse( $( '.form-preset' ) );
+		const mediawikiCore = 'mediawiki/core';
 
 		branchSelect.on( 'change', () => {
 			const branch = branchSelect.value;
@@ -107,12 +108,43 @@
 				const validBranch = window.repoBranches[ repo ].indexOf( branch ) !== -1;
 				reposInput.checkboxMultiselectWidget
 					.findItemFromData( repo )
-					.setDisabled( !validBranch || repo === 'mediawiki/core' );
+					.setDisabled( !validBranch || repo === mediawikiCore );
 			}
 			reposInput.emit( 'change' );
 		} );
 
 		const reposFieldLabel = reposField.getLabel();
+		const isRepoEnabledInCatalyst = ( repo, disableCore = false ) => {
+			return repo === mediawikiCore && disableCore === true ? false :
+				window.pd.catalystRepos.indexOf( repo.toLowerCase() ) !== -1;
+		};
+		const setupRepoForCatalyst = ( option ) => {
+			const repo = option.data;
+			option.setDisabled( !isRepoEnabledInCatalyst( repo, true ) );
+			option.setSelected( option.isSelected() && isRepoEnabledInCatalyst( repo ) );
+		};
+		backendInput.on( 'change', ( value ) => {
+			if ( value ) {
+				document.getElementById( 'catalystHeader' ).hidden = false;
+				reposField.$body[ 0 ].open = true;
+				presetInput.radioSelectWidget.items.forEach( ( preset ) => {
+					if ( preset.data !== 'custom' ) {
+						preset.setDisabled( true );
+					}
+				} );
+				reposInput.checkboxMultiselectWidget.items.forEach( ( option ) => {
+					setupRepoForCatalyst( option );
+				} );
+			} else {
+				document.getElementById( 'catalystHeader' ).hidden = true;
+				presetInput.radioSelectWidget.items.forEach( ( preset ) => {
+					preset.setDisabled( false );
+				} );
+				reposInput.checkboxMultiselectWidget.items.forEach( ( option ) => {
+					option.setDisabled( option.data === mediawikiCore );
+				} );
+			}
+		} );
 
 		presetInput.on( 'change', OO.ui.debounce( () => {
 			const val = presetInput.getValue();
@@ -138,6 +170,9 @@
 
 			let selected = 0, enabled = 0;
 			reposInput.checkboxMultiselectWidget.items.forEach( ( option ) => {
+				if ( backendInput.isSelected() ) {
+					setupRepoForCatalyst( option );
+				}
 				if ( !option.isDisabled() ) {
 					enabled++;
 					if ( option.isSelected() ) {
@@ -167,7 +202,7 @@
 			branchSelect.setValue( 'origin/' + params.get( 'branch' ) );
 			const preset = params.get( 'preset' );
 			if ( preset ) {
-				presetSelect.setValue( preset );
+				presetInput.setValue( preset );
 				const repos = params.get( 'repos' );
 				if ( repos ) {
 					reposInput.setValue( repos.split( ',' ) );

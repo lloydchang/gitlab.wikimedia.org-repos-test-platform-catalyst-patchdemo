@@ -26,7 +26,8 @@ $presetLabels = [
 
 $auth = Authentication::getInstance();
 $canCreate = !$auth->useOauth() || $auth->isSignedIn();
-$branches = get_branches_sorted( 'mediawiki/core' );
+$mediawikiCore = 'mediawiki/core';
+$branches = get_branches_sorted( $mediawikiCore );
 
 $branchOptions = array_map( static function ( $branch ) {
 	return [
@@ -45,7 +46,7 @@ foreach ( $repoData as $repo => $path ) {
 	$repoOptions[] = [
 		'data' => $repo,
 		'label' => get_repo_label( $repo ),
-		'disabled' => ( $repo === 'mediawiki/core' ),
+		'disabled' => ( $repo === $mediawikiCore ),
 	];
 }
 $repoBranches = htmlspecialchars( json_encode_clean( $repoBranches ), ENT_NOQUOTES );
@@ -76,6 +77,13 @@ $presetOptions = array_map( static function ( $data, $preset ) {
 	}
 	return $option;
 }, array_keys( $presetLabels ), array_values( $presetLabels ) );
+
+$catalystRepos = json_encode_clean( get_catalyst_repos() );
+$catalystBackendDisabled = ( count( $catalystRepos ) < 1 );
+$useCatalystBackend = 'Use experimental kubernetes backend (Catalyst)';
+$catalystBackendLabel = $catalystBackendDisabled ?
+	$useCatalystBackend . ' Could not reach catalyst - option disabled.' :
+	$useCatalystBackend;
 
 echo new OOUI\FormLayout( [
 	'infusable' => true,
@@ -133,6 +141,19 @@ echo new OOUI\FormLayout( [
 						]
 					) :
 					null,
+				new OOUI\FieldLayout(
+					new OOUI\CheckboxInputWidget( [
+						'classes' => [ 'form-backend' ],
+						'name' => 'backend',
+						'value' => 1,
+						'selected' => false,
+						'disabled' => $catalystBackendDisabled,
+					] ),
+					[
+						'label' => $catalystBackendLabel,
+						'align' => 'left',
+					]
+				),
 				new OOUI\FieldLayout(
 					new OOUI\RadioSelectInputWidget( [
 						'classes' => [ 'form-preset' ],
@@ -415,7 +436,7 @@ while ( $data = $results->fetch_assoc() ) {
 		case 'custom':
 			$allRepos = get_repo_data();
 			// mediawiki/core is always included and not stored in database
-			unset( $allRepos['mediawiki/core'] );
+			unset( $allRepos[$mediawikiCore] );
 			$presetReposByName = array_map( static function ( $presetRepos ) use ( $allRepos ) {
 				return array_intersect( $presetRepos, array_keys( $allRepos ) );
 			}, get_repo_presets() );
@@ -526,6 +547,7 @@ pd.config = ' . json_encode_clean( [
 	'phabricatorUrl' => $config['phabricatorUrl'],
 	'gerritUrl' => $config['gerritUrl'],
 ] ) . ';
+pd.catalystRepos = ' . $catalystRepos . ';
 </script>';
 ?>
 <script src="js/DetailsFieldLayout.js"></script>
