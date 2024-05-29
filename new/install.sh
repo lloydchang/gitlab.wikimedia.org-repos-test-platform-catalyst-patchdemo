@@ -4,12 +4,6 @@ set -ex
 # make database
 mysql -u patchdemo --password=patchdemo -e "CREATE DATABASE patchdemo_$NAME";
 
-# Set up CentralAuth tables - this doesn't happen during installation, because normally CentralAuth
-# uses a separate database, but we change it (maybe after T348486 this won't be needed)
-if [ -f $PATCHDEMO/wikis/$NAME/w/extensions/CentralAuth/schema/mysql/tables-generated.sql ]; then
-	mysql -u patchdemo -ppatchdemo patchdemo_$NAME < $PATCHDEMO/wikis/$NAME/w/extensions/CentralAuth/schema/mysql/tables-generated.sql
-fi
-
 # install
 cd $PATCHDEMO/wikis/$NAME/w
 php $PATCHDEMO/wikis/$NAME/w/maintenance/install.php \
