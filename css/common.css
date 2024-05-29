@@ -310,6 +310,38 @@ summary > .oo-ui-labelElement-label:not( .oo-ui-inline-help ) {
 	display: block;
 }
 
+.wikis details dl {
+	position: absolute;
+	background: #f8f9fa;
+	border: 1px solid #a2a9b1;
+	padding: 0.3em 0.6em;
+	margin: 0;
+}
+
+.wikis details dt,
+.wikis details dd {
+	display: inline;
+	padding: 0;
+	margin: 0;
+}
+
+.wikis details dt {
+	font-weight: bold;
+}
+
+.wikis details dt::after {
+	content: ': ';
+}
+
+.wikis details dt ~ dt::before {
+	content: '\A';
+	white-space: pre;
+}
+
+.wikis details dd + dd::before {
+	content: ', ';
+}
+
 @media ( max-width: 720px ) {
 	.oo-ui-fieldLayout-align-left > .oo-ui-fieldLayout-body {
 		flex-wrap: wrap;

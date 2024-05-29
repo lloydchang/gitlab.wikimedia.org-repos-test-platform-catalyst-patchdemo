@@ -413,12 +413,51 @@ while ( $data = $results->fetch_assoc() ) {
 			$repos = '?';
 			break;
 		case 'custom':
-			$repoList = implode( ', ',
-				array_map( static function ( $repo ) {
-					return get_repo_label( $repo );
-				}, $wikiData[ 'repos' ][ 'repos' ] )
-			);
-			$repos = '<abbr title="' . htmlspecialchars( $repoList ) . '">' . $presetLabels[ $preset ][ 'title' ] . '</abbr>';
+			$allRepos = get_repo_data();
+			// mediawiki/core is always included and not stored in database
+			unset( $allRepos['mediawiki/core'] );
+			$presetReposByName = array_map( static function ( $presetRepos ) use ( $allRepos ) {
+				return array_intersect( $presetRepos, array_keys( $allRepos ) );
+			}, get_repo_presets() );
+
+			$closestPresetName = 'custom';
+			$closestPresetDiff = count( $allRepos );
+			foreach ( $presetReposByName as $presetName => $presetRepos ) {
+				$differentRepos =
+					count( array_diff( $presetRepos, $wikiData['repos']['repos'] ) ) +
+					count( array_diff( $wikiData['repos']['repos'], $presetRepos ) );
+				if ( $differentRepos < $closestPresetDiff ) {
+					$closestPresetName = $presetName;
+					$closestPresetDiff = $differentRepos;
+				}
+			}
+
+			$closestPresetRepos = $presetReposByName[ $closestPresetName ];
+			$removedRepos = array_diff( $closestPresetRepos, $wikiData['repos']['repos'] );
+			$addedRepos = array_diff( $wikiData['repos']['repos'], $closestPresetRepos );
+
+			$details = [];
+			if ( $closestPresetName !== 'custom' ) {
+				$details[] = '<dt>Base preset</dt>';
+				$details[] = '<dd>' . htmlspecialchars( $presetLabels[ $closestPresetName ][ 'title' ] ) . '</dd>';
+			}
+			if ( $removedRepos ) {
+				$details[] = '<dt>Excluded</dt>';
+				foreach ( $removedRepos as $repo ) {
+					$details[] = '<dd>' . htmlspecialchars( get_repo_label( $repo ) ) . '</dd>';
+				}
+			}
+			if ( $addedRepos ) {
+				$details[] = '<dt>Included</dt>';
+				foreach ( $addedRepos as $repo ) {
+					$details[] = '<dd>' . htmlspecialchars( get_repo_label( $repo ) ) . '</dd>';
+				}
+			}
+
+			$repos = '<details>' .
+				'<summary>' . htmlspecialchars( $presetLabels[ $preset ][ 'title' ] ) . '</summary>' .
+				'<dl>' . implode( '', $details ) . '</dl>' .
+				'</details>';
 			break;
 		default:
 			$repos = htmlspecialchars( $presetLabels[ $preset ][ 'title' ] );
