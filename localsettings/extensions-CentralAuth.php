@@ -6,4 +6,13 @@ $wgCentralAuthDatabase = $wgDBname;
 $wgCentralAuthLoginWiki = $wgDBname;
 $wgLocalDatabases = [ $wgDBname ];
 
+# Make CentralAuth aware of the only site of the farm – this one.
+$wgConf->wikis = [ $wgDBname ];
+$wgConf->suffixes = [ '' ];
+$wgConf->settings = [
+	'wgServer' => [ $wgDBname => $wgServer ],
+	'wgCanonicalServer' => [ $wgDBname => $wgCanonicalServer ],
+	'wgArticlePath' => [ $wgDBname => $wgArticlePath ],
+];
+
 $wgCentralAuthEnableGlobalRenameRequest = true;
