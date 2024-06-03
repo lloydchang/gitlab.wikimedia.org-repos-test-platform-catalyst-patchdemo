@@ -78,7 +78,7 @@ $presetOptions = array_map( static function ( $data, $preset ) {
 	return $option;
 }, array_keys( $presetLabels ), array_values( $presetLabels ) );
 
-$catalystRepos = json_encode_clean( get_catalyst_repos() );
+$catalystRepos = get_catalyst_repos();
 $catalystBackendDisabled = ( count( $catalystRepos ) < 1 );
 $useCatalystBackend = 'Use experimental kubernetes backend (Catalyst)';
 $catalystBackendLabel = $catalystBackendDisabled ?
@@ -547,7 +547,7 @@ pd.config = ' . json_encode_clean( [
 	'phabricatorUrl' => $config['phabricatorUrl'],
 	'gerritUrl' => $config['gerritUrl'],
 ] ) . ';
-pd.catalystRepos = ' . $catalystRepos . ';
+pd.catalystRepos = ' . json_encode_clean( $catalystRepos ) . ';
 </script>';
 ?>
 <script src="js/DetailsFieldLayout.js"></script>
