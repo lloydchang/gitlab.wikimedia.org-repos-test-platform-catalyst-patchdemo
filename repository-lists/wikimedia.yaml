@@ -85,8 +85,7 @@
 - mediawiki/extensions/Poem
 - mediawiki/extensions/PoolCounter
 - mediawiki/extensions/Popups
-# Config causes deprecation warnings (#605)
-# - mediawiki/extensions/QuickSurveys
+- mediawiki/extensions/QuickSurveys
 - mediawiki/extensions/ReadingLists
 - mediawiki/extensions/RelatedArticles
 - mediawiki/extensions/Renameuser
