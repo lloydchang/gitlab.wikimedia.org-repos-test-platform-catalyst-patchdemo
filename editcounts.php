@@ -50,7 +50,7 @@ $short_fields = [
 
 $results = $mysqli->query( 'SELECT wiki, landingPage FROM wikis WHERE !deleted AND ready ORDER BY created DESC' );
 if ( !$results ) {
-	die( $mysqli->error );
+	error( $mysqli->error );
 }
 $wikis = [];
 while ( $data = $results->fetch_assoc() ) {

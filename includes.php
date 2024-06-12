@@ -5,10 +5,19 @@ use SensioLabs\AnsiConverter\Theme\SolarizedXTermTheme;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Yaml;
 
-ini_set( 'display_errors', 1 );
-ini_set( 'display_startup_errors', 1 );
+// Under the API, we don't want to send any errors to the client since it
+// should always respond with a json payload.
+if ( defined( 'PATCH_DEMO_JSON_API' ) ) {
+	ini_set( 'display_errors', 0 );
+	ini_set( 'display_startup_errors', 0 );
+} else {
+	ini_set( 'display_errors', 1 );
+	ini_set( 'display_startup_errors', 1 );
+}
 error_reporting( E_ALL );
+
 include_once './vendor/autoload.php';
+include_once 'errorutils.php';
 
 include 'config.default.php';
 if ( file_exists( 'config.php' ) ) {
@@ -28,7 +37,7 @@ include_once 'Authentication.php';
 
 $mysqli = new mysqli( 'localhost', 'patchdemo', 'patchdemo', 'patchdemo' );
 if ( $mysqli->connect_error ) {
-	die( $mysqli->connect_error );
+	error( $mysqli->connect_error );
 }
 
 function insert_wiki_data( string $wiki, string $creator, int $created, string $branch, ?string $landingPage ) {
@@ -610,7 +619,7 @@ function get_known_pages(): array {
 			WHERE landingPage != "" AND creator = ?
 		' );
 		if ( !$stmt ) {
-			die( $mysqli->error );
+			error( $mysqli->error );
 		}
 		$username = $auth->getUserName();
 		$stmt->bind_param( 's', $username );

@@ -15,7 +15,7 @@ if ( $auth->canSignIn() ) {
 }
 
 if ( !isset( $_POST['csrf_token'] ) || !$auth->checkCsrfToken( $_POST['csrf_token'] ) ) {
-	die( "Invalid session." );
+	error( "Invalid session." );
 }
 
 $startTime = time();
@@ -72,7 +72,7 @@ function abandon( string $errHtml ) {
 	$errJson = json_encode_clean( $errHtml );
 	echo "<script>pd.abandon( $errJson );</script>";
 	delete_wiki( $wiki );
-	die( $errHtml );
+	error( $errHtml );
 }
 
 function set_progress( float $pc, string $label ) {

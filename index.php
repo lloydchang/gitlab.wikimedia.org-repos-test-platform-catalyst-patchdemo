@@ -336,13 +336,13 @@ $stmt = $mysqli->prepare( '
 	ORDER BY IF( creator = ?, 1, 0 ) DESC, created DESC
 ' );
 if ( !$stmt ) {
-	die( $mysqli->error );
+	error( $mysqli->error );
 }
 $stmt->bind_param( 's', $username );
 $stmt->execute();
 $results = $stmt->get_result();
 if ( !$results ) {
-	die( $mysqli->error );
+	error( $mysqli->error );
 }
 $shownMyWikis = false;
 $shownOtherWikis = false;

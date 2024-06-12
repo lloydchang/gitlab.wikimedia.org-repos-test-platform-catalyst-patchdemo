@@ -9,7 +9,7 @@ $wikiData = get_wiki_data( $wiki );
 
 $auth = Authentication::getInstance();
 if ( !$auth->canDelete( $wikiData['creator'] ) ) {
-	die( '<p>You are not allowed to delete this wiki.</p>' );
+	error( '<p>You are not allowed to delete this wiki.</p>' );
 }
 
 if ( !isset( $_POST['confirm' ] ) ) {
@@ -66,11 +66,11 @@ if ( !isset( $_POST['confirm' ] ) ) {
 		]
 	] );
 
-	die();
+	error();
 }
 
 if ( !isset( $_POST['csrf_token'] ) || !$auth->checkCsrfToken( $_POST['csrf_token'] ) ) {
-	die( "Invalid session." );
+	error( "Invalid session." );
 }
 
 ob_implicit_flush( true );
@@ -80,7 +80,7 @@ $error = delete_wiki( $wiki );
 echo '</div>';
 
 if ( $error ) {
-	die( '<p>Error deleting wiki:<br>' . htmlentities( $error ) . '</p>' );
+	error( '<p>Error deleting wiki:<br>' . htmlentities( $error ) . '</p>' );
 } else {
 	echo '<p>Wiki deleted.</p>';
 }

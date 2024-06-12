@@ -1,28 +1,21 @@
 <?php
-
-require_once "includes.php";
-
 header( 'Content-Type: application/json' );
 header( 'Access-Control-Allow-Origin: *' );
 
+define( 'PATCH_DEMO_JSON_API', 1 );
+
+require_once "includes.php";
+
 $data = null;
 
-function error( string $msg ) {
-	http_response_code( 400 );
-	echo json_encode_clean( [
-		'error' => $msg
-	] );
-	die();
-}
-
 if ( !isset( $_GET['action'] ) ) {
-	error( 'Missing param "action"' );
+	bad_request_error( 'Missing param "action"' );
 }
 
 switch ( $_GET['action'] ) {
 	case 'patchmeta':
 		if ( !isset( $_GET['patch'] ) ) {
-			error( 'Missing param "patch"' );
+			bad_request_error( 'Missing param "patch"' );
 		}
 
 		$patch = $_GET['patch'];
@@ -64,7 +57,7 @@ switch ( $_GET['action'] ) {
 
 	case 'findwikis':
 		if ( empty( $_GET['change'] ) ) {
-			error( 'Missing param "change"' );
+			bad_request_error( 'Missing param "change"' );
 		}
 		$change = $_GET['change'];
 		// Patches in JSON look like "CHANGENUM,PS"
@@ -75,13 +68,13 @@ switch ( $_GET['action'] ) {
 			ORDER BY created ASC
 		' );
 		if ( !$stmt ) {
-			die( $mysqli->error );
+			error( $mysqli->error );
 		}
 		$stmt->bind_param( 's', $change );
 		$stmt->execute();
 		$results = $stmt->get_result();
 		if ( !$results ) {
-			die( $mysqli->error );
+			error( $mysqli->error );
 		}
 
 		$server = get_server();
@@ -100,7 +93,7 @@ switch ( $_GET['action'] ) {
 		break;
 
 	default:
-		error( 'Invalid action' );
+		bad_request_error( 'Invalid action' );
 		break;
 }
 
