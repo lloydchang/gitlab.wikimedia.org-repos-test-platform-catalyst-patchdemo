@@ -172,7 +172,7 @@ function get_patch_data( $r, $p ): array {
 	$patch = $r . ',' . $p;
 
 	$stmt = $mysqli->prepare( '
-		SELECT patch, status, subject, message, UNIX_TIMESTAMP( updated ) updated
+		SELECT patch, repo, status, subject, message, UNIX_TIMESTAMP( updated ) updated
 		FROM patches WHERE patch = ?' );
 	$stmt->bind_param( 's', $patch );
 	$stmt->execute();
@@ -182,14 +182,17 @@ function get_patch_data( $r, $p ): array {
 
 	// Patch status can change (if not merged), so re-fetch every 24 hours
 	if (
-		!$data || (
+		!$data ||
+		!$data['repo'] || (
 			$data['status'] !== 'MERGED' &&
 			( time() - $data['updated'] > 24 * 60 * 60 )
 		)
 	) {
 		$changeData = gerrit_query( "changes/$r" );
+		$repo = null;
 		$status = 'UNKNOWN';
 		if ( $changeData ) {
+			$repo = $changeData['project'];
 			$status = $changeData['status'];
 		}
 		$subject = '';
@@ -203,17 +206,18 @@ function get_patch_data( $r, $p ): array {
 		// Update cache
 		$stmt = $mysqli->prepare( '
 			INSERT INTO patches
-			(patch, status, subject, message, updated)
-			VALUES(?, ?, ?, ?, NOW())
+			(patch, repo, status, subject, message, updated)
+			VALUES(?, ?, ?, ?, ?, NOW())
 			ON DUPLICATE KEY UPDATE
-			status = ?, updated = NOW()
+			repo = ?, status = ?, updated = NOW()
 		' );
-		$stmt->bind_param( 'sssss', $patch, $status, $subject, $message, $status );
+		$stmt->bind_param( 'sssssss', $patch, $repo, $status, $subject, $message, $repo, $status );
 		$stmt->execute();
 		$stmt->close();
 
 		$data = [
 			'patch' => $patch,
+			'repo' => $repo,
 			'status' => $status,
 			'subject' => $subject,
 			'message' => $message,
@@ -314,7 +318,9 @@ function format_patch_list( array $patchList, ?string $branch, bool &$closed = f
 		$statuses[] = $status;
 		$title = $patchData['patch'] . ': ' . $patchData[ 'subject' ];
 
-		return '<a href="' . $config['gerritUrl'] . '/r/c/' . $patchData['r'] . '/' . $patchData['p'] . '" title="' . htmlspecialchars( $title ) . '" class="status-' . $status . '">' .
+		return '<a' .
+			" href='{$config['gerritUrl']}/r/c/{$patchData['repo']}/+/{$patchData['r']}/{$patchData['p']}'" .
+			' title="' . htmlspecialchars( $title ) . '" class="status-' . $status . '">' .
 			htmlspecialchars( $title ) .
 		'</a>';
 	}, $patchList ) );

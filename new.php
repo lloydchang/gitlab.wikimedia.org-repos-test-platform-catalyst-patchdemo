@@ -409,7 +409,12 @@ if ( !$patchesApplied ) {
 foreach ( $patchesApplied as $patch ) {
 	preg_match( '`([0-9]+),([0-9]+)`', $patch, $matches );
 	list( $t, $r, $p ) = $matches;
+	$repo = null;
 
+	$changeData = gerrit_query( "changes/$r", true );
+	if ( $changeData ) {
+		$repo = $changeData['project'];
+	}
 	$data = gerrit_query( "changes/$r/revisions/$p/commit", true );
 	check_connection();
 	if ( $data ) {
@@ -419,7 +424,7 @@ foreach ( $patchesApplied as $patch ) {
 
 	$t = htmlentities( $t );
 
-	$mainPage .= "\n:* [{$config['gerritUrl']}/r/c/$r/$p <nowiki>$t</nowiki>]";
+	$mainPage .= "\n:* [{$config['gerritUrl']}/r/c/$repo/+/$r/$p <nowiki>$t</nowiki>]";
 }
 
 $mainPage .= "\n;Linked tasks:";

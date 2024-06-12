@@ -57,3 +57,6 @@ ALTER TABLE `wikis`
 
 ALTER TABLE `wikis`
 	ADD COLUMN IF NOT EXISTS `repos` TEXT NULL AFTER `branch`;
+
+ALTER TABLE `patches`
+	ADD COLUMN IF NOT EXISTS `repo` TEXT NULL AFTER `patch`;
