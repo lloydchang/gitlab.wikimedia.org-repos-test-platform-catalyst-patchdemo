@@ -66,7 +66,7 @@ if ( !isset( $_POST['confirm' ] ) ) {
 		]
 	] );
 
-	error();
+	die();
 }
 
 if ( !isset( $_POST['csrf_token'] ) || !$auth->checkCsrfToken( $_POST['csrf_token'] ) ) {
