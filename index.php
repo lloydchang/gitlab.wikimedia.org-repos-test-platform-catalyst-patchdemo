@@ -78,12 +78,15 @@ $presetOptions = array_map( static function ( $data, $preset ) {
 	return $option;
 }, array_keys( $presetLabels ), array_values( $presetLabels ) );
 
-$catalystRepos = get_catalyst_repos();
-$catalystBackendDisabled = ( count( $catalystRepos ) < 1 );
-$useCatalystBackend = 'Use experimental kubernetes backend (Catalyst)';
-$catalystBackendLabel = $catalystBackendDisabled ?
-	$useCatalystBackend . ' Could not reach catalyst - option disabled.' :
-	$useCatalystBackend;
+$showCatalyst = isset( $_SERVER['HTTP_X_CATALYST'] ) && $_SERVER['HTTP_X_CATALYST'] == 'EnableAll';
+if ( $showCatalyst ) {
+	$catalystRepos = get_catalyst_repos();
+	$catalystBackendDisabled = ( count( $catalystRepos ) < 1 );
+	$useCatalystBackend = 'Use experimental kubernetes backend (Catalyst)';
+	$catalystBackendLabel = $catalystBackendDisabled ?
+		$useCatalystBackend . ' Could not reach catalyst - option disabled.' :
+		$useCatalystBackend;
+}
 
 echo new OOUI\FormLayout( [
 	'infusable' => true,
@@ -141,7 +144,7 @@ echo new OOUI\FormLayout( [
 						]
 					) :
 					null,
-				new OOUI\FieldLayout(
+				$showCatalyst ? new OOUI\FieldLayout(
 					new OOUI\CheckboxInputWidget( [
 						'classes' => [ 'form-backend' ],
 						'name' => 'backend',
@@ -153,7 +156,8 @@ echo new OOUI\FormLayout( [
 						'label' => $catalystBackendLabel,
 						'align' => 'left',
 					]
-				),
+				) :
+				null,
 				new OOUI\FieldLayout(
 					new OOUI\RadioSelectInputWidget( [
 						'classes' => [ 'form-preset' ],
@@ -547,8 +551,13 @@ pd.config = ' . json_encode_clean( [
 	'phabricatorUrl' => $config['phabricatorUrl'],
 	'gerritUrl' => $config['gerritUrl'],
 ] ) . ';
-pd.catalystRepos = ' . json_encode_clean( $catalystRepos ) . ';
 </script>';
+if ( $showCatalyst ) {
+	echo '<script>
+    pd.catalystRepos = ' . json_encode_clean( $catalystRepos ) . ';
+	</script>';
+}
+
 ?>
 <script src="js/DetailsFieldLayout.js"></script>
 <script src="js/PatchSelectWidget.js"></script>
