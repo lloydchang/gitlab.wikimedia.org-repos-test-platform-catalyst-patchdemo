@@ -73,7 +73,10 @@ if ( !isset( $_POST['csrf_token'] ) || !$auth->checkCsrfToken( $_POST['csrf_toke
 	error( "Invalid session." );
 }
 
+// Instruct the server to stream output immediately, without waiting for the script to finish
 ob_implicit_flush( true );
+// The streamed responses trigger some gzip encoding bug somewhere, so disable it (#609)
+apache_setenv( 'no-gzip', '1' );
 
 echo '<div class="consoleLog">';
 $error = delete_wiki( $wiki );

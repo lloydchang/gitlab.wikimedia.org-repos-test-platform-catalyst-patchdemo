@@ -6,7 +6,10 @@ require_once "includes.php";
 
 include "header.php";
 
+// Instruct the server to stream output immediately, without waiting for the script to finish
 ob_implicit_flush( true );
+// The streamed responses trigger some gzip encoding bug somewhere, so disable it (#609)
+apache_setenv( 'no-gzip', '1' );
 
 $auth = Authentication::getInstance();
 if ( $auth->canSignIn() ) {
