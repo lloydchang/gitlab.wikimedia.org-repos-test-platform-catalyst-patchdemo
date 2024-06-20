@@ -40,6 +40,16 @@ if ( $mysqli->connect_error ) {
 	error( $mysqli->connect_error );
 }
 
+function stream_response() {
+	// Instruct the server to stream output immediately, without waiting for the script to finish
+	ob_implicit_flush( true );
+	for ( $i = 0; $i < ob_get_level(); $i++ ) {
+		ob_end_flush();
+	}
+	// The streamed responses trigger some gzip encoding bug somewhere, so disable it (#609)
+	apache_setenv( 'no-gzip', '1' );
+}
+
 function insert_wiki_data( string $wiki, string $creator, int $created, string $branch, ?string $landingPage ) {
 	global $mysqli;
 	$stmt = $mysqli->prepare( '
