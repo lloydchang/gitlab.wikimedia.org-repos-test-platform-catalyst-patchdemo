@@ -41,13 +41,15 @@ if ( $mysqli->connect_error ) {
 }
 
 function stream_response() {
+	// The streamed responses trigger some gzip encoding bug somewhere, so disable it (#609)
+	ini_set( 'zlib.output_compression', 'Off' );
+	ini_set( 'output_buffering', 'Off' );
+	apache_setenv( 'no-gzip', 1 );
 	// Instruct the server to stream output immediately, without waiting for the script to finish
 	ob_implicit_flush( true );
 	for ( $i = 0; $i < ob_get_level(); $i++ ) {
 		ob_end_flush();
 	}
-	// The streamed responses trigger some gzip encoding bug somewhere, so disable it (#609)
-	apache_setenv( 'no-gzip', '1' );
 }
 
 function insert_wiki_data( string $wiki, string $creator, int $created, string $branch, ?string $landingPage ) {
