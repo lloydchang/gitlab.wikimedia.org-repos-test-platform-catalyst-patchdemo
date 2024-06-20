@@ -63,6 +63,13 @@ memory_limit = 256M
 echo "<Directory /var/www/html>
 Options -Indexes
 AllowOverride All
+
+# Workaround for some weird MediaWiki bug involving MobileFrontend and UrlShortener sending it into
+# infinite redirect loop that makes scraper bots hammer the site to death (#603)
+RewriteOptions Inherit
+RewriteEngine On
+RewriteCond \"%{QUERY_STRING}\" \"UrlShortener\"
+RewriteRule \".\"               \"-\"   [F,L]
 </Directory>" > /etc/apache2/sites-available/patchdemo.conf
 
 # Support Parsoid URLs for pages with slashes in the title.
