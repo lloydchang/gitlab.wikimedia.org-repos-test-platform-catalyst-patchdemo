@@ -79,7 +79,6 @@ function set_progress( float $pc, string $label ) {
 	echo '<p>' . htmlspecialchars( $label ) . '</p>';
 	$labelJson = json_encode_clean( $label );
 	echo "<script>pd.setProgress( $pc, $labelJson );</script>";
-	ob_flush();
 }
 
 echo new OOUI\FieldsetLayout( [
