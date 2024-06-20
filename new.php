@@ -580,7 +580,7 @@ shell_echo_multi(
 		set_progress( $repoProgress, "Fetching dependencies ($n/$repoCount)..." );
 	},
 	static function ( int $error, $cmd, $env ) {
-		abandon( "Could not fetch dependencies for <em>{$env['REPO_SOURCE']}</em>" );
+		abandon( "Could not fetch dependencies for <em>{$env['REPO_TARGET']}</em>" );
 	}
 );
 
