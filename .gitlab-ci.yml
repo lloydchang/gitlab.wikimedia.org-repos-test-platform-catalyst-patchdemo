@@ -59,7 +59,9 @@ deploy:
         --set mariadb.auth.password=${DB_PASS} \
         --set mariadb.auth.rootPassword=${DB_ROOT_PASS} \
         --set mariadb.auth.database=${DB_DATABASE} \
-        --set app.db.host=${DB_HOST}
+        --set app.db.host=${DB_HOST} \
+        --set app.catalystApiUrl=${CATALYST_API_URL} \
+        --set app.catalystApiToken=${CATALYST_API_TOKEN}
   tags: [ trusted ]
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED

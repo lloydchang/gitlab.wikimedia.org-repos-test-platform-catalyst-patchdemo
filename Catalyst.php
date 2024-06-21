@@ -18,7 +18,8 @@ class Catalyst {
 	private function __construct( string $apiToken ) {
 		global $config;
 
-		$this->baseUrl = $config['catalystApi'] . '/api';
+		$baseUrl = getenv( 'CATALYST_API_URL' ) ?? $config['catalystApi'];
+		$this->baseUrl = $baseUrl . '/api';
 		$httpClient = ScopingHttpClient::forBaseUri( BASE_CLIENT, $this->baseUrl, [
 			'max_redirects' => 1,
 			'headers' => [
@@ -29,10 +30,10 @@ class Catalyst {
 		$this->httpClient = $httpClient;
 	}
 
-	public function getCharts(): array {
+	public function getChart( string $chartName ): array {
 		return $this->withErr(
-			function () {
-				return $this->httpClient->request( 'GET', "$this->baseUrl/charts" )->toArray();
+			function () use ( $chartName ) {
+				return $this->httpClient->request( 'GET', "$this->baseUrl/charts/" . $chartName )->toArray();
 			},
 			static function ( $_ ) {
 				return [];
@@ -54,7 +55,7 @@ class Catalyst {
 	public function postEnvironment( EnvironmentRequest $env ): void {
 		$this->withErr(
 			function () use ( $env ) {
-				$envJson = json_encode( $env, JSON_FORCE_OBJECT | JSON_THROW_ON_ERROR );
+				$envJson = json_encode( $env, JSON_THROW_ON_ERROR );
 				$res = $this->httpClient->request( 'POST', "$this->baseUrl/environments", [
 					'headers' => [ 'Content-Type' => 'application/json' ],
 					'body' => $envJson,

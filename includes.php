@@ -18,6 +18,7 @@ error_reporting( E_ALL );
 
 include_once './vendor/autoload.php';
 include_once 'errorutils.php';
+require_once "Catalyst.php";
 
 include 'config.default.php';
 if ( file_exists( 'config.php' ) ) {
@@ -595,19 +596,9 @@ function post_phab_comment( string $id, string $comment ) {
 	}
 }
 
-function request_chart_from_catalyst( string $chart ): array {
-	$catalystUrl = getenv( 'CATALYST_API_URL' );
-	// Suppress warning if request fails
-	// phpcs:ignore
-	$resp = @file_get_contents( $catalystUrl . '/charts/' . $chart );
-	if ( $resp === false ) {
-		return [];
-	}
-	return json_decode( $resp, true );
-}
-
 function get_catalyst_repos(): array {
-	$mediawikiChartValues = request_chart_from_catalyst( 'mediawiki' );
+	$catalystApi = Catalyst::newClient( getenv( 'CATALYST_API_TOKEN' ) );
+	$mediawikiChartValues = $catalystApi->getChart( 'mediawiki' );
 	if ( count( $mediawikiChartValues ) < 1 ) {
 		return [];
 	}

@@ -3,6 +3,8 @@
 use Symfony\Component\Yaml\Yaml;
 
 require_once "includes.php";
+require_once "Catalyst.php";
+require_once "EnvironmentRequest.php";
 
 include "header.php";
 
@@ -22,6 +24,7 @@ $startTime = time();
 
 $branch = trim( $_POST['branch'] );
 $patches = trim( $_POST['patches'] );
+$useCatalystBackend = trim( $_POST['backend'] );
 $announce = !empty( $_POST['announce'] );
 $landingPage = trim( $_POST['landingPage'] ) ? trim( $_POST['landingPage'] ) : null;
 $language = trim( $_POST['language'] );
@@ -147,6 +150,7 @@ $patchesApplied = [];
 $linkedTasks = [];
 $commands = [];
 $usedRepos = [];
+$refs = [];
 
 // Iterate by reference, so that we can modify the $patches array to add new entries
 foreach ( $patches as $i => &$patch ) {
@@ -246,15 +250,24 @@ foreach ( $patches as $i => &$patch ) {
 	}
 
 	$patchesApplied[] = $data[0]['_number'] . ',' . $data[0]['revisions'][$revision]['_number'];
-	$commands[] = [
-		[
-			'REPO' => $path,
-			'REF' => $ref,
-			'BASE' => $base,
-			'HASH' => $revision,
-		],
-		__DIR__ . '/new/applypatch.sh'
-	];
+	if ( $useCatalystBackend ) {
+		$refs[$repo][] =
+			[
+				'ref' => $ref,
+				'base' => str_replace( 'origin/', '', $base ),
+				'hash' => $revision,
+			];
+	} else {
+		$commands[] = [
+			[
+				'REPO' => $path,
+				'REF' => $ref,
+				'BASE' => $base,
+				'HASH' => $revision,
+			],
+			__DIR__ . '/new/applypatch.sh'
+		];
+	}
 
 	$relatedChanges = [];
 	$relatedChanges[] = [ $data[0]['_number'], $data[0]['revisions'][$revision]['_number'] ];
@@ -448,217 +461,241 @@ $repoCount = count( $repos );
 
 $cmds = [];
 $envs = [];
-foreach ( $repos as $source => $target ) {
-	$cmds[] = __DIR__ . '/new/updaterepos.sh';
-	$envs[] = $baseEnv + [
-			'REPO_SOURCE' => $source,
-		];
+
+function get_repo_name( string $repo ): string {
+	return preg_replace( '`^mediawiki/(extensions/)?(skins/)?`', '', $repo );
 }
 
-set_progress( $repoProgress, "Updating repositories ($n/$repoCount)..." );
-
-check_connection();
-shell_echo_multi(
-	$cmds, $envs,
-	static function () use ( $start, $end, &$n, &$repoProgress, $repoCount ) {
-		$repoProgress += ( $end - $start ) / $repoCount;
-		$n++;
-		set_progress( $repoProgress, "Updating repositories ($n/$repoCount)..." );
-	},
-	static function ( int $error, $cmd, $env ) {
-		abandon( "Could not update repository <em>{$env['REPO_SOURCE']}</em>" );
+// build catalyst api query here
+if ( $useCatalystBackend ) {
+	$catalystApi = Catalyst::newClient( getenv( 'CATALYST_API_TOKEN' ) );
+	$env = new EnvironmentRequest( 'wiki-' . $wiki, 'mediawiki' );
+	$env->withIngress( $wiki . ".catalyst.wmcloud.org" );
+	foreach ( $allowedRepos as $repo ) {
+		$repoRefs = $refs[$repo] ?? null;
+		$repoName = get_repo_name( $repo );
+		if ( str_contains( $repo, 'skin' ) ) {
+			$env->withSkin( $repoName, $repoRefs );
+		} elseif ( $repo === 'mediawiki/core' ) {
+			$env->withCoreRefs( $repoRefs );
+		} else {
+			$env->withExtension( $repoName, $repoRefs );
+		}
 	}
-);
+	$catalystApi->postEnvironment( $env );
+} else {
+	foreach ( $repos as $source => $target ) {
+		$cmds[] = __DIR__ . '/new/updaterepos.sh';
+		$envs[] = $baseEnv + [
+				'REPO_SOURCE' => $source,
+			];
+	}
+
+	set_progress( $repoProgress, "Updating repositories ($n/$repoCount)..." );
+
+	check_connection();
+	shell_echo_multi(
+		$cmds, $envs,
+		static function () use ( $start, $end, &$n, &$repoProgress, $repoCount ) {
+			$repoProgress += ( $end - $start ) / $repoCount;
+			$n++;
+			set_progress( $repoProgress, "Updating repositories ($n/$repoCount)..." );
+		},
+		static function ( int $error, $cmd, $env ) {
+			abandon( "Could not update repository <em>{$env['REPO_SOURCE']}</em>" );
+		}
+	);
 
 // Just creates empty folders so no need for progress update
-check_connection();
-$error = shell_echo( __DIR__ . '/new/precheckout.sh', $baseEnv );
-if ( $error ) {
-	abandon( "Could not create directories for wiki" );
-}
+	check_connection();
+	$error = shell_echo( __DIR__ . '/new/precheckout.sh', $baseEnv );
+	if ( $error ) {
+		abandon( "Could not create directories for wiki" );
+	}
 
-$start = 40;
-$end = 60;
-$n = 0;
-$repoProgress = $start;
-$repoCount = count( $repos );
+	$start = 40;
+	$end = 60;
+	$n = 0;
+	$repoProgress = $start;
+	$repoCount = count( $repos );
 
-$cmds = [];
-$envs = [];
-foreach ( $repos as $source => $target ) {
-	$cmd = __DIR__ . '/new/checkout.sh';
-	$env = $baseEnv + [
-			'BRANCH' => $repoSpecificBranches[$source] ?? $branch,
-			'REPO_SOURCE' => $source,
-			'REPO_TARGET' => $target,
-		];
-	if ( $source !== 'mediawiki/core' && $source !== 'mediawiki/extensions/VisualEditor' ) {
-		$cmds[] = $cmd;
-		$envs[] = $env;
-	} else {
-		// Update core synchronously before extensions.
-		// Also update VE synchronously to avoid a race with the submodule lib/ve.
-		$error = shell_echo( $cmd, $env );
-		if ( $error ) {
-			abandon( "Could not check out <em>$source</em>" );
+	$cmds = [];
+	$envs = [];
+	foreach ( $repos as $source => $target ) {
+		$cmd = __DIR__ . '/new/checkout.sh';
+		$env = $baseEnv + [
+				'BRANCH' => $repoSpecificBranches[$source] ?? $branch,
+				'REPO_SOURCE' => $source,
+				'REPO_TARGET' => $target,
+			];
+		if ( $source !== 'mediawiki/core' && $source !== 'mediawiki/extensions/VisualEditor' ) {
+			$cmds[] = $cmd;
+			$envs[] = $env;
+		} else {
+			// Update core synchronously before extensions.
+			// Also update VE synchronously to avoid a race with the submodule lib/ve.
+			$error = shell_echo( $cmd, $env );
+			if ( $error ) {
+				abandon( "Could not check out <em>$source</em>" );
+			}
 		}
 	}
-}
 
-set_progress( $repoProgress, "Checking out repositories ($n/$repoCount)..." );
+	set_progress( $repoProgress, "Checking out repositories ($n/$repoCount)..." );
 
-shell_echo_multi(
-	$cmds, $envs,
-	static function () use ( $start, $end, &$n, &$repoProgress, $repoCount ) {
-		$repoProgress += ( $end - $start ) / $repoCount;
-		$n++;
-		set_progress( $repoProgress, "Checking out repositories ($n/$repoCount)..." );
-	},
-	static function ( int $error, $cmd, $env ) {
-		abandon( "Could not check out repository <em>{$env['REPO_SOURCE']}</em>" );
-	}
-);
+	shell_echo_multi(
+		$cmds, $envs,
+		static function () use ( $start, $end, &$n, &$repoProgress, $repoCount ) {
+			$repoProgress += ( $end - $start ) / $repoCount;
+			$n++;
+			set_progress( $repoProgress, "Checking out repositories ($n/$repoCount)..." );
+		},
+		static function ( int $error, $cmd, $env ) {
+			abandon( "Could not check out repository <em>{$env['REPO_SOURCE']}</em>" );
+		}
+	);
 
 // TODO: Make this a loop
-set_progress( 60, 'Fetching submodules...' );
-check_connection();
-$error = shell_echo( __DIR__ . '/new/submodules.sh', $baseEnv );
-if ( $error ) {
-	abandon( "Could not fetch submodules" );
-}
-
-$start = 60;
-$end = 65;
-$progress = $start;
-$count = count( $commands );
-foreach ( $commands as $i => $command ) {
-	$n = $i + 1;
-	set_progress( $progress, "Fetching and applying patches ($n/$count)..." );
+	set_progress( 60, 'Fetching submodules...' );
 	check_connection();
-	$error = shell_echo( $command[1], $baseEnv + $command[0] );
+	$error = shell_echo( __DIR__ . '/new/submodules.sh', $baseEnv );
 	if ( $error ) {
-		abandon( "Could not apply patch {$patchesApplied[$i]}" );
+		abandon( "Could not fetch submodules" );
 	}
-	$progress += ( $end - $start ) / $count;
-}
 
-$start = 65;
-$end = 75;
-$n = 0;
-$composerInstallRepos = Yaml::parse( file_get_contents( __DIR__ . '/repository-lists/composerinstall.yaml' ) );
+	$start = 60;
+	$end = 65;
+	$progress = $start;
+	$count = count( $commands );
+	foreach ( $commands as $i => $command ) {
+		$n = $i + 1;
+		set_progress( $progress, "Fetching and applying patches ($n/$count)..." );
+		check_connection();
+		$error = shell_echo( $command[1], $baseEnv + $command[0] );
+		if ( $error ) {
+			abandon( "Could not apply patch {$patchesApplied[$i]}" );
+		}
+		$progress += ( $end - $start ) / $count;
+	}
+
+	$start = 65;
+	$end = 75;
+	$n = 0;
+	$composerInstallRepos = Yaml::parse( file_get_contents( __DIR__ . '/repository-lists/composerinstall.yaml' ) );
 // Filter down to repos which are being installed
-$composerInstallRepos = array_values( array_filter(
-	$composerInstallRepos,
-	static function ( string $repo ) use ( $repos ): bool {
-		return isset( $repos[$repo] );
-	}
-) );
-$repoProgress = $start;
-$repoCount = count( $composerInstallRepos );
+	$composerInstallRepos = array_values( array_filter(
+		$composerInstallRepos,
+		static function ( string $repo ) use ( $repos ): bool {
+			return isset( $repos[$repo] );
+		}
+	) );
+	$repoProgress = $start;
+	$repoCount = count( $composerInstallRepos );
 
-$cmds = [];
-$envs = [];
-foreach ( $composerInstallRepos as $repo ) {
-	$cmds[] = __DIR__ . '/new/composerinstall.sh';
-	$envs[] = $baseEnv + [
+	$cmds = [];
+	$envs = [];
+	foreach ( $composerInstallRepos as $repo ) {
+		$cmds[] = __DIR__ . '/new/composerinstall.sh';
+		$envs[] = $baseEnv + [
+				// Variable used by composer itself, not our script
+				'COMPOSER_HOME' => __DIR__ . '/composer',
+				'REPO_TARGET' => $repos[$repo],
+			];
+	}
+
+	set_progress( $repoProgress, "Fetching dependencies ($n/$repoCount)..." );
+
+	shell_echo_multi(
+		$cmds, $envs,
+		static function () use ( $start, $end, &$n, &$repoProgress, $repoCount ) {
+			$repoProgress += ( $end - $start ) / $repoCount;
+			$n++;
+			set_progress( $repoProgress, "Fetching dependencies ($n/$repoCount)..." );
+		},
+		static function ( int $error, $cmd, $env ) {
+			abandon( "Could not fetch dependencies for <em>{$env['REPO_TARGET']}</em>" );
+		}
+	);
+
+	set_progress( 75, 'Installing your wiki...' );
+
+	check_connection();
+	$error = shell_echo( __DIR__ . '/new/install.sh',
+		$baseEnv + [
+			'WIKINAME' => $wikiName,
+			'SERVER' => $server,
+			'SERVERPATH' => $serverPath,
+			'LANGUAGE' => $language,
+			'REPOSITORIES' => $reposString,
+			'DEFAULT_SKIN' => $defaultSkin,
+			'DB_USER' => getenv( 'DB_USER' ),
+			'DB_PASS' => getenv( 'DB_PASS' ),
+			'DB_DATABASE' => getenv( 'DB_DATABASE' ),
+			'DB_HOST' => getenv( 'DB_HOST' ),
+		]
+	);
+	if ( $error ) {
+		abandon( "Could not install wiki" );
+	}
+
+	set_progress( 90, 'Setting up wiki content...' );
+
+	check_connection();
+	$error = shell_echo( __DIR__ . '/new/postinstall.sh',
+		$baseEnv + [
+			'MAINPAGE' => $mainPage,
+			'USE_PROXY' => $useProxy,
+			'USE_TEMPUSER' => !empty( $_POST['tempuser'] ),
+			'USE_INSTANT_COMMONS' => $useInstantCommons,
+			'BUILD_DOCS' => $buildDocs,
+			'REPOSITORIES' => $reposString,
+			// May be required for npm (e.g. if using nvm)
+			'EXTRA_PATH' => implode( ':', $config['extraPaths'] ),
 			// Variable used by composer itself, not our script
 			'COMPOSER_HOME' => __DIR__ . '/composer',
-			'REPO_TARGET' => $repos[$repo],
-		];
-}
-
-set_progress( $repoProgress, "Fetching dependencies ($n/$repoCount)..." );
-
-shell_echo_multi(
-	$cmds, $envs,
-	static function () use ( $start, $end, &$n, &$repoProgress, $repoCount ) {
-		$repoProgress += ( $end - $start ) / $repoCount;
-		$n++;
-		set_progress( $repoProgress, "Fetching dependencies ($n/$repoCount)..." );
-	},
-	static function ( int $error, $cmd, $env ) {
-		abandon( "Could not fetch dependencies for <em>{$env['REPO_TARGET']}</em>" );
+			'SERVERPATH' => $serverPath,
+			'DB_USER' => getenv( 'DB_USER' ),
+			'DB_PASS' => getenv( 'DB_PASS' ),
+			'DB_DATABASE' => getenv( 'DB_DATABASE' ),
+			'DB_HOST' => getenv( 'DB_HOST' ),
+		]
+	);
+	if ( $error ) {
+		abandon( "Could not setup wiki content" );
 	}
-);
 
-set_progress( 75, 'Installing your wiki...' );
+	if ( $announce && count( $linkedTasks ) ) {
+		set_progress( 95, 'Posting to Phabricator...' );
 
-check_connection();
-$error = shell_echo( __DIR__ . '/new/install.sh',
-	$baseEnv + [
-		'WIKINAME' => $wikiName,
-		'SERVER' => $server,
-		'SERVERPATH' => $serverPath,
-		'LANGUAGE' => $language,
-		'REPOSITORIES' => $reposString,
-		'DEFAULT_SKIN' => $defaultSkin,
-		'DB_USER' => getenv( 'DB_USER' ),
-		'DB_PASS' => getenv( 'DB_PASS' ),
-		'DB_DATABASE' => getenv( 'DB_DATABASE' ),
-		'DB_HOST' => getenv( 'DB_HOST' ),
-	]
-);
-if ( $error ) {
-	abandon( "Could not install wiki" );
-}
-
-set_progress( 90, 'Setting up wiki content...' );
-
-check_connection();
-$error = shell_echo( __DIR__ . '/new/postinstall.sh',
-	$baseEnv + [
-		'MAINPAGE' => $mainPage,
-		'USE_PROXY' => $useProxy,
-		'USE_TEMPUSER' => !empty( $_POST['tempuser'] ),
-		'USE_INSTANT_COMMONS' => $useInstantCommons,
-		'BUILD_DOCS' => $buildDocs,
-		'REPOSITORIES' => $reposString,
-		// May be required for npm (e.g. if using nvm)
-		'EXTRA_PATH' => implode( ':', $config['extraPaths'] ),
-		// Variable used by composer itself, not our script
-		'COMPOSER_HOME' => __DIR__ . '/composer',
-		'SERVERPATH' => $serverPath,
-		'DB_USER' => getenv( 'DB_USER' ),
-		'DB_PASS' => getenv( 'DB_PASS' ),
-		'DB_DATABASE' => getenv( 'DB_DATABASE' ),
-		'DB_HOST' => getenv( 'DB_HOST' ),
-	]
-);
-if ( $error ) {
-	abandon( "Could not setup wiki content" );
-}
-
-if ( $announce && count( $linkedTasks ) ) {
-	set_progress( 95, 'Posting to Phabricator...' );
-
-	$wikiUrl = "$server$serverPath/" . get_wiki_url( $wiki, $landingPage );
-	foreach ( $linkedTasks as $task ) {
-		try {
-			post_phab_comment(
-				'T' . $task,
-				"Test wiki **created** on [[ $server$serverPath | Patch demo ]]" . ( $creator ? ' by ' . $creator : '' ) . " using patch(es) linked to this task:" .
-				"\n" .
-				"[[ $wikiUrl ]]" .
-				( $hasOOUI ?
-					"\n\n" .
-					"Also created an **OOUI Demos** page:" .
+		$wikiUrl = "$server$serverPath/" . get_wiki_url( $wiki, $landingPage );
+		foreach ( $linkedTasks as $task ) {
+			try {
+				post_phab_comment(
+					'T' . $task,
+					"Test wiki **created** on [[ $server$serverPath | Patch demo ]]" . ( $creator ? ' by ' . $creator : '' ) . " using patch(es) linked to this task:" .
 					"\n" .
-					"$server$serverPath/wikis/$wiki/w/build/ooui/demos"
-					: ""
-				) .
-				( $hasCodex ?
-					"\n\n" .
-					"Also created a **Codex documentation** site:" .
-					"\n" .
-					"$server$serverPath/wikis/$wiki/w/build/codex/docs"
-					: ""
-				)
-			);
-		} catch ( Exception $e ) {
-			warn( "Could not post announcement to Phabricator. See log for details." );
+					"[[ $wikiUrl ]]" .
+					( $hasOOUI ?
+						"\n\n" .
+						"Also created an **OOUI Demos** page:" .
+						"\n" .
+						"$server$serverPath/wikis/$wiki/w/build/ooui/demos"
+						: ""
+					) .
+					( $hasCodex ?
+						"\n\n" .
+						"Also created a **Codex documentation** site:" .
+						"\n" .
+						"$server$serverPath/wikis/$wiki/w/build/codex/docs"
+						: ""
+					)
+				);
+			} catch ( Exception $e ) {
+				warn( "Could not post announcement to Phabricator. See log for details." );
+			}
 		}
+		wiki_add_announced_tasks( $wiki, $linkedTasks );
 	}
-	wiki_add_announced_tasks( $wiki, $linkedTasks );
 }
 
 $timeToCreate = time() - $startTime;

@@ -117,7 +117,7 @@
 		const reposFieldLabel = reposField.getLabel();
 		const isRepoEnabledInCatalyst = ( repo, disableCore = false ) => {
 			return repo === mediawikiCore && disableCore === true ? false :
-				window.pd.catalystRepos.indexOf( repo.toLowerCase() ) !== -1;
+				window.pd.catalystRepos.indexOf( repo ) !== -1;
 		};
 		const setupRepoForCatalyst = ( option ) => {
 			const repo = option.data;

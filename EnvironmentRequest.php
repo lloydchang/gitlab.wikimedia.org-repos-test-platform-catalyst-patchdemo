@@ -18,21 +18,30 @@ class EnvironmentRequest implements JsonSerializable {
 		return $this;
 	}
 
-	public function withCoreRef( string $ref ): EnvironmentRequest {
-		$this->setCoreValue( "ref", $ref );
+	public function withCoreRefs( array $refs ): EnvironmentRequest {
+		$this->setCoreValue( "patches", $refs );
 		return $this;
 	}
 
-	public function withExtension( string $extension, string $ref = null ): EnvironmentRequest {
+	public function withExtension( string $extension, array $refs = null ): EnvironmentRequest {
 		$extConfig = [ "enable" => true ];
-		if ( $ref !== null ) {
-			$extConfig += [ "ref" => $ref ];
+		if ( $refs !== null ) {
+			$extConfig += [ "patches" => $refs ];
 		}
 		$this->values["extensions"][$extension] = $extConfig;
 		return $this;
 	}
 
-	private function setCoreValue( string $key, string $value ): void {
+	public function withSkin( string $skin, array $refs = null ): EnvironmentRequest {
+		$skinConfig = [ "enable" => true ];
+		if ( $refs !== null ) {
+			$skinConfig += [ "patches" => $refs ];
+		}
+		$this->values["skins"][$skin] = $skinConfig;
+		return $this;
+	}
+
+	private function setCoreValue( string $key, mixed $value ): void {
 		$this->values["mediawikiCore"][$key] = $value;
 	}
 

@@ -16,7 +16,8 @@ ingress:
 app:
   db:
     host: mariadb
-  catalystApiUrl: https://api.catalyst.wmcloud.org/api
+  catalystApiUrl: https://api.catalyst.wmcloud.org
+  catalystApiToken: ''
 
 mariadb:
   auth:
