@@ -33,7 +33,7 @@ class Catalyst {
 	public function getChart( string $chartName ): array {
 		return $this->withErr(
 			function () use ( $chartName ) {
-				return $this->httpClient->request( 'GET', "$this->baseUrl/charts/" . $chartName )->toArray();
+				return $this->httpClient->request( 'GET', "$this->baseUrl/charts/$chartName" )->toArray();
 			},
 			static function ( $_ ) {
 				return [];

@@ -254,7 +254,8 @@ echo new OOUI\FormLayout( [
 					new OOUI\CheckboxInputWidget( [
 						'name' => 'proxy',
 						'value' => 1,
-						'selected' => false
+						'selected' => false,
+						'classes' => [ 'form-proxy' ]
 					] ),
 					[
 						'label' => 'Proxy articles from wikipedia.org',
@@ -267,7 +268,8 @@ echo new OOUI\FormLayout( [
 					new OOUI\CheckboxInputWidget( [
 						'name' => 'docs',
 						'value' => 1,
-						'selected' => false
+						'selected' => false,
+						'classes' => [ 'form-docs' ]
 					] ),
 					[
 						'label' => "Build core documentation",
@@ -278,7 +280,8 @@ echo new OOUI\FormLayout( [
 					new OOUI\CheckboxInputWidget( [
 						'name' => 'tempuser',
 						'value' => 1,
-						'selected' => false
+						'selected' => false,
+						'classes' => [ 'form-tempuser' ]
 					] ),
 					[
 						'label' => "Enable temporary user account creation (IP\u{00A0}Masking)",
