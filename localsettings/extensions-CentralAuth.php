@@ -16,3 +16,5 @@ $wgConf->settings = [
 ];
 
 $wgCentralAuthEnableGlobalRenameRequest = true;
+
+$wgGroupPermissions['sysop']['centralauth-rename'] = true;
