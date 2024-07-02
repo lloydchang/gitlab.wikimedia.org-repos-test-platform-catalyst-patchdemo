@@ -19,6 +19,8 @@
 		const proxyInput = OO.ui.infuse( $( '.form-proxy' ) );
 		const docsInput = OO.ui.infuse( $( '.form-docs' ) );
 		const tempuserInput = OO.ui.infuse( $( '.form-tempuser' ) );
+		const submit = OO.ui.infuse( $( '.form-submit' ) );
+		const patchesLayout = OO.ui.infuse( $( '.form-patches-layout' ) );
 		const announceLayout = $( '.form-announce' ).length ? OO.ui.infuse( $( '.form-announce-layout' ) ) : null;
 		const backendInput = $formBackend.length ? OO.ui.infuse( $formBackend ) : null;
 		let catalystSelected = backendInput && backendInput.isSelected();
@@ -48,11 +50,10 @@
 				}
 			}
 		};
-		const setupPatchesInputs = () => {
-			const submit = OO.ui.infuse( $( '.form-submit' ) );
-			const patchesLayout = OO.ui.infuse( $( '.form-patches-layout' ) );
-
+		const setupSubmit = () => {
 			form.addEventListener( 'submit', ( e ) => {
+				// fields must be enabled for data to be submitted
+				toggleWidgetsForCatalyst( false );
 				// Blur is not fired on patchesInput, so call manually
 				patchesInput.doInputEnter();
 
@@ -264,7 +265,7 @@
 			notifField.$field.empty().append( notifToggle.$element );
 		};
 
-		setupPatchesInputs();
+		setupSubmit();
 		if ( announceLayout ) {
 			setupAnnounceInput();
 		}

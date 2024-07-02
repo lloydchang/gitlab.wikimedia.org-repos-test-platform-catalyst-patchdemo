@@ -24,7 +24,7 @@ $startTime = time();
 
 $branch = trim( $_POST['branch'] );
 $patches = trim( $_POST['patches'] );
-$useCatalystBackend = trim( $_POST['backend'] );
+$useCatalystBackend = isset( $_POST['backend'] ) ? trim( $_POST['backend'] ) : false;
 $announce = !empty( $_POST['announce'] );
 $landingPage = trim( $_POST['landingPage'] ) ? trim( $_POST['landingPage'] ) : null;
 $language = trim( $_POST['language'] );
