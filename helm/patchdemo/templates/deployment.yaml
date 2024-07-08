@@ -1,3 +1,17 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "patchdemo.fullname" . }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+    limits:
+      storage: 80Gi
+  volumeMode: Filesystem
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -33,5 +47,13 @@ spec:
               value: "{{ .Values.app.catalystApiUrl }}"
             - name: CATALYST_API_TOKEN
               value: "{{ .Values.app.catalystApiToken }}"
+          volumeMounts:
+            - name: wikis
+              mountPath: var/www/html/wikis
+      volumes:
+        - name: wikis
+          persistentVolumeClaim:
+            claimName: {{ include "patchdemo.fullname" . }}
+
 
 
