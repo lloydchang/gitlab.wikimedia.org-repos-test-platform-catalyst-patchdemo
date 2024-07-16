@@ -1,4 +1,4 @@
-The public https://patchdemo.wmflabs.org/ website currently runs on an `g4.cores4.ram8.disk20` instance at [Wikimedia Cloud VPS](https://wikitech.wikimedia.org/wiki/Portal:Cloud_VPS).
+The public https://patchdemo.wmflabs.org/ website currently runs on an `g4.cores8.ram16.disk20` instance at [Wikimedia Cloud VPS](https://wikitech.wikimedia.org/wiki/Portal:Cloud_VPS).
 
 For extra space an additional 80GiB volume is attached to `/dev/sdb` and mounted as `/srv`.
 
