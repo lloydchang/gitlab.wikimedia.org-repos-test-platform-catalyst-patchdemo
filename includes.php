@@ -689,20 +689,3 @@ function get_server_path(): string {
 function json_encode_clean( $value ) {
 	return json_encode( $value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
 }
-
-function patchdemo_db_space(): string {
-	global $mysqli;
-	$stmt = $mysqli->prepare( 'SHOW VARIABLES WHERE Variable_Name = "datadir"' );
-	$stmt->execute();
-	$res = $stmt->get_result();
-	$data = $res->fetch_assoc();
-	$stmt->close();
-	$dir = $data['Value'];
-	$bytes = disk_free_space( $dir );
-	return round( $bytes / 1024 / 1024 / 1024, 1 );
-}
-
-function patchdemo_file_space(): string {
-	$bytes = disk_free_space( 'wikis' );
-	return round( $bytes / 1024 / 1024 / 1024, 1 );
-}
