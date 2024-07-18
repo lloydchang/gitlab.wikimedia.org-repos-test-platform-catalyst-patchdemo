@@ -1,5 +1,7 @@
 The public https://patchdemo.wmflabs.org/ website currently runs on an `g4.cores8.ram16.disk20` instance at [Wikimedia Cloud VPS](https://wikitech.wikimedia.org/wiki/Portal:Cloud_VPS).
 
+16GB RAM is required to avoid occasional OOM issues in the `rdfind` cron job (#607), in MySQL under heavy load (#612), and when building wikis with the Codex library (#622).
+
 For extra space an additional 80GiB volume is attached to `/dev/sdb` and mounted as `/srv`.
 
 This requires some extra setup to ensure that wiki and mysql data is stored on this volume, and was originally implemented in issues #233 and #599.
