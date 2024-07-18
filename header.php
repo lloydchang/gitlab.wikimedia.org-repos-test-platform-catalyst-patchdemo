@@ -36,6 +36,10 @@ echo '
 						<a href="https://gitlab.wikimedia.org/repos/ci-tools/patchdemo">Source code</a>
 						&bullet;
 						<a href="https://gitlab.wikimedia.org/repos/ci-tools/patchdemo/-/issues">Issues</a>' .
+						( $config['statusUrl'] ?
+							' &bullet; <a href="' . htmlspecialchars( $config['statusUrl'] ) . '">Status</a>' :
+							''
+							) .
 					'</div>
 				</div>
 			</div>
