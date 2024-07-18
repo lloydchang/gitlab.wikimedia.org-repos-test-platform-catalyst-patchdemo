@@ -73,6 +73,9 @@ RewriteOptions Inherit
 RewriteEngine On
 RewriteCond \"%{QUERY_STRING}\" \"UrlShortener\"
 RewriteRule \".\"               \"-\"   [F,L]
+# More bot mitigations (#612)
+RewriteCond %{HTTP_USER_AGENT} \"(Applebot|AhrefsBot|Amazonbot|DotBot|Googlebot|Bytespider|ClaudeBot|YandexRenderResourcesBot|facebook)\" [NC]
+RewriteRule \".\"               \"-\"   [F,L]
 </Directory>" > /etc/apache2/sites-available/patchdemo.conf
 
 # Support Parsoid URLs for pages with slashes in the title.
