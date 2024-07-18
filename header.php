@@ -36,10 +36,6 @@ echo '
 						<a href="https://gitlab.wikimedia.org/repos/ci-tools/patchdemo">Source code</a>
 						&bullet;
 						<a href="https://gitlab.wikimedia.org/repos/ci-tools/patchdemo/-/issues">Issues</a>' .
-						( $auth->canAdmin() ?
-							' &bullet; <a href="editcounts.php">Edit counts</a>' :
-							''
-							) .
 					'</div>
 				</div>
 			</div>
