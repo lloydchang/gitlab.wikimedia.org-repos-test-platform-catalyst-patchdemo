@@ -426,13 +426,6 @@ function shell_echo_multi( array $cmds, array $envs = [], callable $cb = null, c
 	return $error;
 }
 
-function shell( $cmd, array $env = [] ): ?string {
-	$process = Process::fromShellCommandline( $cmd, null, $env );
-	$process->setTimeout( null );
-	$error = $process->run();
-	return $error ? null : $process->getOutput();
-}
-
 /**
  * Delete a wiki.
  *
