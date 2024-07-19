@@ -11,8 +11,8 @@ sudo apt-get update
 # Update NPM
 sudo npm install npm@latest
 # Let www-data run NPM
-sudo mkdir -p /var/www/.npm /var/www/.config
-sudo chown www-data: /var/www/.npm /var/www/.config
+sudo mkdir -p /var/www/.npm /var/www/.config /var/www/.cache
+sudo chown www-data: /var/www/.npm /var/www/.config /var/www/.cache
 # We used to run NPM as root
 sudo chown -R www-data: node_modules
 
