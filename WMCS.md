@@ -1,4 +1,4 @@
-The public https://patchdemo.wmflabs.org/ website currently runs on an `g4.cores8.ram16.disk20` instance at [Wikimedia Cloud VPS](https://wikitech.wikimedia.org/wiki/Portal:Cloud_VPS).
+The public https://patchdemo.wmcloud.org/ website currently runs on an `g4.cores8.ram16.disk20` instance at [Wikimedia Cloud VPS](https://wikitech.wikimedia.org/wiki/Portal:Cloud_VPS).
 
 16GB RAM is required to avoid occasional OOM issues in the `rdfind` cron job (#607), in MySQL under heavy load (#612), and when building wikis with the Codex library (#622).
 
