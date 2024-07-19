@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "65926f3c5549270f7d23dd80b977985d",
+    "content-hash": "3145cce4fda1f374c0bbd40000459253",
     "packages": [
         {
             "name": "buildr/foundation",
@@ -68,16 +68,16 @@
         },
         {
             "name": "mediawiki/oauthclient",
-            "version": "2.1.0",
+            "version": "2.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/wikimedia/mediawiki-oauthclient-php.git",
-                "reference": "4af220c3193b16b0294c2b668ccdcf0e6334f6bf"
+                "reference": "ab3a00e6cd77c62e5f50f82e1d11c4f05a98c7dc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wikimedia/mediawiki-oauthclient-php/zipball/4af220c3193b16b0294c2b668ccdcf0e6334f6bf",
-                "reference": "4af220c3193b16b0294c2b668ccdcf0e6334f6bf",
+                "url": "https://api.github.com/repos/wikimedia/mediawiki-oauthclient-php/zipball/ab3a00e6cd77c62e5f50f82e1d11c4f05a98c7dc",
+                "reference": "ab3a00e6cd77c62e5f50f82e1d11c4f05a98c7dc",
                 "shasum": ""
             },
             "require": {
@@ -88,9 +88,9 @@
             },
             "require-dev": {
                 "mediawiki/mediawiki-codesniffer": "43.0.0",
-                "mediawiki/minus-x": "1.1.1",
+                "mediawiki/minus-x": "1.1.3",
                 "php-parallel-lint/php-console-highlighter": "1.0.0",
-                "php-parallel-lint/php-parallel-lint": "1.3.2",
+                "php-parallel-lint/php-parallel-lint": "1.4.0",
                 "phpunit/phpunit": "9.6.16"
             },
             "type": "library",
@@ -124,7 +124,7 @@
                 "issues": "https://phabricator.wikimedia.org/tag/oauth/",
                 "source": "https://github.com/wikimedia/oauthclient-php/"
             },
-            "time": "2024-03-18T18:25:41+00:00"
+            "time": "2024-07-19T13:42:24+00:00"
         },
         {
             "name": "oojs/oojs-ui",
