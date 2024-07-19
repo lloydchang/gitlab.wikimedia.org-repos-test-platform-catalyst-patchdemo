@@ -6,8 +6,6 @@ $config = [
 	'gerritUrl' => 'https://gerrit.wikimedia.org',
 	// Link to a status page, e.g. on https://grafana.wmcloud.org/
 	'statusUrl' => '',
-	// Message shown below the main form (allows HTML formatting)
-	'banner' => '',
 	// Require that patches are V+2 before building the wiki
 	'requireVerified' => true,
 	// Additional paths, e.g. for npm when using nvm
