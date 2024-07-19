@@ -145,7 +145,7 @@ echo "$MAINPAGE" | php $PATCHDEMO/wikis/$NAME/w/maintenance/edit.php "$MAINPAGET
 
 # update caches after import
 php $PATCHDEMO/wikis/$NAME/w/maintenance/rebuildrecentchanges.php
-php $PATCHDEMO/wikis/$NAME/w/maintenance/initSiteStats.php
+php $PATCHDEMO/wikis/$NAME/w/maintenance/initSiteStats.php --update
 
 # copy logo
 cp $PATCHDEMO/images/logo.svg $PATCHDEMO/wikis/$NAME/w/
