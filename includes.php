@@ -14,9 +14,7 @@ if ( defined( 'PATCH_DEMO_JSON_API' ) ) {
 	ini_set( 'display_errors', 1 );
 	ini_set( 'display_startup_errors', 1 );
 }
-// Silence PHP 8.2 deprecation warnings from mediawiki/oauthclient-php until 2.1.0 is released
-// https://gerrit.wikimedia.org/r/c/mediawiki/oauthclient-php/+/1012419
-error_reporting( E_ALL & ~E_DEPRECATED );
+error_reporting( E_ALL );
 
 include_once './vendor/autoload.php';
 include_once 'errorutils.php';
