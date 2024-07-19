@@ -57,6 +57,7 @@ function check_connection() {
 
 // Don't kill the process automatcally
 ignore_user_abort( true );
+set_time_limit( 0 );
 
 // Create an entry for the wiki before we have resolved patches.
 // Will be updated later.
