@@ -253,11 +253,11 @@ echo new OOUI\FormLayout( [
 					new OOUI\CheckboxInputWidget( [
 						'name' => 'tempuser',
 						'value' => 1,
-						'selected' => false
+						'selected' => true
 					] ),
 					[
 						'label' => "Enable temporary user account creation (IP\u{00A0}Masking)",
-						'help' => 'Anonymous editors will have a temporary user account created for them.',
+						'help' => 'Anonymous editors will have a temporary user account created for them on edit.',
 						'helpInline' => true,
 						'align' => 'left',
 					]
