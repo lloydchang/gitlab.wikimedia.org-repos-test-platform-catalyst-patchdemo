@@ -24,7 +24,7 @@ class Catalyst {
 			'max_redirects' => 1,
 			'headers' => [
 				'Accept' => 'application/json',
-				'Authorization' => "ApiKey $apiToken",
+				'Authorization' => "ApiToken $apiToken",
 			],
 		] );
 		$this->httpClient = $httpClient;
