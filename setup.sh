@@ -6,13 +6,13 @@ sudo apt-get install composer npm unzip rdfind curl
 #Node 18
 sudo curl -fsSL https://deb.nodesource.com/setup_18.x | bash - &&\
 sudo apt-get update
-sudo apt-get install -y nodejs
+
 
 # Update NPM
 sudo npm install npm@latest
 # Let www-data run NPM
-sudo mkdir -p /var/www/.npm /var/www/.config
-sudo chown www-data: /var/www/.npm /var/www/.config
+sudo mkdir -p /var/www/.npm /var/www/.config /var/www/.cache
+sudo chown www-data: /var/www/.npm /var/www/.config /var/www/.cache
 # We used to run NPM as root
 sudo chown -R www-data: node_modules
 
@@ -72,6 +72,9 @@ AllowOverride All
 RewriteOptions Inherit
 RewriteEngine On
 RewriteCond \"%{QUERY_STRING}\" \"UrlShortener\"
+RewriteRule \".\"               \"-\"   [F,L]
+# More bot mitigations (#612)
+RewriteCond %{HTTP_USER_AGENT} \"(Applebot|AhrefsBot|Amazonbot|DotBot|Googlebot|Bytespider|ClaudeBot|YandexRenderResourcesBot|facebook)\" [NC]
 RewriteRule \".\"               \"-\"   [F,L]
 </Directory>" > /etc/apache2/sites-available/patchdemo.conf
 

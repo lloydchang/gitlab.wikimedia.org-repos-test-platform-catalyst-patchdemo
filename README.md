@@ -4,7 +4,7 @@
 
 With **Patch demo** you can quickly spin up a MediaWiki instance running a particular patch from Wikimedia Gerrit. (An idea was first described in [T76245](https://phabricator.wikimedia.org/T76245).)
 
-A public instance is available at <https://patchdemo.wmflabs.org/>. You will need a Wikimedia account to use it.
+A public instance is available at <https://patchdemo.wmcloud.org/>. You will need a Wikimedia account to use it.
 
 This project is not secure. You should only install it in disposable virtual machines, and maybe have some monitoring in place in case someone starts mining bitcoin on them.
 

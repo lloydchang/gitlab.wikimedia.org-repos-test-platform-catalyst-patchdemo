@@ -19,7 +19,7 @@ window.PatchSelectWidget = function PatchSelectWidget( config ) {
 	} );
 
 	// Parent constructor
-	window.PatchSelectWidget.super.call( this, $.extend( {
+	window.PatchSelectWidget.super.call( this, Object.assign( {
 		allowArbitrary: true,
 		allowDisplayInvalidTags: true,
 		selected: config.value && config.value.split( '\n' )
@@ -43,7 +43,6 @@ window.PatchSelectWidget.static.patchCache = {};
 window.PatchSelectWidget.prototype.getTagInfoFromInput = function ( value ) {
 	value = value || this.input.getValue();
 
-	// eslint-disable-next-line security/detect-non-literal-regexp
 	const gerritUrlPattern = new RegExp( pd.config.gerritUrl + '.*?/([0-9]+(?:/[0-9]+)?)/?(?:\\?.*)?$' );
 
 	value = value.trim();
@@ -104,7 +103,6 @@ window.PatchSelectWidget.prototype.createTagItemWidget = function () {
 	item.setData( { input: patch } );
 
 	patchCache[ patch ] = patchCache[ patch ] || (
-		// eslint-disable-next-line security/detect-unsafe-regex
 		patch.match( /^(I[0-9a-f]+|[0-9]+(,[0-9]+)?)$/ ) ?
 			$.get( 'api.php', { action: 'patchmeta', patch: patch } ) :
 			$.Deferred().reject( 'Invalid patch number' ).promise()

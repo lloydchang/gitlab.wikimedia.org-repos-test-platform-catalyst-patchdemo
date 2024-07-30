@@ -8,7 +8,7 @@ window.DetailsFieldLayout = function DetailsFieldLayout( fieldWidget, config ) {
 	config = config || {};
 
 	// Parent constructor
-	window.DetailsFieldLayout.super.call( this, fieldWidget, $.extend( {}, config, {
+	window.DetailsFieldLayout.super.call( this, fieldWidget, Object.assign( {}, config, {
 		// <summary> tag is no longer clickable if there's a <label> inside,
 		// use a <span> instead
 		$label: $( '<span>' )

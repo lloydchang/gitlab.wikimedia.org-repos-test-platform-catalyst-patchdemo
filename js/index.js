@@ -134,10 +134,10 @@
 			}
 		};
 
-		const isRepoEnabledInCatalyst = ( repo, disableCore = false ) => {
-			return repo === mediawikiCore && disableCore === true ? false :
-				window.pd.catalystRepos.indexOf( repo ) !== -1;
-		};
+		const isRepoEnabledInCatalyst = ( repo, disableCore = false ) => (
+			repo === mediawikiCore && disableCore === true ? false :
+				window.pd.catalystRepos.indexOf( repo ) !== -1
+		);
 
 		const setupRepoForCatalyst = ( option ) => {
 			const repo = option.data;

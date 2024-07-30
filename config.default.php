@@ -5,8 +5,8 @@ $config = [
 	'phabricatorUrl' => 'https://phabricator.wikimedia.org',
 	'gerritUrl' => 'https://gerrit.wikimedia.org',
 	'catalystApi' => 'https://api.catalyst.wmcloud.org',
-	// Message shown below the main form (allows HTML formatting)
-	'banner' => '',
+	// Link to a status page, e.g. on https://grafana.wmcloud.org/
+	'statusUrl' => '',
 	// Require that patches are V+2 before building the wiki
 	'requireVerified' => true,
 	// Additional paths, e.g. for npm when using nvm
