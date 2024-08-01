@@ -60,3 +60,6 @@ ALTER TABLE `wikis`
 
 ALTER TABLE `patches`
 	ADD COLUMN IF NOT EXISTS `repo` TEXT NULL AFTER `patch`;
+
+ALTER TABLE `wikis`
+    ADD COLUMN IF NOT EXISTS `backend` VARCHAR(16) NOT NULL DEFAULT 'patchdemo' AFTER `created`;

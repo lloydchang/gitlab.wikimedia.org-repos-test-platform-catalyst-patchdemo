@@ -33,6 +33,7 @@ $buildDocs = !empty( $_POST['docs'] );
 $wiki = substr( md5( $branch . $patches . time() ), 0, 10 );
 $server = get_server();
 $serverPath = get_server_path();
+$backend = $useCatalystBackend ? 'catalyst' : 'patchdemo';
 
 $branchDesc = preg_replace( '/^origin\//', '', $branch );
 
@@ -64,7 +65,7 @@ set_time_limit( 0 );
 
 // Create an entry for the wiki before we have resolved patches.
 // Will be updated later.
-insert_wiki_data( $wiki, $creator, $created, $branchDesc, $landingPage );
+insert_wiki_data( $wiki, $creator, $created, $backend, $branchDesc, $landingPage );
 
 function warn( string $warnHtml ) {
 	$warnJson = json_encode_clean( $warnHtml );
@@ -471,7 +472,7 @@ function get_repo_name( string $repo ): string {
 if ( $useCatalystBackend ) {
 	$catalystApi = Catalyst::newClient( getenv( 'CATALYST_API_TOKEN' ) );
 	$env = new EnvironmentRequest( 'wiki-' . $wiki, 'mediawiki' );
-	$env->withIngress( $wiki . ".catalyst.wmcloud.org" );
+	$env->withIngress( $wiki . '.' . $config['catalystDomainName'] );
 	foreach ( $allowedRepos as $repo ) {
 		$repoRefs = $refs[$repo] ?? null;
 		$repoName = get_repo_name( $repo );
@@ -668,7 +669,7 @@ if ( $useCatalystBackend ) {
 	if ( $announce && count( $linkedTasks ) ) {
 		set_progress( 95, 'Posting to Phabricator...' );
 
-		$wikiUrl = "$server$serverPath/" . get_wiki_url( $wiki, $landingPage );
+		$wikiUrl = get_wiki_url( $wiki, $landingPage );
 		foreach ( $linkedTasks as $task ) {
 			try {
 				post_phab_comment(
@@ -680,14 +681,14 @@ if ( $useCatalystBackend ) {
 						"\n\n" .
 						"Also created an **OOUI Demos** page:" .
 						"\n" .
-						"$server$serverPath/wikis/$wiki/w/build/ooui/demos"
+						get_wiki_url( $wiki, "" ) . "/build/ooui/demos"
 						: ""
 					) .
 					( $hasCodex ?
 						"\n\n" .
 						"Also created a **Codex documentation** site:" .
 						"\n" .
-						"$server$serverPath/wikis/$wiki/w/build/codex/docs"
+						get_wiki_url( $wiki, "" ) . "/build/codex/docs"
 						: ""
 					)
 				);

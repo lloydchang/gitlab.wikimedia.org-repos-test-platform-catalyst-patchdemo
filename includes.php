@@ -55,17 +55,17 @@ function stream_response() {
 	}
 }
 
-function insert_wiki_data( string $wiki, string $creator, int $created, string $branch, ?string $landingPage ) {
+function insert_wiki_data( string $wiki, string $creator, int $created, string $backend, string $branch, ?string $landingPage ) {
 	global $mysqli;
 	$stmt = $mysqli->prepare( '
 		INSERT INTO wikis
-		(wiki, creator, created, branch, landingPage)
-		VALUES(?, ?, FROM_UNIXTIME(?), ?, ?)
+		(wiki, creator, created, backend, branch, landingPage)
+		VALUES(?, ?, FROM_UNIXTIME(?), ?, ?, ?)
 	' );
 	if ( !$stmt ) {
 		echo $mysqli->error;
 	}
-	$stmt->bind_param( 'ssiss', $wiki, $creator, $created, $branch, $landingPage );
+	$stmt->bind_param( 'ssisss', $wiki, $creator, $created, $backend, $branch, $landingPage );
 	$stmt->execute();
 	$stmt->close();
 }
@@ -167,7 +167,22 @@ function get_wiki_data_from_row( array $data ): array {
 }
 
 function get_wiki_url( string $wiki, ?string $landingPage ): string {
-	return 'wikis/' . $wiki . ( $landingPage ? '/wiki/' . $landingPage : '/w' );
+	global $config, $mysqli;
+	$stmt = $mysqli->prepare( 'SELECT backend FROM wikis WHERE wiki = ?' );
+	$stmt->bind_param( 's', $wiki );
+	$stmt->execute();
+	$res = $stmt->get_result();
+	$backend = $res->fetch_assoc()["backend"];
+	$stmt->close();
+
+	if ( $backend == 'catalyst' ) {
+		$wikiUrl = 'https://' . $wiki . '.' . $config['catalystDomainName'];
+	} else {
+		$server = get_server();
+		$serverPath = get_server_path();
+		$wikiUrl = "$server$serverPath/" . 'wikis';
+	}
+	return $wikiUrl . ( $landingPage ? '/wiki/' . $landingPage : '/w' );
 }
 
 function get_wiki_link( string $wiki, ?string $landingPage, bool $ready = true ): string {

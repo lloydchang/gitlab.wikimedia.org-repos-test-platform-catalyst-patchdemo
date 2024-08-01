@@ -5,6 +5,7 @@ $config = [
 	'phabricatorUrl' => 'https://phabricator.wikimedia.org',
 	'gerritUrl' => 'https://gerrit.wikimedia.org',
 	'catalystApi' => 'https://api.catalyst.wmcloud.org',
+	'catalystDomainName' => 'catalyst.wmcloud.org',
 	// Link to a status page, e.g. on https://grafana.wmcloud.org/
 	'statusUrl' => '',
 	// Require that patches are V+2 before building the wiki

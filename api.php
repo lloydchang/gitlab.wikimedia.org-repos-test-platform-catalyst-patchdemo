@@ -77,16 +77,13 @@ switch ( $_GET['action'] ) {
 			error( $mysqli->error );
 		}
 
-		$server = get_server();
-		$serverPath = get_server_path();
-
 		while ( $wiki = $results->fetch_assoc() ) {
 			$data[] = [
 				'wiki' => $wiki['wiki'],
 				'creator' => $wiki['creator'],
 				'created' => date( 'Y-m-d H:i:s', $wiki['created'] ),
 				'patches' => json_decode( $wiki['patches'] ),
-				'url' => "$server$serverPath/" . get_wiki_url( $wiki['wiki'], $wiki['landingPage'] ),
+				'url' => get_wiki_url( $wiki['wiki'], $wiki['landingPage'] ),
 			];
 		}
 
