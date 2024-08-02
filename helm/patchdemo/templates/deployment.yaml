@@ -3,8 +3,6 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ include "patchdemo.fullname" . }}
 spec:
-  accessModes:
-    - ReadWriteMany
   resources:
     requests:
       storage: 1Gi
