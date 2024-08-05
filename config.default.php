@@ -24,4 +24,8 @@ $config = [
 	],
 	// Conduit API key for bot cross-posting to Phabricator
 	'conduitApiKey' => null,
+	// Read only mode disables wiki creation
+	'readOnly' => false,
+	'readOnlyText' => 'This patchdemo instance is in read only mode. You may visit previously created wikis, but no ' .
+	 'new wikis can be created.',
 ];
