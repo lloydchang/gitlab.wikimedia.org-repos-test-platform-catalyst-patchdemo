@@ -27,6 +27,7 @@ if ( file_exists( 'config.php' ) ) {
 }
 
 $ansiConverter = new AnsiToHtmlConverter( new SolarizedXTermTheme() );
+$catalystApi = Catalyst::newClient( getenv( 'CATALYST_API_TOKEN' ) );
 
 $basePath = dirname( $_SERVER['SCRIPT_NAME'] );
 if ( $basePath === '/' ) {
@@ -66,6 +67,14 @@ function insert_wiki_data( string $wiki, string $creator, int $created, string $
 		echo $mysqli->error;
 	}
 	$stmt->bind_param( 'ssisss', $wiki, $creator, $created, $backend, $branch, $landingPage );
+	$stmt->execute();
+	$stmt->close();
+}
+
+function wiki_add_catalyst_id( string $wiki, int $id ) {
+	global $mysqli;
+	$stmt = $mysqli->prepare( 'UPDATE wikis SET catalystId = ? WHERE wiki = ?' );
+	$stmt->bind_param( 'is', $id, $wiki );
 	$stmt->execute();
 	$stmt->close();
 }
@@ -117,7 +126,7 @@ function get_wiki_data( string $wiki ): array {
 	global $mysqli;
 
 	$stmt = $mysqli->prepare( '
-		SELECT wiki, creator, UNIX_TIMESTAMP( created ) created, patches, branch, repos, announcedTasks, landingPage, timeToCreate, deleted, ready
+		SELECT wiki, creator, UNIX_TIMESTAMP( created ) created, backend, catalystId, patches, branch, repos, announcedTasks, landingPage, timeToCreate, deleted, ready
 		FROM wikis WHERE wiki = ?
 	' );
 	if ( !$stmt ) {
@@ -451,6 +460,7 @@ function shell_echo_multi( array $cmds, array $envs = [], callable $cb = null, c
  */
 function delete_wiki( string $wiki, string $serverUri = null ): ?string {
 	global $mysqli;
+	global $catalystApi;
 
 	if ( !$serverUri ) {
 		$serverUri = get_server() . get_server_path();
@@ -462,18 +472,22 @@ function delete_wiki( string $wiki, string $serverUri = null ): ?string {
 		return 'Wiki already deleted.';
 	}
 
-	$error = shell_echo( __DIR__ . '/deletewiki.sh',
-		[
-			'PATCHDEMO' => __DIR__,
-			'WIKI' => $wiki,
-			'DB_USER' => getenv( 'DB_USER' ),
-			'DB_PASS' => getenv( 'DB_PASS' ),
-			'DB_DATABASE' => getenv( 'DB_DATABASE' ),
-			'DB_HOST' => getenv( 'DB_HOST' ),
-		]
-	);
-	if ( $error ) {
-		return 'Could not delete wiki files or database.';
+	if ( $wikiData['backend'] == 'catalyst' ) {
+		$catalystApi->deleteEnvironment( $wikiData['catalystId'] );
+	} else {
+		$error = shell_echo( __DIR__ . '/deletewiki.sh',
+			[
+				'PATCHDEMO' => __DIR__,
+				'WIKI' => $wiki,
+				'DB_USER' => getenv( 'DB_USER' ),
+				'DB_PASS' => getenv( 'DB_PASS' ),
+				'DB_DATABASE' => getenv( 'DB_DATABASE' ),
+				'DB_HOST' => getenv( 'DB_HOST' ),
+			]
+		);
+		if ( $error ) {
+			return 'Could not delete wiki files or database.';
+		}
 	}
 
 	foreach ( $wikiData['announcedTasks'] as $task ) {
@@ -605,7 +619,8 @@ function post_phab_comment( string $id, string $comment ) {
 }
 
 function get_catalyst_repos(): array {
-	$catalystApi = Catalyst::newClient( $config['catalystApiToken'] );
+	global $catalystApi;
+
 	$mediawikiChartValues = $catalystApi->getChart( 'mediawiki' );
 	if ( count( $mediawikiChartValues ) < 1 ) {
 		return [];

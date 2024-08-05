@@ -484,7 +484,9 @@ if ( $useCatalystBackend ) {
 			$env->withExtension( $repoName, $repoRefs );
 		}
 	}
-	$catalystApi->postEnvironment( $env );
+	$res = $catalystApi->postEnvironment( $env );
+	$catalystId = $res["id"];
+	wiki_add_catalyst_id( $wiki, $catalystId );
 } else {
 	foreach ( $repos as $source => $target ) {
 		$cmds[] = __DIR__ . '/new/updaterepos.sh';

@@ -52,14 +52,25 @@ class Catalyst {
 		);
 	}
 
-	public function postEnvironment( EnvironmentRequest $env ): void {
-		$this->withErr(
+	public function deleteEnvironment( string $id ): array {
+		return $this->withErr(
+			function () use ( $id ) {
+				return $this->httpClient->request( 'DELETE', "$this->baseUrl/environments/$id" )->toArray();
+			},
+			static function ( $_ ) {
+				return [];
+			}
+		);
+	}
+
+	public function postEnvironment( EnvironmentRequest $env ): array {
+		return $this->withErr(
 			function () use ( $env ) {
 				$envJson = json_encode( $env, JSON_THROW_ON_ERROR );
-				$res = $this->httpClient->request( 'POST', "$this->baseUrl/environments", [
+				return $this->httpClient->request( 'POST', "$this->baseUrl/environments", [
 					'headers' => [ 'Content-Type' => 'application/json' ],
 					'body' => $envJson,
-				] );
+				] )->toArray();
 			},
 			static function ( $e ) {
 				throw $e;

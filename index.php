@@ -366,7 +366,7 @@ $wikiPatches = [];
 $username = $auth->getUserName();
 
 $stmt = $mysqli->prepare( '
-	SELECT wiki, creator, UNIX_TIMESTAMP( created ) created, patches, branch, repos, announcedTasks, landingPage, timeToCreate, deleted, ready
+	SELECT wiki, creator, UNIX_TIMESTAMP( created ) created, backend, patches, branch, repos, announcedTasks, landingPage, timeToCreate, deleted, ready
 	FROM wikis
 	WHERE !deleted
 	ORDER BY IF( creator = ?, 1, 0 ) DESC, created DESC
@@ -509,6 +509,7 @@ while ( $data = $results->fetch_assoc() ) {
 		'<td data-label="Linked tasks" class="linkedTasks">' . $linkedTasks . '</td>' .
 		'<td data-label="Repos" class="repos">' . $repos . '</td>' .
 		'<td data-label="Time" class="date">' . date( 'Y-m-d H:i:s', $wikiData[ 'created' ] ) . '</td>' .
+		'<td data-label="Backend" class="backend">' . $wikiData[ 'backend' ] . '</td>' .
 		( $auth->useOAuth() ? '<td data-label="Creator">' . ( $creator ? user_link( $creator ) : '?' ) . '</td>' : '' ) .
 		( $auth->canAdmin() ? '<td data-label="Time to create">' . ( $wikiData['timeToCreate'] ? format_duration( $wikiData['timeToCreate'] ) : '' ) . '</td>' : '' ) .
 		( count( $actions ) ?
@@ -548,6 +549,7 @@ echo '<table class="wikis">' .
 		'<th>Linked tasks<br /><em>✓=Resolved ✗=Declined/Invalid</em></th>' .
 		'<th>Repos</th>' .
 		'<th>Time</th>' .
+		'<th>Backend</th>' .
 		( $auth->useOAuth() ? '<th>Creator</th>' : '' ) .
 		( $auth->canAdmin() ? '<th><abbr title="Time to create">TTC</abbr></th>' : '' ) .
 		( $anyCanDelete ? '<th>Actions</th>' : '' ) .
