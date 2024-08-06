@@ -1,7 +1,7 @@
 # dependencies of MediaWiki
 sudo apt-get install apache2 default-mysql-server php libapache2-mod-php php-mysql php-intl php-xml php-mbstring php-curl php-gd php-wikidiff2 imagemagick librsvg2-bin lame
 # dependencies of our system
-sudo apt-get install composer npm unzip rdfind curl
+sudo apt-get install composer npm unzip rdfind curl cron
 
 #Node 18
 sudo curl -fsSL https://deb.nodesource.com/setup_18.x | bash - &&\
