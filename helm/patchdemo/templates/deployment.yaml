@@ -50,10 +50,35 @@ spec:
           volumeMounts:
             - name: wikis
               mountPath: var/www/html/wikis
+            - name: log-volume
+              mountPath: /var/log/apache2
+        - name: tail-access-log
+          image: busybox
+          command: ["sh", "-c", "tail -f /var/log/apache2/access.log"]
+          volumeMounts:
+            - name: log-volume
+              mountPath: /var/log/apache2
+        - name: tail-error-log
+          image: busybox
+          command: ["sh", "-c", "tail -f /var/log/apache2/error.log"]
+          volumeMounts:
+            - name: log-volume
+              mountPath: /var/log/apache2
+        - name: tail-other-vhosts-access-log
+          image: busybox
+          command: ["sh", "-c", "tail -f /var/log/apache2/other_vhosts_access.log"]
+          volumeMounts:
+            - name: log-volume
+              mountPath: /var/log/apache2
+      initContainers:
+        - name: init-permissions
+          image: busybox
+          command: ["sh", "-c", "chown -R 33:33 /var/log/apache2"]
+          volumeMounts:
+            - name: log-volume
+              mountPath: /var/log/apache2
       volumes:
         - name: wikis
           persistentVolumeClaim:
             claimName: {{ include "patchdemo.fullname" . }}
-
-
-
+        - name: log-volume
