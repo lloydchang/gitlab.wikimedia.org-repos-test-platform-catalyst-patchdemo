@@ -77,233 +77,243 @@ $presetOptions = array_map( static function ( $data, $preset ) {
 	return $option;
 }, array_keys( $presetLabels ), array_values( $presetLabels ) );
 
-echo new OOUI\FormLayout( [
-	'infusable' => true,
-	'method' => 'POST',
-	'action' => 'new.php',
-	'id' => 'new-form',
-	'classes' => ( $canCreate ? [] : [ 'form-disabled' ] ),
-	'items' => [
-		new OOUI\FieldsetLayout( [
-			'label' => null,
-			'items' => array_filter( [
-				new OOUI\FieldLayout(
-					new OOUI\DropdownInputWidget( [
-						'classes' => [ 'form-branch' ],
-						'name' => 'branch',
-						'options' => $branchOptions,
-						'value' => !empty( $_GET['branch' ] ) ? 'origin/' . $_GET['branch' ] : null
-					] ),
-					[
-						'label' => 'Start with version:',
-						'align' => 'left',
-					]
-				),
-				new OOUI\FieldLayout(
-					new PatchSelectWidget( [
-						'classes' => [ 'form-patches' ],
-						'name' => 'patches',
-						'rows' => 2,
-						'placeholder' => "e.g. 456123",
-						'value' => !empty( $_GET['patches'] ) ? str_replace( ',', "\n", $_GET['patches'] ) : null
-					] ),
-					[
-						'classes' => [ 'form-patches-layout' ],
-						'infusable' => true,
-						'label' => 'Then, apply patches:',
-						'help' => 'Gerrit changeset number or Change-Id, one per line',
-						'helpInline' => true,
-						'align' => 'left',
-					]
-				),
-				$config['conduitApiKey'] ?
+if ( $config['readOnly'] ) {
+	echo new OOUI\MessageWidget( [
+		'type' => 'warning',
+		'label' => new OOUI\HtmlSnippet(
+			$config['readOnlyText']
+		)
+	] );
+} else {
+	echo new OOUI\FormLayout( [
+		'infusable' => true,
+		'method' => 'POST',
+		'action' => 'new.php',
+		'id' => 'new-form',
+		'classes' => ( $canCreate ? [] : [ 'form-disabled' ] ),
+		'items' => [
+			new OOUI\FieldsetLayout( [
+				'label' => null,
+				'items' => array_filter( [
+					new OOUI\FieldLayout(
+						new OOUI\DropdownInputWidget( [
+							'classes' => [ 'form-branch' ],
+							'name' => 'branch',
+							'options' => $branchOptions,
+							'value' => !empty( $_GET['branch' ] ) ? 'origin/' . $_GET['branch' ] : null
+						] ),
+						[
+							'label' => 'Start with version:',
+							'align' => 'left',
+						]
+					),
+					new OOUI\FieldLayout(
+						new PatchSelectWidget( [
+							'classes' => [ 'form-patches' ],
+							'name' => 'patches',
+							'rows' => 2,
+							'placeholder' => "e.g. 456123",
+							'value' => !empty( $_GET['patches'] ) ? str_replace( ',', "\n", $_GET['patches'] ) : null
+						] ),
+						[
+							'classes' => [ 'form-patches-layout' ],
+							'infusable' => true,
+							'label' => 'Then, apply patches:',
+							'help' => 'Gerrit changeset number or Change-Id, one per line',
+							'helpInline' => true,
+							'align' => 'left',
+						]
+					),
+					$config['conduitApiKey'] ?
+						new OOUI\FieldLayout(
+							new OOUI\CheckboxInputWidget( [
+								'classes' => [ 'form-announce' ],
+								'name' => 'announce',
+								'value' => 1,
+								'selected' => true
+							] ),
+							[
+								'classes' => [ 'form-announce-layout' ],
+								'label' => 'Announce wiki on Phabricator:',
+								'help' => 'Any tasks linked to from patches applied will get a comment announcing this wiki.',
+								'helpInline' => true,
+								'align' => 'left',
+							]
+						) :
+						null,
+					new OOUI\FieldLayout(
+						new OOUI\RadioSelectInputWidget( [
+							'classes' => [ 'form-preset' ],
+							'name' => 'preset',
+							'options' => $presetOptions,
+							'value' => 'wikimedia',
+						] ),
+						[
+							'label' => 'Choose configuration preset:',
+							'align' => 'left',
+						]
+					),
+					new DetailsFieldLayout(
+						new OOUI\CheckboxMultiselectInputWidget( [
+							'classes' => [ 'form-repos' ],
+							'name' => 'repos[]',
+							'options' => $repoOptions,
+							'value' => get_repo_presets()[ 'wikimedia' ],
+						] ),
+						[
+							'label' => 'Choose included repos:',
+							'help' => new OOUI\HtmlSnippet( 'If your extension is not listed, please create a <a href="https://gitlab.wikimedia.org/repos/ci-tools/patchdemo/-/issues/new">new issue</a>.' ),
+							'helpInline' => true,
+							'align' => 'inline',
+							'classes' => [ 'form-repos-field' ],
+						]
+					),
 					new OOUI\FieldLayout(
 						new OOUI\CheckboxInputWidget( [
-							'classes' => [ 'form-announce' ],
-							'name' => 'announce',
+							'classes' => [ 'form-instantCommons' ],
+							'name' => 'instantCommons',
 							'value' => 1,
 							'selected' => true
 						] ),
 						[
-							'classes' => [ 'form-announce-layout' ],
-							'label' => 'Announce wiki on Phabricator:',
-							'help' => 'Any tasks linked to from patches applied will get a comment announcing this wiki.',
+							'label' => 'Load images from Commons',
+							'help' => 'Any images not local to the wiki will be pulled from Wikimedia Commons.',
 							'helpInline' => true,
 							'align' => 'left',
 						]
-					) :
-					null,
-				new OOUI\FieldLayout(
-					new OOUI\RadioSelectInputWidget( [
-						'classes' => [ 'form-preset' ],
-						'name' => 'preset',
-						'options' => $presetOptions,
-						'value' => 'wikimedia',
-					] ),
-					[
-						'label' => 'Choose configuration preset:',
-						'align' => 'left',
-					]
-				),
-				new DetailsFieldLayout(
-					new OOUI\CheckboxMultiselectInputWidget( [
-						'classes' => [ 'form-repos' ],
-						'name' => 'repos[]',
-						'options' => $repoOptions,
-						'value' => get_repo_presets()[ 'wikimedia' ],
-					] ),
-					[
-						'label' => 'Choose included repos:',
-						'help' => new OOUI\HtmlSnippet( 'If your extension is not listed, please create a <a href="https://gitlab.wikimedia.org/repos/ci-tools/patchdemo/-/issues/new">new issue</a>.' ),
-						'helpInline' => true,
-						'align' => 'inline',
-						'classes' => [ 'form-repos-field' ],
-					]
-				),
-				new OOUI\FieldLayout(
-					new OOUI\CheckboxInputWidget( [
-						'classes' => [ 'form-instantCommons' ],
-						'name' => 'instantCommons',
-						'value' => 1,
-						'selected' => true
-					] ),
-					[
-						'label' => 'Load images from Commons',
-						'help' => 'Any images not local to the wiki will be pulled from Wikimedia Commons.',
-						'helpInline' => true,
-						'align' => 'left',
-					]
-				),
-				new OOUI\FieldLayout(
-					new OOUI\DropdownInputWidget( [
-						'classes' => [ 'form-instantCommonsMethod' ],
-						'name' => 'instantCommonsMethod',
-						'options' => [
-							[ 'data' => 'quick', 'label' => 'QuickInstantCommons' ],
-							[ 'data' => 'full', 'label' => 'InstantCommons' ],
+					),
+					new OOUI\FieldLayout(
+						new OOUI\DropdownInputWidget( [
+							'classes' => [ 'form-instantCommonsMethod' ],
+							'name' => 'instantCommonsMethod',
+							'options' => [
+								[ 'data' => 'quick', 'label' => 'QuickInstantCommons' ],
+								[ 'data' => 'full', 'label' => 'InstantCommons' ],
+							]
+						] ),
+						[
+							'label' => 'Method for loading images from Commons',
+							'help' => new OOUI\HtmlSnippet(
+								'<a href="https://www.mediawiki.org/wiki/Extension:QuickInstantCommons">QuickInstantCommons</a> is much faster than using full <a href="https://www.mediawiki.org/wiki/InstantCommons">InstantCommons</a> but may lack some advanced image viewing features.'
+							),
+							'helpInline' => true,
+							'align' => 'left',
 						]
-					] ),
-					[
-						'label' => 'Method for loading images from Commons',
-						'help' => new OOUI\HtmlSnippet(
-							'<a href="https://www.mediawiki.org/wiki/Extension:QuickInstantCommons">QuickInstantCommons</a> is much faster than using full <a href="https://www.mediawiki.org/wiki/InstantCommons">InstantCommons</a> but may lack some advanced image viewing features.'
-						),
-						'helpInline' => true,
-						'align' => 'left',
-					]
-				),
-				new OOUI\FieldLayout(
-					new ComboBoxInputWidget( [
-						'placeholder' => 'Main Page',
-						'classes' => [ 'form-landingPage' ],
-						'name' => 'landingPage',
-						'options' => array_map( static function ( string $page ) {
-							return [ 'data' => $page ];
-						}, get_known_pages() ),
-						'menu' => [
-							'filterFromInput' => true
-						],
-						'value' => !empty( $_GET['landingPage' ] ) ? $_GET['landingPage' ] : null
-					] ),
-					[
-						'label' => 'Landing page:',
-						'help' => 'The page linked to from this page, and any announcement posts.',
-						'helpInline' => true,
-						'align' => 'left',
-					]
-				),
-				new OOUI\FieldLayout(
-					new OOUI\TextInputWidget( [
-						'name' => 'language',
-						'value' => 'en',
-						'classes' => [ 'form-language' ]
-					] ),
-					[
-						'label' => 'Language code',
-						'help' => 'Will be used as the content language and default interface language.',
-						'helpInline' => true,
-						'align' => 'left',
-					]
-				),
-				new OOUI\FieldLayout(
-					new OOUI\CheckboxInputWidget( [
-						'name' => 'proxy',
-						'value' => 1,
-						'selected' => false
-					] ),
-					[
-						'label' => 'Proxy articles from wikipedia.org',
-						'help' => 'Any articles not local to the wiki will be pulled from Wikipedia, using the language code above.',
-						'helpInline' => true,
-						'align' => 'left',
-					]
-				),
-				new OOUI\FieldLayout(
-					new OOUI\CheckboxInputWidget( [
-						'name' => 'docs',
-						'value' => 1,
-						'selected' => false
-					] ),
-					[
-						'label' => "Build core documentation",
-						'align' => 'left',
-					]
-				),
-				new OOUI\FieldLayout(
-					new OOUI\CheckboxInputWidget( [
-						'name' => 'tempuser',
-						'value' => 1,
-						'selected' => true
-					] ),
-					[
-						'label' => "Enable temporary user account creation (IP\u{00A0}Masking)",
-						'help' => 'Anonymous editors will have a temporary user account created for them on edit.',
-						'helpInline' => true,
-						'align' => 'left',
-					]
-				),
-				new OOUI\FieldLayout(
+					),
+					new OOUI\FieldLayout(
+						new ComboBoxInputWidget( [
+							'placeholder' => 'Main Page',
+							'classes' => [ 'form-landingPage' ],
+							'name' => 'landingPage',
+							'options' => array_map( static function ( string $page ) {
+								return [ 'data' => $page ];
+							}, get_known_pages() ),
+							'menu' => [
+								'filterFromInput' => true
+							],
+							'value' => !empty( $_GET['landingPage' ] ) ? $_GET['landingPage' ] : null
+						] ),
+						[
+							'label' => 'Landing page:',
+							'help' => 'The page linked to from this page, and any announcement posts.',
+							'helpInline' => true,
+							'align' => 'left',
+						]
+					),
+					new OOUI\FieldLayout(
+						new OOUI\TextInputWidget( [
+							'name' => 'language',
+							'value' => 'en',
+							'classes' => [ 'form-language' ]
+						] ),
+						[
+							'label' => 'Language code',
+							'help' => 'Will be used as the content language and default interface language.',
+							'helpInline' => true,
+							'align' => 'left',
+						]
+					),
+					new OOUI\FieldLayout(
+						new OOUI\CheckboxInputWidget( [
+							'name' => 'proxy',
+							'value' => 1,
+							'selected' => false
+						] ),
+						[
+							'label' => 'Proxy articles from wikipedia.org',
+							'help' => 'Any articles not local to the wiki will be pulled from Wikipedia, using the language code above.',
+							'helpInline' => true,
+							'align' => 'left',
+						]
+					),
+					new OOUI\FieldLayout(
+						new OOUI\CheckboxInputWidget( [
+							'name' => 'docs',
+							'value' => 1,
+							'selected' => false
+						] ),
+						[
+							'label' => "Build core documentation",
+							'align' => 'left',
+						]
+					),
+					new OOUI\FieldLayout(
+						new OOUI\CheckboxInputWidget( [
+							'name' => 'tempuser',
+							'value' => 1,
+							'selected' => true
+						] ),
+						[
+							'label' => "Enable temporary user account creation (IP\u{00A0}Masking)",
+							'help' => 'Anonymous editors will have a temporary user account created for them on edit.',
+							'helpInline' => true,
+							'align' => 'left',
+						]
+					),
+					new OOUI\FieldLayout(
 					// Placeholder, will be replaced by a ToggleButtonWidget in JS
-					new OOUI\ButtonWidget( [
-						'icon' => 'bell',
-						'disabled' => 'true'
-					] ),
-					[
-						'align' => 'inline',
-						'classes' => [ 'enableNotifications' ],
-						'label' => 'Get a browser notification when your wikis are ready',
-						'infusable' => true,
-					]
-				),
-				new OOUI\FieldLayout(
-					new OOUI\ButtonInputWidget( [
-						'classes' => [ 'form-submit' ],
-						'label' => 'Create demo',
-						'type' => 'submit',
-						// 'disabled' => true,
-						'flags' => [ 'progressive', 'primary' ]
-					] ),
-					[
-						'classes' => [ 'createField' ],
-						'warnings' => $config[ 'newWikiWarning' ] ? [ new OOUI\HtmlSnippet( $config[ 'newWikiWarning' ] ) ] : [],
-						'label' => ' ',
-						'align' => 'left',
-					]
-				),
-				new OOUI\FieldLayout(
-					new OOUI\HiddenInputWidget( [
-						'name' => 'csrf_token',
-						'value' => $auth->getCsrfToken(),
-					] )
-				),
-			] )
-		] ),
-	]
-] );
+						new OOUI\ButtonWidget( [
+							'icon' => 'bell',
+							'disabled' => 'true'
+						] ),
+						[
+							'align' => 'inline',
+							'classes' => [ 'enableNotifications' ],
+							'label' => 'Get a browser notification when your wikis are ready',
+							'infusable' => true,
+						]
+					),
+					new OOUI\FieldLayout(
+						new OOUI\ButtonInputWidget( [
+							'classes' => [ 'form-submit' ],
+							'label' => 'Create demo',
+							'type' => 'submit',
+							// 'disabled' => true,
+							'flags' => [ 'progressive', 'primary' ]
+						] ),
+						[
+							'classes' => [ 'createField' ],
+							'warnings' => $config[ 'newWikiWarning' ] ? [ new OOUI\HtmlSnippet( $config[ 'newWikiWarning' ] ) ] : [],
+							'label' => ' ',
+							'align' => 'left',
+						]
+					),
+					new OOUI\FieldLayout(
+						new OOUI\HiddenInputWidget( [
+							'name' => 'csrf_token',
+							'value' => $auth->getCsrfToken(),
+						] )
+					),
+				] )
+			] ),
+		]
+	] );
 
-if ( !$canCreate ) {
-	echo $auth->signInPrompt();
+	if ( !$canCreate ) {
+		echo $auth->signInPrompt();
+	}
 }
+
 ?>
 <br/>
 <h3>Previously generated wikis</h3>
