@@ -180,7 +180,7 @@ function get_wiki_url( string $wiki, ?string $landingPage ): string {
 	} else {
 		$server = get_server();
 		$serverPath = get_server_path();
-		$wikiUrl = "$server$serverPath/" . 'wikis';
+		$wikiUrl = "$server$serverPath/" . 'wikis/' . $wiki;
 	}
 	return $wikiUrl . ( $landingPage ? '/wiki/' . $landingPage : '/w' );
 }
