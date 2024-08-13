@@ -43,10 +43,34 @@ spec:
               value: "{{ .Release.Name }}-{{ .Values.app.db.host }}"
             - name: DB_DATABASE
               value: "{{ .Values.mariadb.auth.database }}"
+            - name: NEW_WIKI_WARNING
+              value: "{{ .Values.app.newWikiWarning }}"
+            - name: PHABRICATOR_URL
+              value: "{{ .Values.app.phabricatorUrl }}"
+            - name: GERRIT_URL
+              value: "{{ .Values.app.gerritUrl }}"
             - name: CATALYST_API_URL
               value: "{{ .Values.app.catalystApiUrl }}"
+            - name: CATALYST_DOMAIN_NAME
+              value: "{{ .Values.app.catalystDomainName }}"
             - name: CATALYST_API_TOKEN
               value: "{{ .Values.app.catalystApiToken }}"
+            - name: STATUS_URL
+              value: "{{ .Values.app.statusUrl }}"
+            - name: REQUIRE_VERIFIED
+              value: "{{ .Values.app.requireVerified }}"
+            - name: OAUTH_URL
+              value: "{{ .Values.app.oauthUrl }}"
+            - name: OAUTH_CALLBACK
+              value: "{{ .Values.app.oauthCallback }}"
+            - name: OAUTH_CONSUMER_KEY
+              value: "{{ .Values.app.oauthConsumerKey }}"
+            - name: OAUTH_CONSUMER_SECRET
+              value: "{{ .Values.app.oauthConsumerSecret }}"
+            - name: ADMIN_USERS
+              value: "{{ .Values.app.adminUsers }}"
+            - name: CONDUIT_API_KEY
+              value: "{{ .Values.app.conduitApiKey }}"
           volumeMounts:
             - name: wikis
               mountPath: var/www/html/wikis

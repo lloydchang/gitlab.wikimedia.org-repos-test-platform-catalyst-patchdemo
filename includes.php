@@ -605,7 +605,7 @@ function post_phab_comment( string $id, string $comment ) {
 }
 
 function get_catalyst_repos(): array {
-	$catalystApi = Catalyst::newClient( getenv( 'CATALYST_API_TOKEN' ) );
+	$catalystApi = Catalyst::newClient( $config['catalystApiToken'] );
 	$mediawikiChartValues = $catalystApi->getChart( 'mediawiki' );
 	if ( count( $mediawikiChartValues ) < 1 ) {
 		return [];

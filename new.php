@@ -470,7 +470,7 @@ function get_repo_name( string $repo ): string {
 
 // build catalyst api query here
 if ( $useCatalystBackend ) {
-	$catalystApi = Catalyst::newClient( getenv( 'CATALYST_API_TOKEN' ) );
+	$catalystApi = Catalyst::newClient( $config['catalystApiToken'] );
 	$env = new EnvironmentRequest( 'wiki-' . $wiki, 'mediawiki' );
 	$env->withIngress( $wiki . '.' . $config['catalystDomainName'] );
 	foreach ( $allowedRepos as $repo ) {

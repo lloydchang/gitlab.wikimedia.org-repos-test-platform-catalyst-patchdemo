@@ -18,7 +18,7 @@ class Catalyst {
 	private function __construct( string $apiToken ) {
 		global $config;
 
-		$baseUrl = getenv( 'CATALYST_API_URL' ) ?? $config['catalystApi'];
+		$baseUrl = $config['catalystApiUrl'];
 		$this->baseUrl = $baseUrl . '/api';
 		$httpClient = ScopingHttpClient::forBaseUri( BASE_CLIENT, $this->baseUrl, [
 			'max_redirects' => 1,

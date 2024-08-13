@@ -16,8 +16,20 @@ ingress:
 app:
   db:
     host: mariadb
+  newWikiWarning: ''
+  phabricatorUrl: https://phabricator.wikimedia.org
+  gerritUrl: https://gerrit.wikimedia.org
   catalystApiUrl: https://api.catalyst.wmcloud.org
+  catalystDomainName: catalyst.wmcloud.org
   catalystApiToken: ''
+  statusUrl: ''
+  requireVerified: true
+  oauthUrl: 'https://meta.wikimedia.org/w/index.php?title=Special:OAuth'
+  oauthCallback: https://patchdemo.wmcloud.org
+  oauthConsumerKey: ''
+  oauthConsumerSecret: ''
+  adminUsers: 'SDunlap-WMF,JNuche (WMF),JHuneidi (WMF),CCicalese (WMF),ESanders (WMF),Ed g2s,Matma Rex'
+  conduitApiKey: ''
 
 mariadb:
   auth:
