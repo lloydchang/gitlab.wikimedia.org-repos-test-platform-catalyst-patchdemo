@@ -61,7 +61,7 @@ deploy:
         --set mariadb.auth.database=${DB_DATABASE} \
         --set app.db.host=${DB_HOST} \
         --set app.catalystApiToken=${CATALYST_API_TOKEN} \
-        --set app.oauthCallback="https://patchdemo.catalyst.wmcloud.org" \
+        --set app.oauthCallback="https://patchdemo.catalyst.wmcloud.org/" \
         --set app.oauthConsumerKey=${OAUTH_CONSUMER_KEY} \
         --set app.oauthConsumerSecret=${OAUTH_CONSUMER_SECRET} \
         --set app.conduitApiKey=${CONDUIT_API_KEY}
