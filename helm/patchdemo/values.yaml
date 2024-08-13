@@ -17,6 +17,7 @@ app:
   db:
     host: mariadb
   newWikiWarning: ''
+  notificationBanner: ''
   phabricatorUrl: https://phabricator.wikimedia.org
   gerritUrl: https://gerrit.wikimedia.org
   catalystApiUrl: https://api.catalyst.wmcloud.org

@@ -88,6 +88,14 @@ if ( $showCatalyst ) {
 		$useCatalystBackend;
 }
 
+if ( $config['notificationBanner'] ) {
+	echo new OOUI\MessageWidget( [
+			'type' => 'notice',
+			'label' => new OOUI\HtmlSnippet( $config['notificationBanner'] ) ]
+	);
+	echo '<br />';
+}
+
 echo new OOUI\FormLayout( [
 	'infusable' => true,
 	'method' => 'POST',

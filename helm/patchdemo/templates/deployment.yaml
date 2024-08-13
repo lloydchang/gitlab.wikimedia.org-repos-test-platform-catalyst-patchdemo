@@ -45,6 +45,8 @@ spec:
               value: "{{ .Values.mariadb.auth.database }}"
             - name: NEW_WIKI_WARNING
               value: "{{ .Values.app.newWikiWarning }}"
+            - name: NOTIFICATION_BANNER
+              value: "{{ .Values.app.notificationBanner }}"
             - name: PHABRICATOR_URL
               value: "{{ .Values.app.phabricatorUrl }}"
             - name: GERRIT_URL
