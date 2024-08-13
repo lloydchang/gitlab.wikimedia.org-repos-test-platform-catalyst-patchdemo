@@ -4,3 +4,4 @@ repositories
 composer
 vendor
 node_modules
+helm/patchdemo/charts
