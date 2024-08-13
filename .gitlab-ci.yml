@@ -40,6 +40,11 @@ publish:
     - trusted
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED
+    - changes:
+        - .github/*
+        - .helm/*
+        - .gitlab-ci.yml
+      when: never
 
 deploy:
   stage: deploy
@@ -65,7 +70,7 @@ deploy:
         --set app.oauthConsumerKey=${OAUTH_CONSUMER_KEY} \
         --set app.oauthConsumerSecret=${OAUTH_CONSUMER_SECRET} \
         --set app.conduitApiKey=${CONDUIT_API_KEY} \
-        --set app.notificationBanner=${NOTIFICATION_BANNER}
+        --set app.notificationBanner="${NOTIFICATION_BANNER}"
   tags: [ trusted ]
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED
