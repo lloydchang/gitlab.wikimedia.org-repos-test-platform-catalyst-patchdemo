@@ -1,14 +1,14 @@
 <?php
 $config = [
 	// Warning shown below the new wiki form (allows HTML formatting)
-	'newWikiWarning' => getenv( 'NEW_WIKI_WARNING' ) ?? '',
+	'newWikiWarning' => getenv( 'NEW_WIKI_WARNING' ) ?: '',
 	// notification banner at the top of the page (allows HTML formatting)
-	'notificationBanner' => getenv( 'NOTIFICATION_BANNER' ) ?? '',
-	'phabricatorUrl' => getenv( 'PHABRICATOR_URL' ) ?? 'https://phabricator.wikimedia.org',
-	'gerritUrl' => getenv( 'GERRIT_URL' ) ?? 'https://gerrit.wikimedia.org',
-	'catalystApiUrl' => getenv( 'CATALYST_API_URL' ) ?? 'https://api.catalyst.wmcloud.org',
-	'catalystDomainName' => getenv( 'CATALYST_DOMAIN_NAME' ) ?? 'catalyst.wmcloud.org',
-	'catalystApiToken' => getenv( 'CATALYST_API_TOKEN' ) ?? '',
+	'notificationBanner' => getenv( 'NOTIFICATION_BANNER' ) ?: '',
+	'phabricatorUrl' => getenv( 'PHABRICATOR_URL' ) ?: 'https://phabricator.wikimedia.org',
+	'gerritUrl' => getenv( 'GERRIT_URL' ) ?: 'https://gerrit.wikimedia.org',
+	'catalystApiUrl' => getenv( 'CATALYST_API_URL' ) ?: 'https://api.catalyst.wmcloud.org',
+	'catalystDomainName' => getenv( 'CATALYST_DOMAIN_NAME' ) ?: 'catalyst.wmcloud.org',
+	'catalystApiToken' => getenv( 'CATALYST_API_TOKEN' ) ?: '',
 	// Link to a status page, e.g. on https://grafana.wmcloud.org/
 	'statusUrl' => getenv( 'STATUS_URL' ),
 	// Require that patches are V+2 before building the wiki
