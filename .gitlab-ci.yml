@@ -40,11 +40,12 @@ publish:
     - trusted
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED
-    - changes:
+      changes:
         - .github/*
         - .helm/*
         - .gitlab-ci.yml
       when: never
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED
 
 deploy:
   stage: deploy
