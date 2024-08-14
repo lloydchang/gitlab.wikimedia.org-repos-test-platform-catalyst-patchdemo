@@ -34,7 +34,6 @@ publish:
     BUILD_VARIANT: patchdemo
     PUBLISH_IMAGE_TAG: ${CI_COMMIT_SHORT_SHA}
     PUBLISH_IMAGE_EXTRA_TAGS: latest
-
   extends: .kokkuri:build-and-publish-image
   tags:
     - trusted
@@ -47,7 +46,7 @@ publish:
       when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED
 
-deploy:
+.deploy:
   stage: deploy
   image:
     name: docker-registry.wikimedia.org/repos/abstract-wiki/ci-images/helm
@@ -73,8 +72,23 @@ deploy:
         --set app.conduitApiKey=${CONDUIT_API_KEY} \
         --set app.notificationBanner="${NOTIFICATION_BANNER}"
   tags: [ trusted ]
-  rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED
   environment:
     name: production
+
+deploy:
+  extends:
+    - .deploy
+  needs: ["publish"]
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED
+
+
+manual-deploy:
+  extends:
+    - .deploy
+  variables:
+    CI_COMMIT_SHORT_SHA:
+      value: "latest"
+      description: "commit sha to be used as image tag, or latest"
+  when: manual
 
