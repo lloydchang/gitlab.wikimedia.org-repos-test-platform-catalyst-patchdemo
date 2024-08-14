@@ -33,6 +33,16 @@ test-nodejs:
     - npm run build --if-present
     - npm test
 
+.default_rules:
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED
+      changes:
+        - .github/*
+        - .helm/*
+        - .gitlab-ci.yml
+      when: never
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED
+
 publish:
   stage: publish
   variables:
@@ -43,13 +53,7 @@ publish:
   tags:
     - trusted
   rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED
-      changes:
-        - .github/*
-        - .helm/*
-        - .gitlab-ci.yml
-      when: never
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED
+    - !reference [.default_rules, rules]
 
 .deploy:
   stage: deploy
@@ -86,10 +90,12 @@ deploy:
   extends:
     - .deploy
   needs: ["publish"]
-  rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED
+  rules: 
+    - !reference [.default_rules, rules]
 
 manual-deploy:
   extends:
     - .deploy
-  when: manual
+  rules:
+  - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    when: manual
