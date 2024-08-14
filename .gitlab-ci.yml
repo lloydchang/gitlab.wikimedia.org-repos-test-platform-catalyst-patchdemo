@@ -89,7 +89,6 @@ deploy:
     IMAGE_TAG: ${CI_COMMIT_SHORT_SHA}
   extends:
     - .deploy
-  needs: ["publish"]
   rules: 
     - !reference [.default_rules, rules]
 
