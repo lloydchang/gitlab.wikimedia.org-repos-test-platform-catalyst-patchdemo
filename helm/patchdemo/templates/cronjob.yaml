@@ -1,0 +1,50 @@
+# TODO: Remove once patchdemo-legacy.wmcloud.org has been phased out T372291
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "patchdemo.fullname" . }}-wikiredirect
+spec:
+  schedule: "*/5 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 0
+  # To check the logs of a failing job, you can temporarily suspend the cron and then look at the latest failing pod:
+  # https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/#schedule-suspension
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      template:
+        spec:
+          restartPolicy: Never
+          volumes:
+            - name: wikis
+              persistentVolumeClaim:
+                claimName: {{ include "patchdemo.fullname" . }}
+          containers:
+            - name: {{ include "patchdemo.fullname" . }}-wikiredirect
+              image: alpine:latest
+              imagePullPolicy: IfNotPresent
+              volumeMounts:
+                - name: wikis
+                  mountPath: /var/www/html/wikis
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  apk add curl jq
+
+                  wikis=$(curl -s https://patchdemo-legacy.wmcloud.org | egrep -o 'wikiPatches = \{[^}]*\}' | \
+                          sed 's/wikiPatches = //' | jq keys_unsorted | tr -d '[],"\n')
+                  for wiki in $wikis; do
+                    if [ ! -d /var/www/html/wikis/$wiki ]; then
+                      mkdir -p /var/www/html/wikis/$wiki
+                      cat <<HERE >/var/www/html/wikis/$wiki/.htaccess
+                  RewriteEngine On
+                  # redirect access to env in the legacy VM Patchdemo
+                  RewriteCond %{HTTP_HOST} !^patchdemo-legacy\.wmcloud\.org$ [NC]
+                  RewriteRule ^(.*)$ https://patchdemo-legacy.wmcloud.org/wikis/$wiki/\$1 [L,R=301,NE]
+                  HERE
+                      # 33 is www-data
+                      chown -R 33:33 /var/www/html/wikis/$wiki
+                    fi
+                  done

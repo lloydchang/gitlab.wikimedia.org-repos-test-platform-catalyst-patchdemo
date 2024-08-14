@@ -75,7 +75,7 @@ spec:
               value: "{{ .Values.app.conduitApiKey }}"
           volumeMounts:
             - name: wikis
-              mountPath: var/www/html/wikis
+              mountPath: /var/www/html/wikis
             - name: log-volume
               mountPath: /var/log/apache2
         - name: tail-access-log
