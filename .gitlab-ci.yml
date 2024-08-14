@@ -1,3 +1,8 @@
+variables:
+  IMAGE_TAG:
+    description: "commit sha to be used as image tag, or latest"
+    value: "latest"
+
 include:
   - project: repos/releng/kokkuri
     file: includes/images.yaml
@@ -57,7 +62,7 @@ publish:
     - |
       helm upgrade --install --dependency-update --namespace patchdemo --create-namespace \
         patchdemo ./helm/patchdemo \
-        --set image.tag=${CI_COMMIT_SHORT_SHA} \
+        --set image.tag=${IMAGE_TAG} \
         --set service.type=ClusterIP \
         --set ingress.enabled=true \
         --set mariadb.auth.username=${DB_USER} \
@@ -76,19 +81,15 @@ publish:
     name: production
 
 deploy:
+  variables:
+    IMAGE_TAG: ${CI_COMMIT_SHORT_SHA}
   extends:
     - .deploy
   needs: ["publish"]
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED
 
-
 manual-deploy:
   extends:
     - .deploy
-  variables:
-    CI_COMMIT_SHORT_SHA:
-      value: "latest"
-      description: "commit sha to be used as image tag, or latest"
   when: manual
-
