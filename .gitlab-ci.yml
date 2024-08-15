@@ -69,6 +69,7 @@ publish:
         --set image.tag=${IMAGE_TAG} \
         --set service.type=ClusterIP \
         --set ingress.enabled=true \
+        --set ingress.hostname="patchdemo.wmcloud.org" \
         --set mariadb.auth.username=${DB_USER} \
         --set mariadb.auth.password=${DB_PASS} \
         --set mariadb.auth.rootPassword=${DB_ROOT_PASS} \

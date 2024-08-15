@@ -11,7 +11,7 @@ service:
 
 ingress:
   enabled: false
-  hostname: patchdemo.catalyst.wmcloud.org
+  hostname: patchdemo.wmcloud.org
 
 app:
   db:
