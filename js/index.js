@@ -21,7 +21,7 @@
 		const tempuserInput = OO.ui.infuse( $( '.form-tempuser' ) );
 		const submit = OO.ui.infuse( $( '.form-submit' ) );
 		const patchesLayout = OO.ui.infuse( $( '.form-patches-layout' ) );
-		const announce = $( '.form-announce' ).length ? $( '.form-announce' ) : null;
+		const announce = $( '.form-announce' ).length ? OO.ui.infuse( $( '.form-announce' ) ) : null;
 		const announceLayout = announce ? OO.ui.infuse( $( '.form-announce-layout' ) ) : null;
 		const backendInput = $formBackend.length ? OO.ui.infuse( $formBackend ) : null;
 		let catalystSelected = backendInput && backendInput.isSelected();
