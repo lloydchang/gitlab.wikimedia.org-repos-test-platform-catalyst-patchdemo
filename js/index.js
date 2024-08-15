@@ -214,6 +214,7 @@
 					} );
 					catalystSelected = false;
 					toggleWidgetsForCatalyst( false );
+					reposInput.emit( 'change' );
 				}
 			} );
 		};
