@@ -683,14 +683,14 @@ if ( $useCatalystBackend ) {
 						"\n\n" .
 						"Also created an **OOUI Demos** page:" .
 						"\n" .
-						get_wiki_url( $wiki, "" ) . "/build/ooui/demos"
+						get_wiki_url( $wiki, "" ) . "build/ooui/demos"
 						: ""
 					) .
 					( $hasCodex ?
 						"\n\n" .
 						"Also created a **Codex documentation** site:" .
 						"\n" .
-						get_wiki_url( $wiki, "" ) . "/build/codex/docs"
+						get_wiki_url( $wiki, "" ) . "build/codex/docs"
 						: ""
 					)
 				);

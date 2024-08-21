@@ -191,7 +191,7 @@ function get_wiki_url( string $wiki, ?string $landingPage ): string {
 		$serverPath = get_server_path();
 		$wikiUrl = "$server$serverPath/" . 'wikis/' . $wiki;
 	}
-	return $wikiUrl . ( $landingPage ? '/wiki/' . $landingPage : '/w' );
+	return $wikiUrl . ( $landingPage ? '/wiki/' . $landingPage : '/w/' );
 }
 
 function get_wiki_link( string $wiki, ?string $landingPage, bool $ready = true ): string {
