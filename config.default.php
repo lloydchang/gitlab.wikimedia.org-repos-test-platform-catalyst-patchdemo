@@ -26,9 +26,9 @@ $config = [
 		'admins' => getenv( 'ADMIN_USERS' ) ? explode( ',', getenv( 'ADMIN_USERS' ) ) : []
 	],
 	// Conduit API key for bot cross-posting to Phabricator
-	getenv( 'CONDUIT_API_KEY' ),
+	'conduitApiKey' => getenv( 'CONDUIT_API_KEY' ),
 	// Read only mode disables wiki creation
-	'readOnly' => false,
-	'readOnlyText' => 'This patchdemo instance is in read only mode. You may visit previously created wikis, but no ' .
-		'new wikis can be created.',
+	'readOnly' => getenv( 'READ_ONLY' ) ? getenv( 'READ_ONLY' ) == "true" : false,
+	'readOnlyText' => getenv( 'READ_ONLY_TEXT' ) ?: 'This patchdemo instance is in read only mode. You may' .
+		'visit previously created wikis, but no new wikis can be created.',
 ];
