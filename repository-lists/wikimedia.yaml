@@ -26,6 +26,7 @@
 # - mediawiki/extensions/CodeReview
 - mediawiki/extensions/Collection
 - mediawiki/extensions/CommonsMetadata
+- mediawiki/extensions/CommunityConfiguration
 - mediawiki/extensions/ConfirmEdit
 # Without cxserver this isn't much use most of the time
 # - mediawiki/extensions/ContentTranslation
