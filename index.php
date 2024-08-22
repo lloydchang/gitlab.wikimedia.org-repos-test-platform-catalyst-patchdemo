@@ -160,6 +160,19 @@ if ( $config['readOnly'] ) {
 							]
 						) :
 						null,
+					$showCatalyst ? new OOUI\FieldLayout(
+						new OOUI\CheckboxInputWidget( [
+							'classes' => [ 'form-backend' ],
+							'name' => 'backend',
+							'value' => 1,
+							'selected' => false,
+							'disabled' => $catalystBackendDisabled,
+						] ),
+						[
+							'label' => $catalystBackendLabel,
+							'align' => 'left',
+						]
+					) : null,
 					new OOUI\FieldLayout(
 						new OOUI\RadioSelectInputWidget( [
 							'classes' => [ 'form-preset' ],
@@ -256,7 +269,8 @@ if ( $config['readOnly'] ) {
 						new OOUI\CheckboxInputWidget( [
 							'name' => 'proxy',
 							'value' => 1,
-							'selected' => false
+							'selected' => false,
+							'classes' => [ 'form-proxy' ]
 						] ),
 						[
 							'label' => 'Proxy articles from wikipedia.org',
@@ -269,7 +283,8 @@ if ( $config['readOnly'] ) {
 						new OOUI\CheckboxInputWidget( [
 							'name' => 'docs',
 							'value' => 1,
-							'selected' => false
+							'selected' => false,
+							'classes' => [ 'form-docs' ]
 						] ),
 						[
 							'label' => "Build core documentation",
@@ -280,7 +295,8 @@ if ( $config['readOnly'] ) {
 						new OOUI\CheckboxInputWidget( [
 							'name' => 'tempuser',
 							'value' => 1,
-							'selected' => true
+							'selected' => true,
+							'classes' => [ 'form-tempuser' ]
 						] ),
 						[
 							'label' => "Enable temporary user account creation (IP\u{00A0}Masking)",
