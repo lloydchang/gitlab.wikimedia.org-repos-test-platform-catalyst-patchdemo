@@ -471,17 +471,19 @@ function get_repo_name( string $repo ): string {
 // build catalyst api query here
 if ( $useCatalystBackend ) {
 	$catalystApi = Catalyst::newClient( $config['catalystApiToken'] );
-	$env = new EnvironmentRequest( 'wiki-' . $wiki, 'mediawiki' );
-	$env->withIngress( $wiki . '.' . $config['catalystDomainName'] );
+	$bareBranch = substr( $branch, strlen( 'origin/' ) );
+	$env = ( new EnvironmentRequest( 'wiki-' . $wiki, 'mediawiki' ) )
+			->withBranch( $bareBranch )
+			->withIngress( $wiki . '.' . $config['catalystDomainName'] );
 	foreach ( $allowedRepos as $repo ) {
 		$repoRefs = $refs[$repo] ?? null;
 		$repoName = get_repo_name( $repo );
 		if ( str_contains( $repo, 'skin' ) ) {
-			$env->withSkin( $repoName, $repoRefs );
+			$env->withSkin( $repoName, $bareBranch, $repoRefs );
 		} elseif ( $repo === 'mediawiki/core' ) {
 			$env->withCoreRefs( $repoRefs );
 		} else {
-			$env->withExtension( $repoName, $repoRefs );
+			$env->withExtension( $repoName, $bareBranch, $repoRefs );
 		}
 	}
 	$res = $catalystApi->postEnvironment( $env );

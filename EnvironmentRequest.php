@@ -13,6 +13,11 @@ class EnvironmentRequest implements JsonSerializable {
 		$this->values = [];
 	}
 
+	public function withBranch( string $branch ): EnvironmentRequest {
+		$this->setCoreValue( "branch", $branch );
+		return $this;
+	}
+
 	public function withIngress( string $ingress ): EnvironmentRequest {
 		$this->setCoreValue( "ingress", $ingress );
 		return $this;
@@ -23,8 +28,8 @@ class EnvironmentRequest implements JsonSerializable {
 		return $this;
 	}
 
-	public function withExtension( string $extension, array $refs = null ): EnvironmentRequest {
-		$extConfig = [ "enable" => true ];
+	public function withExtension( string $extension, string $branch, array $refs = null ): EnvironmentRequest {
+		$extConfig = [ "enable" => true, "branch" => $branch ];
 		if ( $refs !== null ) {
 			$extConfig += [ "patches" => $refs ];
 		}
@@ -32,8 +37,8 @@ class EnvironmentRequest implements JsonSerializable {
 		return $this;
 	}
 
-	public function withSkin( string $skin, array $refs = null ): EnvironmentRequest {
-		$skinConfig = [ "enable" => true ];
+	public function withSkin( string $skin, string $branch, array $refs = null ): EnvironmentRequest {
+		$skinConfig = [ "enable" => true, "branch" => $branch ];
 		if ( $refs !== null ) {
 			$skinConfig += [ "patches" => $refs ];
 		}
