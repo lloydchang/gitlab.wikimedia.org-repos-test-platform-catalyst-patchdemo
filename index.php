@@ -194,7 +194,7 @@ if ( $config['readOnly'] ) {
 						] ),
 						[
 							'label' => 'Choose included repos:',
-							'help' => new OOUI\HtmlSnippet( 'If your extension is not listed, please create a <a href="https://gitlab.wikimedia.org/repos/ci-tools/patchdemo/-/issues/new">new issue</a>.' ),
+							'help' => new OOUI\HtmlSnippet( 'If your extension is not listed, please create a <a href="https://phabricator.wikimedia.org/maniphest/task/edit/form/1/?title=Add%20[Extension]%20to%20PatchDemo&description=Repository%20link:%20[gitlab/gerrit%20link]&projects=PatchDemo">new task</a>.' ),
 							'helpInline' => true,
 							'align' => 'inline',
 							'classes' => [ 'form-repos-field' ],

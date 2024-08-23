@@ -33,9 +33,9 @@ if ( $auth->isSignedIn() ) {
 }
 echo '
 					<div class="source">
-						<a href="https://gitlab.wikimedia.org/repos/ci-tools/patchdemo">Source code</a>
+						<a href="https://gitlab.wikimedia.org/repos/qte/catalyst/patchdemo">Source code</a>
 						&bullet;
-						<a href="https://gitlab.wikimedia.org/repos/ci-tools/patchdemo/-/issues">Issues</a>' .
+						<a href="https://phabricator.wikimedia.org/project/view/7367/">Issues</a>' .
 						( $config['statusUrl'] ?
 							' &bullet; <a href="' . htmlspecialchars( $config['statusUrl'] ) . '">Status</a>' :
 							''
