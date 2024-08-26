@@ -94,15 +94,12 @@ if ( $config['readOnly'] ) {
 		)
 	] );
 } else {
-	$showCatalyst = isset( $_SERVER['HTTP_X_CATALYST'] ) && $_SERVER['HTTP_X_CATALYST'] == 'EnableAll';
-	if ( $showCatalyst ) {
-		$catalystRepos = get_catalyst_repos();
-		$catalystBackendDisabled = ( count( $catalystRepos ) < 1 );
-		$useCatalystBackend = 'Use experimental kubernetes backend (Catalyst)';
-		$catalystBackendLabel = $catalystBackendDisabled ?
-			$useCatalystBackend . ' Could not reach catalyst - option disabled.' :
-			$useCatalystBackend;
-	}
+	$catalystRepos = get_catalyst_repos();
+	$catalystBackendDisabled = ( count( $catalystRepos ) < 1 );
+	$useCatalystBackend = 'Use experimental kubernetes backend (Catalyst)';
+	$catalystBackendLabel = $catalystBackendDisabled ?
+		$useCatalystBackend . ' Could not reach catalyst - option disabled.' :
+		$useCatalystBackend;
 
 	echo new OOUI\FormLayout( [
 		'infusable' => true,
@@ -160,7 +157,7 @@ if ( $config['readOnly'] ) {
 							]
 						) :
 						null,
-					$showCatalyst ? new OOUI\FieldLayout(
+					new OOUI\FieldLayout(
 						new OOUI\CheckboxInputWidget( [
 							'classes' => [ 'form-backend' ],
 							'name' => 'backend',
@@ -172,7 +169,7 @@ if ( $config['readOnly'] ) {
 							'label' => $catalystBackendLabel,
 							'align' => 'left',
 						]
-					) : null,
+					),
 					new OOUI\FieldLayout(
 						new OOUI\RadioSelectInputWidget( [
 							'classes' => [ 'form-preset' ],
@@ -573,12 +570,8 @@ pd.config = ' . json_encode_clean( [
 	'phabricatorUrl' => $config['phabricatorUrl'],
 	'gerritUrl' => $config['gerritUrl'],
 ] ) . ';
+pd.catalystRepos = ' . json_encode_clean( $catalystRepos ) . ';
 </script>';
-if ( $showCatalyst ) {
-	echo '<script>
-    pd.catalystRepos = ' . json_encode_clean( $catalystRepos ) . ';
-	</script>';
-}
 
 ?>
 <script src="js/DetailsFieldLayout.js"></script>
