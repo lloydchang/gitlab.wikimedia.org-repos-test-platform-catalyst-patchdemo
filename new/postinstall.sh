@@ -74,9 +74,8 @@ if [ -d $PATCHDEMO/wikis/$NAME/w/build/codex ]; then
 	npm run -w @wikimedia/codex-icons build
 	npm run -w @wikimedia/codex build
 	cd $PATCHDEMO
-	cp -r $PATCHDEMO/wikis/$NAME/w/build/codex/packages/codex/dist/* $PATCHDEMO/wikis/$NAME/w/resources/lib/codex/
-	cp -r $PATCHDEMO/wikis/$NAME/w/build/codex/packages/codex-icons/dist/* $PATCHDEMO/wikis/$NAME/w/resources/lib/codex-icons/
-	cp -r $PATCHDEMO/wikis/$NAME/w/build/codex/packages/codex-design-tokens/dist/* $PATCHDEMO/wikis/$NAME/w/resources/lib/codex-design-tokens/
+	# Configure MediaWiki to look for Codex in /w/build/codex instead of the normal location
+	cp $PATCHDEMO/localsettings/codex.php $PATCHDEMO/wikis/$NAME/w/settings.d
 	# Make docs available at /w/build/codex/docs/
 	# FIXME: don't do this for now, since we can't build the docs without crashing
 	#mv $PATCHDEMO/wikis/$NAME/w/build/codex/packages/codex-docs/docs/.vitepress/dist $PATCHDEMO/wikis/$NAME/w/build/codex/docs
