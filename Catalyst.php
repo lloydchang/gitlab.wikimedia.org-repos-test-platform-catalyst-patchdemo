@@ -1,5 +1,7 @@
 <?php
 
+use Symfony\Component\HttpClient\Chunk\ServerSentEvent;
+use Symfony\Component\HttpClient\EventSourceHttpClient;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpClient\ScopingHttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -10,6 +12,7 @@ class Catalyst {
 
 	private string $baseUrl;
 	private HttpClientInterface $httpClient;
+	private EventSourceHttpClient $eventSourceHttpClient;
 
 	public static function newClient( string $apiToken ): Catalyst {
 		return new Catalyst( $apiToken );
@@ -27,7 +30,37 @@ class Catalyst {
 				'Authorization' => "ApiToken $apiToken",
 			],
 		] );
+		$eventSourceHttpClient = new EventSourceHttpClient( $httpClient );
 		$this->httpClient = $httpClient;
+		$this->eventSourceHttpClient = $eventSourceHttpClient;
+	}
+
+	public function streamLogs( string $id, string $containerName, callable $handlerFn ): void {
+		do {
+			// keep trying in case pod is initializing
+			sleep( 5 );
+			$source = $this->eventSourceHttpClient->connect( "$this->baseUrl/environments/$id/logs?stream=$containerName" );
+		} while ( $source->getStatusCode() === 503 );
+		$finished = false;
+		while ( $source && !$finished ) {
+			$finished = $this->withErr(
+				function () use ( $source, $handlerFn ) {
+					foreach ( $this->eventSourceHttpClient->stream( $source, 300 ) as $r => $chunk ) {
+						if ( $chunk instanceof ServerSentEvent ) {
+							$data = $chunk->getArrayData();
+							$logs = $data['logs'];
+							$handlerFn( $logs );
+						}
+
+						if ( $chunk->isLast() ) {
+							return true;
+						}
+					}
+					return false;
+				}
+			);
+
+		}
 	}
 
 	public function getChart( string $chartName ): array {

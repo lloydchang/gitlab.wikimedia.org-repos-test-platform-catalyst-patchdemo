@@ -2,7 +2,7 @@
 	"require": {
 		"mediawiki/oauthclient": "^2.0",
 		"symfony/deprecation-contracts": "^2.5",
-		"symfony/http-client": "^5.4",
+		"symfony/http-client": "^6.4",
 		"symfony/process": "^5.4",
 		"symfony/service-contracts": "^2.5",
 		"symfony/yaml": "^5.4",

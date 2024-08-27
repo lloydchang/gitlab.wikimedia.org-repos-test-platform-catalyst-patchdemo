@@ -387,6 +387,11 @@ function format_duration( int $time ): string {
 		$time . 's';
 }
 
+function format_streamed_log( string $timestamp, string $log ): string {
+	return '<span class="logPrefix">' . htmlspecialchars( $timestamp ) . ':</span> ' .
+		'<span>' . htmlspecialchars( $log ) . '</span>';
+}
+
 function format_log_command( string $cmd, array $env = [] ): string {
 	$prefix = '';
 	foreach ( $env as $key => $value ) {
