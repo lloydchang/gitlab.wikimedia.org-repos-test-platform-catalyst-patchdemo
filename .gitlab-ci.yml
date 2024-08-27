@@ -15,7 +15,7 @@ stages:
 test-php:
   stage: test
   image:
-    name: docker-registry.wikimedia.org/releng/composer-test-php74:0.1.2
+    name: docker-registry.wikimedia.org/releng/composer-test-php82:0.1.2-s2
     entrypoint: [ "" ]
   allow_failure: false
   script:
