@@ -88,7 +88,7 @@ deploy-staging:
   environment:
     name: patchdemo-staging
   rules: 
-    - !reference [.default_rules, rules]
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED
 
 deploy-production:
   stage: deploy
@@ -123,5 +123,5 @@ deploy-production:
   environment:
     name: patchdemo-production
   rules:
-  - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED
     when: manual
