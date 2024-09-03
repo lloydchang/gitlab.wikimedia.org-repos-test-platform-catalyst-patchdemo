@@ -96,7 +96,9 @@ if ( $config['readOnly'] ) {
 } else {
 	$catalystRepos = get_catalyst_repos();
 	$catalystBackendDisabled = ( count( $catalystRepos ) < 1 );
-	$useCatalystBackend = 'Use experimental kubernetes backend (Catalyst)';
+	$useCatalystBackend = new OOUI\HtmlSnippet(
+		'Use experimental Kubernetes backend (<a href="https://wikitech.wikimedia.org/wiki/Catalyst">Catalyst</a>)'
+	);
 	$catalystBackendLabel = $catalystBackendDisabled ?
 		$useCatalystBackend . ' Could not reach catalyst - option disabled.' :
 		$useCatalystBackend;
