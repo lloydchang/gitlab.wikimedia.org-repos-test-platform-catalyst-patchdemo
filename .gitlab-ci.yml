@@ -36,12 +36,6 @@ test-nodejs:
 .default_rules:
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED
-      changes:
-        - .github/*
-        - .helm/*
-        - .gitlab-ci.yml
-      when: never
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED
 
 publish:
   stage: publish
