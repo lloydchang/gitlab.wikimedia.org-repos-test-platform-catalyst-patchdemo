@@ -31,6 +31,11 @@ Tested on Debian 11.
 
 For deployment on Wikmedia's Cloud VPS, read this [additional documentation](WMCS.md).
 
+Deployment To Staging and Production
+----
+* Changes are automatically deployed to staging(patchdemo-staging.wmcloud.org) on a successful merge into the master branch.
+* A manual action on gitlab-ci is required to deploy to production.
+
 FAQ
 ----
 ### Can you delete a wiki when you are done with it?
