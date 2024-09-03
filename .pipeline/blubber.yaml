@@ -6,7 +6,7 @@ variants:
       uid: 33
       gid: 33
       as: www-data
-    base: docker-registry.wikimedia.org/dev/patchdemo-bookworm-node18-php82-apache2:0.0.1-1
+    base: docker-registry.wikimedia.org/dev/patchdemo-bookworm-node18-php82-apache2:0.0.2
     builders:
       - custom:
           command: [cd /var/www/html && /var/www/html/setup-docker.sh]
