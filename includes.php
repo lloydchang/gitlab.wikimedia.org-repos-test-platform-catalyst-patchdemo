@@ -476,7 +476,7 @@ function delete_wiki( string $wiki, string $serverUri = null ): ?string {
 	}
 
 	if ( $wikiData['backend'] == 'catalyst' && $wikiData['catalystId'] != null ) {
-		//FIXME: handle error; don't print wiki deleted if error occurs
+		// FIXME: handle error; don't print wiki deleted if error occurs
 		$catalystApi->deleteEnvironment( $wikiData['catalystId'] );
 	} else {
 		$error = shell_echo( __DIR__ . '/deletewiki.sh',
