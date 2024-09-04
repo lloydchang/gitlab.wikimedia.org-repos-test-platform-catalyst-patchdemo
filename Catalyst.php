@@ -52,13 +52,10 @@ class Catalyst {
 		);
 	}
 
-	public function deleteEnvironment( string $id ): array {
-		return $this->withErr(
+	public function deleteEnvironment( string $id ): void {
+		$this->withErr(
 			function () use ( $id ) {
-				return $this->httpClient->request( 'DELETE', "$this->baseUrl/environments/$id" )->toArray();
-			},
-			static function ( $_ ) {
-				return [];
+				$this->httpClient->request( 'DELETE', "$this->baseUrl/environments/$id" )->getContent();
 			}
 		);
 	}
