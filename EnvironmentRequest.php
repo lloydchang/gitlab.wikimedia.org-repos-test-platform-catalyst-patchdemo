@@ -28,26 +28,29 @@ class EnvironmentRequest implements JsonSerializable {
 		return $this;
 	}
 
-	public function withExtension( string $extension, string $branch, array $refs = null ): EnvironmentRequest {
-		$extConfig = [ "enable" => true, "branch" => $branch ];
-		if ( $refs !== null ) {
-			$extConfig += [ "patches" => $refs ];
-		}
-		$this->values["extensions"][$extension] = $extConfig;
-		return $this;
+	public function withExtension( string $extension, string $branch, array $refs = [] ): EnvironmentRequest {
+		return $this->withComponent( "extensions", $extension, $branch, $refs );
 	}
 
-	public function withSkin( string $skin, string $branch, array $refs = null ): EnvironmentRequest {
-		$skinConfig = [ "enable" => true, "branch" => $branch ];
-		if ( $refs !== null ) {
-			$skinConfig += [ "patches" => $refs ];
-		}
-		$this->values["skins"][$skin] = $skinConfig;
-		return $this;
+	public function withSkin( string $skin, string $branch, array $refs = [] ): EnvironmentRequest {
+		return $this->withComponent( "skins", $skin, $branch, $refs );
+	}
+
+	public function withModule( string $module, string $branch, array $refs = [] ): EnvironmentRequest {
+		return $this->withComponent( "otherModules", $module, $branch, $refs );
 	}
 
 	private function setCoreValue( string $key, mixed $value ): void {
 		$this->values["mediawikiCore"][$key] = $value;
+	}
+
+	private function withComponent( string $type, string $component, string $branch, array $refs ): EnvironmentRequest {
+		$compConfig = [ "enable" => true, "branch" => $branch ];
+		if ( $refs !== null ) {
+			$compConfig += [ "patches" => $refs ];
+		}
+		$this->values[$type][$component] = $compConfig;
+		return $this;
 	}
 
 	public function jsonSerialize(): mixed {

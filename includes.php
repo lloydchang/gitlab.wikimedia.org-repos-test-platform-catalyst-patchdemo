@@ -630,14 +630,27 @@ function get_catalyst_repos(): array {
 	{
 		$extension = "$prefix/$extension";
 	}, 'mediawiki/extensions' );
-	$skins = array_keys( $mediawikiChartValues['defaultValues']['skins'] );
 
+	$skins = array_keys( $mediawikiChartValues['defaultValues']['skins'] );
 	array_walk( $skins, static function ( &$skin, $key, $prefix )
 	{
 		$skin = "$prefix/$skin";
 	}, 'mediawiki/skins' );
 
-	return array_merge( $skins, $extensions, [ "mediawiki/core" ] );
+	$otherModules = array_keys( $mediawikiChartValues['defaultValues']['otherModules'] );
+	array_walk( $otherModules, static function ( &$module, $key )
+	{
+		switch ( $module ) {
+			case 'VisualEditor':
+				$module = 'VisualEditor/VisualEditor';
+				break;
+			case 'parsoid':
+				$module = 'mediawiki/services/parsoid';
+				break;
+		}
+	} );
+
+	return array_merge( $skins, $extensions, $otherModules, [ "mediawiki/core" ] );
 }
 
 function get_repo_presets(): array {

@@ -193,12 +193,6 @@
 			backendInput.on( 'change', ( value ) => {
 				if ( value ) {
 					document.getElementById( 'catalystHeader' ).hidden = false;
-					reposField.$body[ 0 ].open = true;
-					presetInput.radioSelectWidget.items.forEach( ( preset ) => {
-						if ( preset.data !== 'custom' ) {
-							preset.setDisabled( true );
-						}
-					} );
 					reposInput.checkboxMultiselectWidget.items.forEach( ( option ) => {
 						setupRepoForCatalyst( option );
 					} );
@@ -206,9 +200,6 @@
 					toggleWidgetsForCatalyst( true );
 				} else {
 					document.getElementById( 'catalystHeader' ).hidden = true;
-					presetInput.radioSelectWidget.items.forEach( ( preset ) => {
-						preset.setDisabled( false );
-					} );
 					reposInput.checkboxMultiselectWidget.items.forEach( ( option ) => {
 						option.setDisabled( option.data === mediawikiCore );
 					} );

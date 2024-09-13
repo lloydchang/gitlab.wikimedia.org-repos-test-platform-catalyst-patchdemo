@@ -475,15 +475,28 @@ if ( $useCatalystBackend ) {
 	$env = ( new EnvironmentRequest( 'wiki-' . $wiki, 'mediawiki' ) )
 			->withBranch( $bareBranch )
 			->withIngress( $wiki . '.' . $config['catalystDomainName'] );
-	foreach ( $allowedRepos as $repo ) {
-		$repoRefs = $refs[$repo] ?? null;
+	foreach ( array_keys( $repos ) as $repo ) {
+		$repoRefs = $refs[$repo] ?? [];
 		$repoName = get_repo_name( $repo );
-		if ( str_contains( $repo, 'skin' ) ) {
-			$env->withSkin( $repoName, $bareBranch, $repoRefs );
-		} elseif ( $repo === 'mediawiki/core' ) {
-			$env->withCoreRefs( $repoRefs );
-		} else {
-			$env->withExtension( $repoName, $bareBranch, $repoRefs );
+		switch ( true ) {
+			case $repo === 'mediawiki/core':
+				$env->withCoreRefs( $repoRefs );
+				break;
+			case $repo === 'VisualEditor/VisualEditor':
+				$env->withModule( 'VisualEditor', $bareBranch, $repoRefs );
+				break;
+			case $repo === 'mediawiki/services/parsoid':
+				$env->withModule( 'parsoid', $bareBranch, $repoRefs );
+				break;
+			case str_contains( $repo, 'extension' ):
+				$env->withExtension( $repoName, $bareBranch, $repoRefs );
+				break;
+			case str_contains( $repo, 'skin' ):
+				$env->withSkin( $repoName, $bareBranch, $repoRefs );
+				break;
+			default:
+				$console_msg = htmlspecialchars( "Unknown repo $repo for Catalyst request" );
+				echo "<script>console.error( '$console_msg' );</script>";
 		}
 	}
 	$res = $catalystApi->postEnvironment( $env );
