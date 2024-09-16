@@ -25,7 +25,8 @@ $presetLabels = [
 ];
 
 $auth = Authentication::getInstance();
-$canCreate = !$auth->useOauth() || $auth->isSignedIn();
+$authorized = !$auth->useOauth() || $auth->isSignedIn();
+$canCreate = !$config['readOnly'] && $authorized;
 $mediawikiCore = 'mediawiki/core';
 $branches = get_branches_sorted( $mediawikiCore );
 
@@ -342,10 +343,10 @@ if ( $config['readOnly'] ) {
 			] ),
 		]
 	] );
+}
 
-	if ( !$canCreate ) {
-		echo $auth->signInPrompt();
-	}
+if ( !$authorized ) {
+	echo $auth->signInPrompt();
 }
 
 ?>
@@ -565,15 +566,21 @@ echo '<table class="wikis">' .
 	$rows .
 '</table>';
 
-echo '<script>
+$windowData = '<script>
 window.pd = window.pd || {};
 pd.wikiPatches = ' . json_encode_clean( $wikiPatches ) . ';
 pd.config = ' . json_encode_clean( [
 	'phabricatorUrl' => $config['phabricatorUrl'],
 	'gerritUrl' => $config['gerritUrl'],
-] ) . ';
-pd.catalystRepos = ' . json_encode_clean( $catalystRepos ) . ';
+] ) . ';';
+if ( isset( $catalystRepos ) ) {
+	$windowData .= '
+pd.catalystRepos = ' . json_encode_clean( $catalystRepos ) . ';';
+}
+$windowData .= '
 </script>';
+
+echo $windowData;
 
 ?>
 <script src="js/DetailsFieldLayout.js"></script>
