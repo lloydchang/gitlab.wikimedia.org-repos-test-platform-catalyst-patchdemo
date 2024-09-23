@@ -488,6 +488,14 @@ if ( $useCatalystBackend ) {
 			case $repo === 'mediawiki/services/parsoid':
 				$env->withModule( 'parsoid', $bareBranch, $repoRefs );
 				break;
+			case $repo === 'oojs/ui':
+				# We don't branch 'oojs/ui', 'master' is the only possible branch for the repo
+				$env->withModule( 'ooui', 'master', $repoRefs );
+				break;
+			case $repo === 'design/codex':
+				# We don't branch 'design/codex', 'main' is the only possible branch for the repo
+				$env->withModule( 'codex', 'main', $repoRefs );
+				break;
 			case str_contains( $repo, 'extension' ):
 				$env->withExtension( $repoName, $bareBranch, $repoRefs );
 				break;

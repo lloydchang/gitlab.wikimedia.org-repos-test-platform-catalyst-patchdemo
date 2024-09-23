@@ -647,6 +647,12 @@ function get_catalyst_repos(): array {
 			case 'parsoid':
 				$module = 'mediawiki/services/parsoid';
 				break;
+			case 'ooui':
+				$module = 'oojs/ui';
+				break;
+			case 'codex':
+				$module = 'design/codex';
+				break;
 		}
 	} );
 
