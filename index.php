@@ -79,14 +79,6 @@ $presetOptions = array_map( static function ( $data, $preset ) {
 	return $option;
 }, array_keys( $presetLabels ), array_values( $presetLabels ) );
 
-if ( $config['notificationBanner'] ) {
-	echo new OOUI\MessageWidget( [
-			'type' => 'notice',
-			'label' => new OOUI\HtmlSnippet( $config['notificationBanner'] ) ]
-	);
-	echo '<br />';
-}
-
 if ( $config['readOnly'] ) {
 	echo new OOUI\MessageWidget( [
 		'type' => 'warning',
@@ -356,6 +348,14 @@ if ( !$authorized ) {
 <br/>
 <h3>Previously generated wikis</h3>
 <?php
+if ( $config['notificationBanner'] ) {
+	echo new OOUI\MessageWidget( [
+			'type' => 'notice',
+			'label' => new OOUI\HtmlSnippet( $config['notificationBanner'] ) ]
+	);
+	echo '<br />';
+}
+
 if ( $auth->isSignedIn() ) {
 	echo new OOUI\FieldLayout(
 		new OOUI\CheckboxInputWidget( [
