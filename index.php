@@ -100,8 +100,11 @@ if ( $config['readOnly'] ) {
 	$useCatalystBackend = new OOUI\HtmlSnippet(
 		'Use experimental Kubernetes backend (<a href="https://wikitech.wikimedia.org/wiki/Catalyst">Catalyst</a>)'
 	);
+	$cannotUseCatalystBackend = new OOUI\HtmlSnippet(
+		'Could not reach the experimental Kubernetes backend (<a href="https://wikitech.wikimedia.org/wiki/Catalyst">Catalyst</a>) - option disabled.'
+	);
 	$catalystBackendLabel = $catalystBackendDisabled ?
-		$useCatalystBackend . ' Could not reach catalyst - option disabled.' :
+		$cannotUseCatalystBackend :
 		$useCatalystBackend;
 
 	echo new OOUI\FormLayout( [
