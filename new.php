@@ -489,6 +489,7 @@ if ( $useCatalystBackend ) {
 	$res = $catalystApi->postEnvironment( $env );
 	$catalystId = $res["id"];
 	wiki_add_catalyst_id( $wiki, $catalystId );
+	sleep(6);
 	check_connection();
 	set_progress( $repoProgress, "Cloning repositories ($n/$repoCount)..." );
 	$catalystApi->streamLogs( $catalystId, "mediawiki/install-mediawiki", static function ( $logs ) use ( $start, $end, $repoCount, &$n, &$repoProgress ) {
