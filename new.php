@@ -507,6 +507,7 @@ if ( $useCatalystBackend ) {
 				echo "<script>console.error( '$console_msg' );</script>";
 		}
 	}
+	$env->useRepositoryPool( "/mnt/k3s-data/wiki-repos" );
 	$res = $catalystApi->postEnvironment( $env );
 	$catalystId = $res["id"];
 	wiki_add_catalyst_id( $wiki, $catalystId );

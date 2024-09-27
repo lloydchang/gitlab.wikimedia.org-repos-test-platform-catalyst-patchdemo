@@ -40,13 +40,18 @@ class EnvironmentRequest implements JsonSerializable {
 		return $this->withComponent( "otherModules", $module, $branch, $refs );
 	}
 
+	public function useRepositoryPool( string $poolPath ): EnvironmentRequest {
+		$this->values["reposCache"] = [ "use" => true, "wikiRepos" => $poolPath ];
+		return $this;
+	}
+
 	private function setCoreValue( string $key, mixed $value ): void {
 		$this->values["mediawikiCore"][$key] = $value;
 	}
 
 	private function withComponent( string $type, string $component, string $branch, array $refs ): EnvironmentRequest {
 		$compConfig = [ "enable" => true, "branch" => $branch ];
-		if ( $refs !== null ) {
+		if ( $refs ) {
 			$compConfig += [ "patches" => $refs ];
 		}
 		$this->values[$type][$component] = $compConfig;

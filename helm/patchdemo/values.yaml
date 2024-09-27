@@ -32,6 +32,8 @@ app:
   adminUsers: 'SDunlap-WMF,JNuche (WMF),JHuneidi (WMF),CCicalese (WMF),ESanders (WMF),Ed g2s,Matma Rex'
   conduitApiKey: ''
 
+refWikiRepos: /mnt/k3s-data/wiki-repos
+
 mariadb:
   auth:
     database: patchdemo

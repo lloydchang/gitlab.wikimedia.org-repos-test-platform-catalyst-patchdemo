@@ -1,4 +1,33 @@
 apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ include "patchdemo.fullname" . }}-wiki-repos-pv
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 15Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: {{ .Values.refWikiRepos }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "patchdemo.fullname" . }}-wiki-repos-pvc
+spec:
+  volumeName: {{ include "patchdemo.fullname" . }}-wiki-repos-pv
+  storageClassName: manual
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 15Gi
+---
+apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ include "patchdemo.fullname" . }}
@@ -11,6 +40,15 @@ spec:
     limits:
       storage: 80Gi
   volumeMode: Filesystem
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "patchdemo.fullname" . }}-repos-config
+data:
+  repos.cfg: |
+{{ $.Files.Get "files/repos.cfg" | indent 4 }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -103,8 +141,39 @@ spec:
           volumeMounts:
             - name: log-volume
               mountPath: /var/log/apache2
+        - name: clone-wiki-repos
+          image: bitnami/git:latest
+          command:
+            - bash
+            - -c
+            - |
+              set -eu -o pipefail
+
+              GERRIT_URL="https://gerrit.wikimedia.org/r"
+
+              cd /srv/repo-pool/wiki-repos
+              if [ ! -d core/.git ]; then
+                git clone --no-checkout $GERRIT_URL/mediawiki/core core
+              fi
+              while read -r source target; do
+                if [ ! -d "$target/.git" ]; then
+                  git clone --no-checkout "$GERRIT_URL/$source" "$target"
+                fi
+              done <../config/repos.cfg
+          volumeMounts:
+            - name: wiki-repos
+              mountPath: /srv/repo-pool/wiki-repos
+              readOnly: false
+            - name: repos-config
+              mountPath: /srv/repo-pool/config
       volumes:
         - name: wikis
           persistentVolumeClaim:
             claimName: {{ include "patchdemo.fullname" . }}
+        - name: wiki-repos
+          persistentVolumeClaim:
+            claimName: {{ include "patchdemo.fullname" . }}-wiki-repos-pvc
+        - name: repos-config
+          configMap:
+            name: {{ include "patchdemo.fullname" . }}-repos-config
         - name: log-volume
