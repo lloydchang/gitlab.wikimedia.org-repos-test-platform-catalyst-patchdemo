@@ -318,9 +318,9 @@ $repoValue = [
 	'preset' => $_POST['preset']
 ];
 if ( $_POST['preset'] === 'custom' ) {
-	$allowedRepos = $_POST['repos'];
+	$allowedRepos = $_POST['repos'] ?? [];
 	// Only store full list if used
-	$repoValue['repos'] = $_POST['repos'];
+	$repoValue['repos'] = $_POST['repos'] ?? [];
 } else {
 	$allowedRepos = get_repo_presets()[$_POST['preset']];
 }

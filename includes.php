@@ -151,6 +151,9 @@ function get_wiki_data_from_row( array $data ): array {
 	$data['announcedTasks'] = json_decode( $data['announcedTasks'] ?: '' ) ?: [];
 	$data['repos'] = json_decode( $data['repos'] ?: '', true ) ?: [ 'preset' => 'unknown' ];
 
+	// ensure that $data['repos']['repos'] is always an array so consumers don't need to do array checks before array arithmetic
+	$data['repos']['repos'] = isset( $data['repos']['repos'] ) && $data['repos']['repos'] !== null ? $data['repos']['repos'] : [];
+
 	// Populate patch list
 	$patchList = [];
 	$linkedTasks = [];
