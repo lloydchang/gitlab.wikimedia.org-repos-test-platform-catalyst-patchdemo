@@ -27,7 +27,7 @@ if ( file_exists( 'config.php' ) ) {
 }
 
 $ansiConverter = new AnsiToHtmlConverter( new SolarizedXTermTheme() );
-$catalystApi = Catalyst::newClient( getenv( 'CATALYST_API_TOKEN' ) );
+$catalystApi = Catalyst::newClient( $config['catalystApiToken'] );
 
 $basePath = dirname( $_SERVER['SCRIPT_NAME'] );
 if ( $basePath === '/' ) {
