@@ -72,6 +72,9 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
+            - name: ssh
+              containerPort: 22
+              protocol: TCP
           env:
             - name: DB_USER
               value: "{{ .Values.mariadb.auth.username }}"

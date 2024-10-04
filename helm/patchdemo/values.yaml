@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: docker-registry.wikimedia.org/repos/qte/catalyst/patchdemo
+  repository: k3s-reg:5000/patchdemo-sshd
   tag: latest
   pullPolicy: Always
 
@@ -20,15 +20,15 @@ app:
   notificationBanner: ''
   phabricatorUrl: https://phabricator.wikimedia.org
   gerritUrl: https://gerrit.wikimedia.org
-  catalystApiUrl: https://api.catalyst.wmcloud.org
+  catalystApiUrl: http://host.minikube.internal:8080
   catalystDomainName: catalyst.wmcloud.org
-  catalystApiToken: ''
+  catalystApiToken: '0-550e8400-e29b-41d4-a716-446655440000'
   statusUrl: ''
   requireVerified: true
-  oauthUrl: 'https://meta.wikimedia.org/w/index.php?title=Special:OAuth'
-  oauthCallback: https://patchdemo.wmcloud.org
-  oauthConsumerKey: ''
-  oauthConsumerSecret: ''
+  oauthUrl: ''
+  oauthCallback: ""
+  oauthConsumerKey: ""
+  oauthConsumerSecret: ""
   adminUsers: 'SDunlap-WMF,JNuche (WMF),JHuneidi (WMF),CCicalese (WMF),ESanders (WMF),Ed g2s,Matma Rex'
   conduitApiKey: ''
 
@@ -106,7 +106,7 @@ mariadb:
       	ADD COLUMN IF NOT EXISTS `repo` TEXT NULL AFTER `patch`;
       
       ALTER TABLE `wikis`
-          ADD COLUMN IF NOT EXISTS `backend` VARCHAR(16) NOT NULL DEFAULT 'patchdemo' AFTER `created`;
-
+        ADD COLUMN IF NOT EXISTS `backend` VARCHAR(16) NOT NULL DEFAULT 'patchdemo' AFTER `created`;
+      
       ALTER TABLE `wikis`
-          ADD COLUMN IF NOT EXISTS `catalystId` SMALLINT UNSIGNED NULL DEFAULT NULL AFTER `backend`;
+        ADD COLUMN IF NOT EXISTS `catalystId` SMALLINT UNSIGNED NULL DEFAULT NULL AFTER `backend`;

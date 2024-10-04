@@ -1,5 +1,7 @@
 <?php
 
+use Symfony\Component\HttpClient\Chunk\ServerSentEvent;
+use Symfony\Component\HttpClient\EventSourceHttpClient;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpClient\ScopingHttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -10,6 +12,7 @@ class Catalyst {
 
 	private string $baseUrl;
 	private HttpClientInterface $httpClient;
+	private EventSourceHttpClient $eventSourceHttpClient;
 
 	public static function newClient( string $apiToken ): Catalyst {
 		return new Catalyst( $apiToken );
@@ -27,7 +30,54 @@ class Catalyst {
 				'Authorization' => "ApiToken $apiToken",
 			],
 		] );
+		$eventSourceHttpClient = new EventSourceHttpClient( $httpClient );
 		$this->httpClient = $httpClient;
+		$this->eventSourceHttpClient = $eventSourceHttpClient;
+	}
+
+	public function streamLogs( string $id, string $containerName, callable $handlerFn ): void {
+		$connected = false;
+		$source = null;
+		echo "<br> before do ";
+		do {
+			// keep trying in case pod is initializing
+			try {
+				$pre = $this->eventSourceHttpClient->connect( "$this->baseUrl/environments/$id/logs" );
+				$source = $this->eventSourceHttpClient->connect( "$this->baseUrl/environments/$id/logs?stream=$containerName" );
+				// echo "<br> status code in try block".$source->getStatusCode();
+				echo "<br> stream URL: ". "$this->baseUrl/environments/$id/logs?stream=$containerName" ;
+			}catch (Exception $e){
+				var_dump("exception from try catch", $e);
+			}
+			$connected = true;
+		// } while ( $source->getStatusCode() === 503 );
+		} while (!$connected || $source->getStatusCode() === 503);
+		$finished = false;
+		echo "<br> after do + while !connected ";
+		echo "<br>".$source->getStatusCode();
+		while ( $source && $pre && !$finished ) {
+			$finished = $this->withErr(
+				function () use ( $source, $handlerFn ) {
+					echo "<br> in handler function ";
+					foreach ( $this->eventSourceHttpClient->stream( $source, 300 ) as $chunk ) {
+						var_dump("chunk from handler fn", $chunk);
+						if ( $chunk instanceof ServerSentEvent ) {
+							echo "<br> getting ready to call handler fn";
+							$data = $chunk->getArrayData();
+							$logs = $data['logs'];
+							$handlerFn( $logs );
+						}
+
+						if ( $chunk->isLast() ) {
+							echo "<br> last chunk";
+							return true;
+						}
+					}
+					return false;
+				}
+			);
+
+		}
 	}
 
 	public function getChart( string $chartName ): array {

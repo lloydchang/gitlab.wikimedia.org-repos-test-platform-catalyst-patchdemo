@@ -470,6 +470,7 @@ function get_repo_name( string $repo ): string {
 
 // build catalyst api query here
 if ( $useCatalystBackend ) {
+	echo "<br> inside catalyst if ";
 	$catalystApi = Catalyst::newClient( $config['catalystApiToken'] );
 	$bareBranch = substr( $branch, strlen( 'origin/' ) );
 	$env = ( new EnvironmentRequest( 'wiki-' . $wiki, 'mediawiki' ) )
@@ -511,6 +512,29 @@ if ( $useCatalystBackend ) {
 	$res = $catalystApi->postEnvironment( $env );
 	$catalystId = $res["id"];
 	wiki_add_catalyst_id( $wiki, $catalystId );
+	echo "<br> before check connection ";
+	check_connection();
+	echo "<br> after check connection. $catalystId";
+	set_progress( $repoProgress, "Cloning repositories ($n/$repoCount)..." );
+	$catalystApi->streamLogs( $catalystId, "mediawiki/install-mediawiki", static function ( $logs ) use ( $start, $end, $repoCount, &$n, &$repoProgress ) {
+		echo "<br> inside handler ";
+		foreach ( $logs as $log ) {
+			$logMsg = $log['log'];
+			if ( str_contains( $logMsg, 'Cloning' ) ) {
+				$repoProgress += ( $end - $start ) / $repoCount;
+				$n++;
+				set_progress( $repoProgress, "Cloning repositories ($n/$repoCount)..." );
+			} elseif ( str_contains( $logMsg, 'composer install' ) ) {
+				set_progress( 60, "Running composer..." );
+			} elseif ( str_contains( $logMsg, 'apt-get install -y npm' ) ) {
+				set_progress( 80, "Setting up npm..." );
+			} elseif ( str_contains( $logMsg, 'Installing Wiki' ) ) {
+				set_progress( 90, "Installing wiki..." );
+			}
+			echo format_streamed_log( $log['timestamp'], $logMsg );
+			echo '<br />';
+		}
+	} );
 } else {
 	foreach ( $repos as $source => $target ) {
 		$cmds[] = __DIR__ . '/new/updaterepos.sh';
