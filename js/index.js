@@ -16,7 +16,6 @@
 		const instantCommonsCheckbox = OO.ui.infuse( $( '.form-instantCommons' ) );
 		const instantCommonsMethodDropdown = OO.ui.infuse( $( '.form-instantCommonsMethod' ) );
 		const languageInput = OO.ui.infuse( $( '.form-language' ) );
-		const proxyInput = OO.ui.infuse( $( '.form-proxy' ) );
 		const docsInput = OO.ui.infuse( $( '.form-docs' ) );
 		const tempuserInput = OO.ui.infuse( $( '.form-tempuser' ) );
 		const submit = OO.ui.infuse( $( '.form-submit' ) );
@@ -24,7 +23,6 @@
 		const announce = $( '.form-announce' ).length ? OO.ui.infuse( $( '.form-announce' ) ) : null;
 		const announceLayout = announce ? OO.ui.infuse( $( '.form-announce-layout' ) ) : null;
 		const backendInput = $formBackend.length ? OO.ui.infuse( $formBackend ) : null;
-		let catalystSelected = backendInput && backendInput.isSelected();
 		const mediawikiCore = 'mediawiki/core';
 
 		const toggleWidgetsForCatalyst = ( setDisabled ) => {
@@ -35,7 +33,6 @@
 			if ( announce ) {
 				announce.setDisabled( setDisabled );
 			}
-			proxyInput.setDisabled( setDisabled );
 			docsInput.setDisabled( setDisabled );
 			tempuserInput.setDisabled( setDisabled );
 
@@ -43,7 +40,6 @@
 				instantCommonsCheckbox.setSelected( false );
 				landingPageInput.setValue( landingPageInput.placeholder );
 				languageInput.setValue( 'en' );
-				proxyInput.setSelected( false );
 				docsInput.setSelected( false );
 				tempuserInput.setSelected( false );
 				if ( announce ) {
@@ -135,17 +131,6 @@
 			}
 		};
 
-		const isRepoEnabledInCatalyst = ( repo, disableCore = false ) => (
-			repo === mediawikiCore && disableCore === true ? false :
-				window.pd.catalystRepos.indexOf( repo ) !== -1
-		);
-
-		const setupRepoForCatalyst = ( option ) => {
-			const repo = option.data;
-			option.setDisabled( !isRepoEnabledInCatalyst( repo, true ) );
-			option.setSelected( option.isSelected() && isRepoEnabledInCatalyst( repo ) );
-		};
-
 		const setupReposInputs = () => {
 			const reposFieldLabel = reposField.getLabel();
 			presetInput.on( 'change', OO.ui.debounce( () => {
@@ -172,9 +157,6 @@
 
 				let selected = 0, enabled = 0;
 				reposInput.checkboxMultiselectWidget.items.forEach( ( option ) => {
-					if ( catalystSelected ) {
-						setupRepoForCatalyst( option );
-					}
 					if ( !option.isDisabled() ) {
 						enabled++;
 						if ( option.isSelected() ) {
@@ -193,17 +175,12 @@
 			backendInput.on( 'change', ( value ) => {
 				if ( value ) {
 					document.getElementById( 'catalystHeader' ).hidden = false;
-					reposInput.checkboxMultiselectWidget.items.forEach( ( option ) => {
-						setupRepoForCatalyst( option );
-					} );
-					catalystSelected = true;
 					toggleWidgetsForCatalyst( true );
 				} else {
 					document.getElementById( 'catalystHeader' ).hidden = true;
 					reposInput.checkboxMultiselectWidget.items.forEach( ( option ) => {
 						option.setDisabled( option.data === mediawikiCore );
 					} );
-					catalystSelected = false;
 					toggleWidgetsForCatalyst( false );
 					reposInput.emit( 'change' );
 				}

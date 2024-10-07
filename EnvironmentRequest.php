@@ -28,6 +28,11 @@ class EnvironmentRequest implements JsonSerializable {
 		return $this;
 	}
 
+	public function useProxy(): EnvironmentRequest {
+		$this->setCoreValue( "useProxy", true );
+		return $this;
+	}
+
 	public function withExtension( string $extension, string $branch, array $refs = [] ): EnvironmentRequest {
 		return $this->withComponent( "extensions", $extension, $branch, $refs );
 	}

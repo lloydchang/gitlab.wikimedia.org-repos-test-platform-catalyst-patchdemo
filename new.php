@@ -475,6 +475,11 @@ if ( $useCatalystBackend ) {
 	$env = ( new EnvironmentRequest( 'wiki-' . $wiki, 'mediawiki' ) )
 			->withBranch( $bareBranch )
 			->withIngress( $wiki . '.' . $config['catalystDomainName'] );
+
+	if ( $useProxy ) {
+		$env->useProxy();
+	}
+
 	foreach ( array_keys( $repos ) as $repo ) {
 		$repoRefs = $refs[$repo] ?? [];
 		$repoName = get_repo_name( $repo );
