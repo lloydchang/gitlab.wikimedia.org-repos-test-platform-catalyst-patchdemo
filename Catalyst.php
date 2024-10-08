@@ -26,7 +26,7 @@ class Catalyst {
 		$httpClient = ScopingHttpClient::forBaseUri( BASE_CLIENT, $this->baseUrl, [
 			'max_redirects' => 1,
 			'headers' => [
-				'Accept' => 'application/json',
+				'Accept' => 'text/event-stream',
 				'Authorization' => "ApiToken $apiToken",
 			],
 		] );
@@ -116,10 +116,11 @@ class Catalyst {
 	public function postEnvironment( EnvironmentRequest $env ): array {
 		return $this->withErr(
 			function () use ( $env ) {
+				$env_utf8 = mb_convert_encoding($env, 'UTF-8', 'ISO-8859-1');
 				$envJson = json_encode( $env, JSON_THROW_ON_ERROR );
 				return $this->httpClient->request( 'POST', "$this->baseUrl/environments", [
-					'headers' => [ 'Content-Type' => 'application/json' ],
-					'body' => $envJson,
+					'headers' => [ 'Content-Type' => 'text/event-stream' ],
+					'body' => $env_utf8,
 				] )->toArray();
 			},
 			static function ( $e ) {

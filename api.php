@@ -1,5 +1,5 @@
 <?php
-header( 'Content-Type: application/json' );
+header( 'Content-Type: text/event-stream' );
 header( 'Access-Control-Allow-Origin: *' );
 
 define( 'PATCH_DEMO_JSON_API', 1 );
