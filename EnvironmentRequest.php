@@ -28,8 +28,13 @@ class EnvironmentRequest implements JsonSerializable {
 		return $this;
 	}
 
-	public function useProxy(): EnvironmentRequest {
-		$this->setCoreValue( "useProxy", true );
+	public function withLanguage( string $language ): EnvironmentRequest {
+		$this->setCoreValue( "language", $language );
+		return $this;
+	}
+
+	public function useProxy( bool $use ): EnvironmentRequest {
+		$this->setCoreValue( "useProxy", $use );
 		return $this;
 	}
 

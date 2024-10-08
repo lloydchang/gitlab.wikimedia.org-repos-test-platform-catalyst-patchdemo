@@ -475,11 +475,9 @@ if ( $useCatalystBackend ) {
 	$bareBranch = substr( $branch, strlen( 'origin/' ) );
 	$env = ( new EnvironmentRequest( 'wiki-' . $wiki, 'mediawiki' ) )
 			->withBranch( $bareBranch )
-			->withIngress( $wiki . '.' . $config['catalystDomainName'] );
-
-	if ( $useProxy ) {
-		$env->useProxy();
-	}
+			->withIngress( $wiki . '.' . $config['catalystDomainName'] )
+			->withLanguage( $language )
+			->useProxy( $useProxy );
 
 	foreach ( array_keys( $repos ) as $repo ) {
 		$repoRefs = $refs[$repo] ?? [];
