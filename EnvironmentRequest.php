@@ -28,6 +28,11 @@ class EnvironmentRequest implements JsonSerializable {
 		return $this;
 	}
 
+	public function withMainPageText( string $text ): EnvironmentRequest {
+		$this->setCoreValue( "mainPageText", $text );
+		return $this;
+	}
+
 	public function withLanguage( string $language ): EnvironmentRequest {
 		$this->setCoreValue( "language", $language );
 		return $this;

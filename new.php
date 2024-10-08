@@ -476,6 +476,7 @@ if ( $useCatalystBackend ) {
 	$env = ( new EnvironmentRequest( 'wiki-' . $wiki, 'mediawiki' ) )
 			->withBranch( $bareBranch )
 			->withIngress( $wiki . '.' . $config['catalystDomainName'] )
+			->withMainPageText( $mainPage )
 			->withLanguage( $language )
 			->useProxy( $useProxy );
 
