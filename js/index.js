@@ -26,8 +26,6 @@
 		const mediawikiCore = 'mediawiki/core';
 
 		const toggleWidgetsForCatalyst = ( setDisabled ) => {
-			instantCommonsCheckbox.setDisabled( setDisabled );
-			instantCommonsMethodDropdown.setDisabled( setDisabled );
 			if ( announce ) {
 				announce.setDisabled( setDisabled );
 			}
@@ -35,7 +33,6 @@
 			tempuserInput.setDisabled( setDisabled );
 
 			if ( setDisabled ) {
-				instantCommonsCheckbox.setSelected( false );
 				docsInput.setSelected( false );
 				tempuserInput.setSelected( false );
 				if ( announce ) {

@@ -33,6 +33,11 @@ class EnvironmentRequest implements JsonSerializable {
 		return $this;
 	}
 
+	public function useInstantCommons( bool $use ): EnvironmentRequest {
+		$this->setCoreValue( "useInstantCommons", $use );
+		return $this;
+	}
+
 	public function withLanguage( string $language ): EnvironmentRequest {
 		$this->setCoreValue( "language", $language );
 		return $this;
