@@ -392,7 +392,8 @@ $mainPage = "This wiki was generated on [$server$serverPath '''Patch demo'''] at
 
 if ( $landingPage ) {
 	// $landingPage could have a query string so build an external link.
-	$mainPage .= "\n\nThe designated landing page for this wiki is [{{SERVER}}{{ARTICLEPATH}}/../$landingPage $landingPage].";
+	$linkLandingPage = preg_replace( '/\s+/', '_', $landingPage );
+	$mainPage .= "\n\nThe designated landing page for this wiki is [{{SERVER}}{{ARTICLEPATH}}/../$linkLandingPage $landingPage].";
 }
 
 if ( $buildDocs ) {
