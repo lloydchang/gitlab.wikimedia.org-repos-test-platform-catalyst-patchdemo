@@ -16,8 +16,6 @@
 		const instantCommonsCheckbox = OO.ui.infuse( $( '.form-instantCommons' ) );
 		const instantCommonsMethodDropdown = OO.ui.infuse( $( '.form-instantCommonsMethod' ) );
 		const languageInput = OO.ui.infuse( $( '.form-language' ) );
-		const docsInput = OO.ui.infuse( $( '.form-docs' ) );
-		const tempuserInput = OO.ui.infuse( $( '.form-tempuser' ) );
 		const submit = OO.ui.infuse( $( '.form-submit' ) );
 		const patchesLayout = OO.ui.infuse( $( '.form-patches-layout' ) );
 		const announce = $( '.form-announce' ).length ? OO.ui.infuse( $( '.form-announce' ) ) : null;
@@ -29,12 +27,8 @@
 			if ( announce ) {
 				announce.setDisabled( setDisabled );
 			}
-			docsInput.setDisabled( setDisabled );
-			tempuserInput.setDisabled( setDisabled );
 
 			if ( setDisabled ) {
-				docsInput.setSelected( false );
-				tempuserInput.setSelected( false );
 				if ( announce ) {
 					announce.setSelected( false );
 				}
@@ -171,11 +165,7 @@
 					toggleWidgetsForCatalyst( true );
 				} else {
 					document.getElementById( 'catalystHeader' ).hidden = true;
-					reposInput.checkboxMultiselectWidget.items.forEach( ( option ) => {
-						option.setDisabled( option.data === mediawikiCore );
-					} );
 					toggleWidgetsForCatalyst( false );
-					reposInput.emit( 'change' );
 				}
 			} );
 		};

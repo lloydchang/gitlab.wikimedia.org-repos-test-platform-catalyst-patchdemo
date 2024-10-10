@@ -332,6 +332,7 @@ wiki_add_repos( $wiki, $repoValue );
 $allowedRepos = array_merge( $allowedRepos, $usedRepos );
 
 $useProxy = !empty( $_POST['proxy'] );
+$useTempUser = !empty( $_POST['tempuser'] );
 $useInstantCommons = !empty( $_POST['instantCommons'] );
 // When proxying, always enable MobileFrontend and its content provider
 if ( $useProxy ) {
@@ -479,7 +480,9 @@ if ( $useCatalystBackend ) {
 			->useInstantCommons( $useInstantCommons )
 			->withMainPageText( $mainPage )
 			->withLanguage( $language )
-			->useProxy( $useProxy );
+			->useProxy( $useProxy )
+			->buildDocs( $buildDocs )
+			->useTempUser( $useTempUser );
 
 	foreach ( array_keys( $repos ) as $repo ) {
 		$repoRefs = $refs[$repo] ?? [];
@@ -679,7 +682,7 @@ if ( $useCatalystBackend ) {
 		$baseEnv + [
 			'MAINPAGE' => $mainPage,
 			'USE_PROXY' => $useProxy,
-			'USE_TEMPUSER' => !empty( $_POST['tempuser'] ),
+			'USE_TEMPUSER' => $useTempUser,
 			'USE_INSTANT_COMMONS' => $useInstantCommons,
 			'BUILD_DOCS' => $buildDocs,
 			'REPOSITORIES' => $reposString,

@@ -48,6 +48,16 @@ class EnvironmentRequest implements JsonSerializable {
 		return $this;
 	}
 
+	public function buildDocs( bool $build ): EnvironmentRequest {
+		$this->setCoreValue( "buildDocs", $build );
+		return $this;
+	}
+
+	public function useTempUser( bool $use ): EnvironmentRequest {
+		$this->setCoreValue( "useTempUser", $use );
+		return $this;
+	}
+
 	public function withExtension( string $extension, string $branch, array $refs = [] ): EnvironmentRequest {
 		return $this->withComponent( "extensions", $extension, $branch, $refs );
 	}
