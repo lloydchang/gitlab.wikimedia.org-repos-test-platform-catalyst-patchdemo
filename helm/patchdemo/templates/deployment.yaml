@@ -30,6 +30,18 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
+  name: {{ include "patchdemo.fullname" . }}-sessions
+spec:
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
   name: {{ include "patchdemo.fullname" . }}
 spec:
   accessModes:
@@ -114,6 +126,8 @@ spec:
           volumeMounts:
             - name: wikis
               mountPath: /var/www/html/wikis
+            - name: sessions
+              mountPath: /var/lib/php/sessions
             - name: log-volume
               mountPath: /var/log/apache2
         - name: tail-access-log
@@ -170,6 +184,9 @@ spec:
         - name: wikis
           persistentVolumeClaim:
             claimName: {{ include "patchdemo.fullname" . }}
+        - name: sessions
+          persistentVolumeClaim:
+            claimName: {{ include "patchdemo.fullname" . }}-sessions
         - name: wiki-repos
           persistentVolumeClaim:
             claimName: {{ include "patchdemo.fullname" . }}-wiki-repos-pvc
