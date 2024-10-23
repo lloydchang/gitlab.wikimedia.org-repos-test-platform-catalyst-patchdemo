@@ -18,26 +18,11 @@
 		const languageInput = OO.ui.infuse( $( '.form-language' ) );
 		const submit = OO.ui.infuse( $( '.form-submit' ) );
 		const patchesLayout = OO.ui.infuse( $( '.form-patches-layout' ) );
-		const announce = $( '.form-announce' ).length ? OO.ui.infuse( $( '.form-announce' ) ) : null;
-		const announceLayout = announce ? OO.ui.infuse( $( '.form-announce-layout' ) ) : null;
 		const backendInput = $formBackend.length ? OO.ui.infuse( $formBackend ) : null;
 		const mediawikiCore = 'mediawiki/core';
 
-		const toggleWidgetsForCatalyst = ( setDisabled ) => {
-			if ( announce ) {
-				announce.setDisabled( setDisabled );
-			}
-
-			if ( setDisabled ) {
-				if ( announce ) {
-					announce.setSelected( false );
-				}
-			}
-		};
 		const setupSubmit = () => {
 			form.addEventListener( 'submit', ( e ) => {
-				// fields must be enabled for data to be submitted
-				toggleWidgetsForCatalyst( false );
 				// Blur is not fired on patchesInput, so call manually
 				patchesInput.doInputEnter();
 
@@ -70,6 +55,7 @@
 			} );
 		};
 		const setupAnnounceInput = () => {
+			const announceLayout = OO.ui.infuse( $( '.form-announce-layout' ) );
 			const taskLabel = new OO.ui.LabelWidget( { classes: [ 'form-announce-taskList' ] } );
 			announceLayout.$field.append( taskLabel.$element );
 			const updateLinkedTasks = ( linkedTasks ) => {
@@ -162,10 +148,8 @@
 			backendInput.on( 'change', ( value ) => {
 				if ( value ) {
 					document.getElementById( 'catalystHeader' ).hidden = false;
-					toggleWidgetsForCatalyst( true );
 				} else {
 					document.getElementById( 'catalystHeader' ).hidden = true;
-					toggleWidgetsForCatalyst( false );
 				}
 			} );
 		};
@@ -219,7 +203,7 @@
 		};
 
 		setupSubmit();
-		if ( announceLayout ) {
+		if ( $( '.form-announce' ).length ) {
 			setupAnnounceInput();
 		}
 		if ( $( '.closedWikis' ).length ) {
