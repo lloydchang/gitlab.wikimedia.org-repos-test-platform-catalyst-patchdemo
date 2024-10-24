@@ -1,0 +1,39 @@
+apiVersion: skaffold/v4beta11
+kind: Config
+metadata:
+  name: patchdemo
+build:
+  artifacts:
+    - image: patchdemo
+      custom:
+        buildCommand: docker buildx build -f .pipeline/blubber.yaml --target patchdemo -t $IMAGE .
+        dependencies:
+          paths:
+            - "**/*.php"
+            - "**/*.html"
+            - "**/*.sh"
+
+
+deploy:
+  helm:
+    releases:
+      - name: patchdemo
+        chartPath: helm/patchdemo
+        skipBuildDependencies: false
+        valuesFiles:
+          - helm/patchdemo/values.yaml
+        version: 0.1.0
+        setValueTemplates:
+          image.repository: "{{.IMAGE_REPO_patchdemo}}"
+          image.tag: "{{.IMAGE_TAG_patchdemo}}@{{.IMAGE_DIGEST_patchdemo}}"
+        setValues:
+          image.pullPolicy: "IfNotPresent"
+          service.type: NodePort
+          ingress.enabled: true
+          ingress.hostname: patchdemo.catalyst.nowhere
+          app.catalystApiUrl: http://catalyst-api-service
+          app.catalystApiToken: 0-00000000-0000-0000-0000-000000000000
+          app.oauthUrl: ''
+          app.oauthCallback: ''
+          app.oauthConsumerKey: ''
+          app.oauthConsumerSecret: ''
