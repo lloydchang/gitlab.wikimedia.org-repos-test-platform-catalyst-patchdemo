@@ -1,0 +1,53 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: clean-pods
+  namespace: cat-env
+  labels:
+    app: clean-pods
+spec:
+  schedule: "*/1 * * * *" # use 0 0 * * * for actual
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 5
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      template:
+        spec:
+          serviceAccountName: cat-default #replace with better naming later?
+          restartPolicy: OnFailure
+          containers:
+            - name: clean-pods
+              imagePullPolicy: Always
+              image: bitnami/kubectl:latest
+              env:
+              - name: NAMESPACE
+                value: "cat-env"
+              - name: MAX_DAYS
+                value: "10"
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  #!/bin/sh
+                  # Convert MAX_DAYS to seconds
+                  MAX_SECONDS=$((${MAX_DAYS} * 86400))
+                  # Get the current timestamp
+                  CURRENT_TIMESTAMP=$(date +%s)
+                  
+                  # Loop through each pod in the namespace
+                  kubectl get pods -n ${NAMESPACE} | while read pod_name status age; do
+                    # Fetch the pod's creation timestamp
+                    pod_creation_timestamp=$(kubectl get pod $pod_name -n ${NAMESPACE} -o=jsonpath='{.metadata.creationTimestamp}')
+                    # Convert the pod's creation timestamp to seconds
+                    pod_timestamp=$(date -d "$pod_creation_timestamp" +%s)
+                    
+                    # Calculate pod age in seconds
+                    pod_age=$((CURRENT_TIMESTAMP - pod_timestamp))
+                    
+                    # If the pod is older than MAX_DAYS, delete it
+                    if [ $pod_age -ge $MAX_SECONDS ]; then
+                      echo "Deleted pod $pod_name, age exceeded ${MAX_DAYS} days."
+                    fi
+                  done
