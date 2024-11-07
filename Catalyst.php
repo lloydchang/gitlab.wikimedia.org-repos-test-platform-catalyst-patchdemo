@@ -35,32 +35,56 @@ class Catalyst {
 		$this->eventSourceHttpClient = $eventSourceHttpClient;
 	}
 
-	public function streamLogs( string $id, string $containerName, callable $handlerFn ): void {
+	private function errorMessageForStream( string $content ): ?string {
+		$error = json_decode( $content, true, 32, JSON_THROW_ON_ERROR );
+		$statusCode = $error['statusCode'] ?: " ";
+		$errorMessages = $error['details'] ?: [];
+		$statusText = $error['statusText'] ?: " ";
+		return "Error streaming logs: " . $statusCode . ', ' . $statusText . ' ' .
+			implode( ",", $errorMessages );
+	}
+
+	public function streamLogs( string $id, string $containerName, callable $handlerFn ): ?string {
+		$start_time = time();
 		do {
 			// keep trying in case pod is initializing
 			sleep( 5 );
-			$source = $this->eventSourceHttpClient->connect( "$this->baseUrl/environments/$id/logs?stream=$containerName" );
-		} while ( $source->getStatusCode() === 503 || $source->getStatusCode() === 400 );
-		$finished = false;
-		while ( $source && !$finished ) {
-			$finished = $this->withErr(
+			$source = $this->eventSourceHttpClient->connect(
+				"$this->baseUrl/environments/$id/logs?stream=$containerName"
+			);
+			$needs_retry = in_array( $source->getStatusCode(), [ 503, 400 ] );
+			if ( time() - $start_time > 60 && $needs_retry ) {
+				return $this->errorMessageForStream( $source->getContent() );
+			}
+		} while ( $needs_retry );
+		$error_content = null;
+		while ( $source && !$error_content ) {
+			$error_content = $this->withErr(
 				function () use ( $source, $handlerFn ) {
+					$res = "[]";
 					foreach ( $this->eventSourceHttpClient->stream( $source, 300 ) as $r => $chunk ) {
 						if ( $chunk instanceof ServerSentEvent ) {
 							$data = $chunk->getArrayData();
 							$logs = $data['logs'];
 							$handlerFn( $logs );
+						} else {
+							// collect error if it occurred
+							$res = $chunk->getContent() ?: $res;
 						}
 
 						if ( $chunk->isLast() ) {
-							return true;
+							return $res;
 						}
 					}
-					return false;
+					return null;
 				}
 			);
 
 		}
+		if ( $source->getStatusCode() != 200 ) {
+			return $this->errorMessageForStream( $error_content );
+		}
+		return null;
 	}
 
 	public function getChart( string $chartName ): array {

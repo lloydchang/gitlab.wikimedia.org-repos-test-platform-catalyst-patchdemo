@@ -72,11 +72,13 @@ function warn( string $warnHtml ) {
 	echo "<script>pd.warn( $warnJson );</script>";
 }
 
-function abandon( string $errHtml ) {
+function abandon( string $errHtml, bool $delete = true ) {
 	global $wiki;
 	$errJson = json_encode_clean( $errHtml );
 	echo "<script>pd.abandon( $errJson );</script>";
-	delete_wiki( $wiki );
+	if ( $delete ) {
+		delete_wiki( $wiki );
+	}
 	error( $errHtml );
 }
 
@@ -522,24 +524,39 @@ if ( $useCatalystBackend ) {
 	wiki_add_catalyst_id( $wiki, $catalystId );
 	check_connection();
 	set_progress( $repoProgress, "Initializing containers..." );
-	$catalystApi->streamLogs( $catalystId, "mediawiki/install-mediawiki", static function ( $logs ) use ( $start, $end, $repoCount, &$n, &$repoProgress ) {
-		foreach ( $logs as $log ) {
-			$logMsg = $log['log'];
-			if ( str_contains( $logMsg, 'Cloning' ) ) {
-				$repoProgress += ( $end - $start ) / $repoCount;
-				$n++;
-				set_progress( $repoProgress, "Cloning repositories ($n/$repoCount)..." );
-			} elseif ( str_contains( $logMsg, 'composer install' ) ) {
-				set_progress( 60, "Running composer..." );
-			} elseif ( str_contains( $logMsg, 'apt-get install -y npm' ) ) {
-				set_progress( 80, "Setting up npm..." );
-			} elseif ( str_contains( $logMsg, 'Installing Wiki' ) ) {
-				set_progress( 90, "Installing wiki..." );
+	$error = $catalystApi->streamLogs( $catalystId, "mediawiki/install-mediawiki",
+		static function ( $logs ) use ( $start, $end, $repoCount, &$n, &$repoProgress ) {
+			foreach ( $logs as $log ) {
+				$logMsg = $log['log'];
+				if ( str_contains( $logMsg, 'Cloning' ) ) {
+					$repoProgress += ( $end - $start ) / $repoCount;
+					$n++;
+					set_progress( $repoProgress, "Cloning repositories ($n/$repoCount)..." );
+				} elseif ( str_contains( $logMsg, 'composer install' ) ) {
+					set_progress( 60, "Running composer..." );
+				} elseif ( str_contains( $logMsg, 'apt-get install -y npm' ) ) {
+					set_progress( 80, "Setting up npm..." );
+				} elseif ( str_contains( $logMsg, 'Installing Wiki' ) ) {
+					set_progress( 90, "Installing wiki..." );
+				}
+				echo format_streamed_log( $log['timestamp'], $logMsg );
+				echo '<br />';
 			}
-			echo format_streamed_log( $log['timestamp'], $logMsg );
-			echo '<br />';
+		} );
+	if ( $error ) {
+		abandon( $error, false );
+	} else {
+		$status_check_time = time();
+		do {
+			sleep( 10 );
+			$catalyst_environment = $catalystApi->getEnvironment( $catalystId );
+			$wiki_status = $catalyst_environment["status"];
+		} while ( $wiki_status != 'running' && time() - $status_check_time < 60 );
+
+		if ( $wiki_status != "running" ) {
+			abandon( "Log stream has terminated, but deployment is not complete. Status is: " . $wiki_status, false );
 		}
-	} );
+	}
 } else {
 	foreach ( $repos as $source => $target ) {
 		$cmds[] = __DIR__ . '/new/updaterepos.sh';
