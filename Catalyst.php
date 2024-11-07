@@ -40,7 +40,7 @@ class Catalyst {
 			// keep trying in case pod is initializing
 			sleep( 5 );
 			$source = $this->eventSourceHttpClient->connect( "$this->baseUrl/environments/$id/logs?stream=$containerName" );
-		} while ( $source->getStatusCode() === 503 );
+		} while ( $source->getStatusCode() === 503 || $source->getStatusCode() === 400 );
 		$finished = false;
 		while ( $source && !$finished ) {
 			$finished = $this->withErr(
