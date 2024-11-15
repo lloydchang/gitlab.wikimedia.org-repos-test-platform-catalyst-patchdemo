@@ -45,6 +45,8 @@ if ( $mysqli->connect_error ) {
 }
 
 function stream_response() {
+	// make the page load faster!!!
+	header( "HTTP/2 206 Partial Content; Content-Type: text/html; charset=utf-8" );
 	// The streamed responses trigger some gzip encoding bug somewhere, so disable it (#609)
 	ini_set( 'zlib.output_compression', 'Off' );
 	ini_set( 'output_buffering', 'Off' );
