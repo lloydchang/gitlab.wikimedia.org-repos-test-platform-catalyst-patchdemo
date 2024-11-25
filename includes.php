@@ -672,9 +672,7 @@ function get_catalyst_repos(): array {
 
 function get_repo_presets(): array {
 	$presets = [];
-
-	$presets['all'] = array_keys( get_repo_data() );
-
+	$presets['all'] = Yaml::parse( file_get_contents( __DIR__ . '/repository-lists/all_temp.yaml' ) );
 	$presets['wikimedia'] = Yaml::parse( file_get_contents( __DIR__ . '/repository-lists/wikimedia.yaml' ) );
 	$presets['tarball'] = Yaml::parse( file_get_contents( __DIR__ . '/repository-lists/tarball.yaml' ) );
 	$presets['minimal'] = Yaml::parse( file_get_contents( __DIR__ . '/repository-lists/minimal.yaml' ) );

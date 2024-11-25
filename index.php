@@ -6,6 +6,7 @@ include "header.php";
 $presetLabels = [
 	'all' => [
 		'title' => 'All',
+		'description' => 'Selects all repos except WikiLambda, support for this extension is in the works',
 	],
 	'wikimedia' => [
 		'title' => 'Wikimedia',
@@ -28,6 +29,7 @@ $auth = Authentication::getInstance();
 $authorized = !$auth->useOauth() || $auth->isSignedIn();
 $canCreate = !$config['readOnly'] && $authorized;
 $mediawikiCore = 'mediawiki/core';
+$wikiLambda = 'mediawiki/extensions/WikiLambda';
 $branches = get_branches_sorted( $mediawikiCore );
 
 $branchOptions = array_map( static function ( $branch ) {
@@ -462,7 +464,7 @@ while ( $data = $results->fetch_assoc() ) {
 			break;
 		case 'custom':
 			$allRepos = get_repo_data();
-			// mediawiki/core is always included and not stored in database
+			// mediawiki/core is always included and not stored in database.
 			unset( $allRepos[$mediawikiCore] );
 			$presetReposByName = array_map( static function ( $presetRepos ) use ( $allRepos ) {
 				return array_intersect( $presetRepos, array_keys( $allRepos ) );
