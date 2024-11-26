@@ -30,5 +30,5 @@ $config = [
 	// Read only mode disables wiki creation
 	'readOnly' => getenv( 'READ_ONLY' ) ? getenv( 'READ_ONLY' ) == "true" : false,
 	'readOnlyText' => getenv( 'READ_ONLY_TEXT' ) ?: 'This patchdemo instance is in read only mode. You may' .
-		' visit or delete previously created wikis, but no new wikis can be created.',
+		' visit previously created wikis',
 ];

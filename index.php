@@ -374,7 +374,6 @@ if ( $auth->isSignedIn() ) {
 <?php
 
 $rows = '';
-$anyCanDelete = false;
 $closedWikis = 0;
 $wikiPatches = [];
 $username = $auth->getUserName();
@@ -408,7 +407,6 @@ while ( $data = $results->fetch_assoc() ) {
 
 	$creator = $wikiData[ 'creator' ] ?? '';
 	$canDelete = $auth->canDelete( $creator );
-	$anyCanDelete = $anyCanDelete || $canDelete;
 
 	if ( !$shownMyWikis && $creator === $username ) {
 		$rows .= '<tr class="wikiSection"><th colspan="99">My wikis</th></tr>';
@@ -526,10 +524,7 @@ while ( $data = $results->fetch_assoc() ) {
 		'<td data-label="Backend" class="backend">' . $wikiData[ 'backend' ] . '</td>' .
 		( $auth->useOAuth() ? '<td data-label="Creator">' . ( $creator ? user_link( $creator ) : '?' ) . '</td>' : '' ) .
 		( $auth->canAdmin() ? '<td data-label="Time to create">' . ( $wikiData['timeToCreate'] ? format_duration( $wikiData['timeToCreate'] ) : '' ) . '</td>' : '' ) .
-		( count( $actions ) ?
-			'<td data-label="Actions">' . implode( '&nbsp;&middot;&nbsp;', $actions ) . '</td>' :
-			'<!-- EMPTY ACTIONS -->'
-		) .
+		( $canCreate ? '<td data-label="Actions">' . implode( '&nbsp;&middot;&nbsp;', $actions ) . '</td>' : '' ) .
 	'</tr>';
 
 	if ( $username && $username === $creator && $closed ) {
@@ -537,8 +532,6 @@ while ( $data = $results->fetch_assoc() ) {
 	}
 }
 $stmt->close();
-
-$rows = str_replace( '<!-- EMPTY ACTIONS -->', $anyCanDelete ? '<td></td>' : '', $rows );
 
 if ( $closedWikis ) {
 	echo new OOUI\MessageWidget( [
@@ -566,7 +559,7 @@ echo '<table class="wikis">' .
 		'<th>Backend</th>' .
 		( $auth->useOAuth() ? '<th>Creator</th>' : '' ) .
 		( $auth->canAdmin() ? '<th><abbr title="Time to create">TTC</abbr></th>' : '' ) .
-		( $anyCanDelete ? '<th>Actions</th>' : '' ) .
+		( $canCreate ? '<th>Actions</th>' : '' ) .
 	'</tr>' .
 	$rows .
 '</table>';
