@@ -1,5 +1,3 @@
-replicaCount: 1
-
 image:
   repository: docker-registry.wikimedia.org/repos/test-platform/catalyst/patchdemo
   tag: latest
@@ -32,11 +30,9 @@ app:
   adminUsers: 'SDunlap-WMF,JNuche (WMF),JHuneidi (WMF),CCicalese (WMF),ESanders (WMF),Ed g2s,Matma Rex'
   conduitApiKey: ''
 
-refWikiRepos: /mnt/k3s-data/wiki-repos
-
-jobs:
-  fetch-cron-job:
-    schedule: "0 0 * * *"
+wikiReposPool:
+  enabled: true
+  hostPath: "/mnt/k3s-data/wiki-repos"
 
 mariadb:
   auth:

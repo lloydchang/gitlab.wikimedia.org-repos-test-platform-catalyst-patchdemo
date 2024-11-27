@@ -4,3 +4,5 @@ repositories
 composer
 vendor
 node_modules
+# local development files
+helm/patchdemo/values.local.yaml

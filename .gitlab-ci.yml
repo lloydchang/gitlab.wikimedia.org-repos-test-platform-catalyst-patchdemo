@@ -2,6 +2,8 @@ variables:
   IMAGE_TAG:
     description: "commit sha to be used as image tag, or latest"
     value: "latest"
+  GIT_SUBMODULE_STRATEGY: recursive
+  GIT_SUBMODULE_FORCE_HTTPS: "true"
 
 include:
   - project: repos/releng/kokkuri
@@ -77,7 +79,8 @@ deploy-staging:
         --set app.oauthConsumerKey=${OAUTH_CONSUMER_KEY} \
         --set app.oauthConsumerSecret=${OAUTH_CONSUMER_SECRET} \
         --set app.conduitApiKey=${CONDUIT_API_KEY} \
-        --set app.notificationBanner="${NOTIFICATION_BANNER}"
+        --set app.notificationBanner="${NOTIFICATION_BANNER}" \
+        --set wikiReposPool.hostPath=${REPO_POOL_HOST_PATH}
   tags: [ trusted ]
   environment:
     name: patchdemo-staging
@@ -112,7 +115,8 @@ deploy-production:
         --set app.oauthConsumerKey=${OAUTH_CONSUMER_KEY} \
         --set app.oauthConsumerSecret=${OAUTH_CONSUMER_SECRET} \
         --set app.conduitApiKey=${CONDUIT_API_KEY} \
-        --set app.notificationBanner="${NOTIFICATION_BANNER}"
+        --set app.notificationBanner="${NOTIFICATION_BANNER}" \
+        --set wikiReposPool.hostPath=${REPO_POOL_HOST_PATH}
   tags: [ trusted ]
   environment:
     name: patchdemo-production

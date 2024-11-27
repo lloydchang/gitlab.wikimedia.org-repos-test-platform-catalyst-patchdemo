@@ -1,0 +1,3 @@
+[submodule "shared-repo-config"]
+	path = shared-repo-config
+	url = git@gitlab.wikimedia.org:repos/test-platform/catalyst/shared-repo-config.git

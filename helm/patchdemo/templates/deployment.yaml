@@ -1,7 +1,8 @@
+{{ if .Values.wikiReposPool.enabled -}}
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: {{ include "patchdemo.fullname" . }}-wiki-repos-pv
+  name: {{ include "patchdemo.fullname" . }}-repo-pool-pv
 spec:
   storageClassName: manual
   capacity:
@@ -11,14 +12,14 @@ spec:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   hostPath:
-    path: {{ .Values.refWikiRepos }}
+    path: {{ .Values.wikiReposPool.hostPath }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "patchdemo.fullname" . }}-wiki-repos-pvc
+  name: {{ include "patchdemo.fullname" . }}-repo-pool-pvc
 spec:
-  volumeName: {{ include "patchdemo.fullname" . }}-wiki-repos-pv
+  volumeName: {{ include "patchdemo.fullname" . }}-repo-pool-pv
   storageClassName: manual
   volumeMode: Filesystem
   accessModes:
@@ -26,6 +27,15 @@ spec:
   resources:
     requests:
       storage: 15Gi
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "patchdemo.fullname" . }}-repos-config
+data:
+  repos.cfg: |
+{{ $.Files.Get "files/repos.cfg" | indent 4 }}
+{{- end }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -52,15 +62,6 @@ spec:
     limits:
       storage: 80Gi
   volumeMode: Filesystem
-
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ include "patchdemo.fullname" . }}-repos-config
-data:
-  repos.cfg: |
-{{ $.Files.Get "files/repos.cfg" | indent 4 }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -80,6 +81,7 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["sh", "-c", "/var/www/html/entrypoint.sh"]
           ports:
             - name: http
               containerPort: 8080
@@ -123,6 +125,8 @@ spec:
               value: "{{ .Values.app.adminUsers }}"
             - name: CONDUIT_API_KEY
               value: "{{ .Values.app.conduitApiKey }}"
+            - name: REPO_POOL_HOST_PATH
+              value: "{{ .Values.wikiReposPool.hostPath }}"
           volumeMounts:
             - name: wikis
               mountPath: /var/www/html/wikis
@@ -130,6 +134,15 @@ spec:
               mountPath: /var/lib/php/sessions
             - name: log-volume
               mountPath: /var/log/apache2
+            - name: repositories
+              mountPath: /var/www/html/repositories
+{{- if .Values.wikiReposPool.enabled }}
+            - name: repos-config
+              mountPath: /var/www/html/repository-lists/config
+            - name: repo-pool
+              mountPath: /srv/repo-pool/wiki-repos
+              readOnly: true
+{{- end }}
         - name: tail-access-log
           image: busybox
           command: ["sh", "-c", "tail -f /var/log/apache2/access.log"]
@@ -149,37 +162,59 @@ spec:
             - name: log-volume
               mountPath: /var/log/apache2
       initContainers:
+{{- if .Values.wikiReposPool.enabled }}
+        - name: clone-wikis
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -eu pipefail
+              
+              cd /var/www/html/repositories
+              while IFS=' ' read -r repo dir; do
+                while [ ! -d "$REPO_POOL_MOUNT_PATH/$repo/.git" ]; do
+                  echo "Waiting for $repo to be available in repo pool"
+                  sleep 30
+                done
+                git clone --no-checkout https://gerrit.wikimedia.org/r/$repo.git $repo --reference $REPO_POOL_MOUNT_PATH/$repo
+              done < ../repository-lists/config/repos.cfg
+              cd ..
+          env:
+            - name: REPO_POOL_MOUNT_PATH
+              value: /srv/repo-pool/wiki-repos
+          volumeMounts:
+            - name: repo-pool
+              mountPath: /srv/repo-pool/wiki-repos
+              readOnly: true
+            - name: repos-config
+              mountPath: /var/www/html/repository-lists/config
+            - name: repositories
+              mountPath: /var/www/html/repositories
+{{- else }}
+        - name: clone-wikis
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: [ "/bin/sh", "-c" ]
+          args:
+            - |
+              set -eu pipefail
+              
+              cd /var/www/html/repositories
+              while IFS=' ' read -r repo dir; do
+                git clone --no-checkout https://gerrit.wikimedia.org/r/$repo.git $repo
+              done < ../repository-lists/all.txt
+              cd ..
+          volumeMounts:
+            - name: repositories
+              mountPath: /var/www/html/repositories
+{{- end }}
         - name: init-permissions
           image: busybox
           command: ["sh", "-c", "chown -R 33:33 /var/log/apache2"]
           volumeMounts:
             - name: log-volume
               mountPath: /var/log/apache2
-        - name: clone-wiki-repos
-          image: bitnami/git:latest
-          command:
-            - bash
-            - -c
-            - |
-              set -eu -o pipefail
-
-              GERRIT_URL="https://gerrit.wikimedia.org/r"
-
-              cd /srv/repo-pool/wiki-repos
-              if [ ! -d core/.git ]; then
-                git clone --no-checkout $GERRIT_URL/mediawiki/core core
-              fi
-              while read -r source target; do
-                if [ ! -d "$target/.git" ]; then
-                  git clone --no-checkout "$GERRIT_URL/$source" "$target"
-                fi
-              done <../config/repos.cfg
-          volumeMounts:
-            - name: wiki-repos
-              mountPath: /srv/repo-pool/wiki-repos
-              readOnly: false
-            - name: repos-config
-              mountPath: /srv/repo-pool/config
       volumes:
         - name: wikis
           persistentVolumeClaim:
@@ -187,10 +222,14 @@ spec:
         - name: sessions
           persistentVolumeClaim:
             claimName: {{ include "patchdemo.fullname" . }}-sessions
-        - name: wiki-repos
+        - name: repositories
+          emptyDir: { }
+{{- if .Values.wikiReposPool.enabled }}
+        - name: repo-pool
           persistentVolumeClaim:
-            claimName: {{ include "patchdemo.fullname" . }}-wiki-repos-pvc
+            claimName: {{ include "patchdemo.fullname" . }}-repo-pool-pvc
         - name: repos-config
           configMap:
             name: {{ include "patchdemo.fullname" . }}-repos-config
+{{- end }}
         - name: log-volume
