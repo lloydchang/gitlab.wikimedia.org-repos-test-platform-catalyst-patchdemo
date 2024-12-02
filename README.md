@@ -62,3 +62,4 @@ Yes, patches for many extensions and skins are supported (mostly those included 
 Nothing. Once created, the wikis are never updated. New versions of the selected patches are not applied, and neither are patches merged into master. If you want to test a newer version of the patch, create a new wiki with it.
 
 
+
