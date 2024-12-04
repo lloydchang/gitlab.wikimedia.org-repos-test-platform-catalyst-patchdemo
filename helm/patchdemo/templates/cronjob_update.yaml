@@ -1,3 +1,4 @@
+{{ if eq .Release.Namespace "patchdemo" -}}
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -39,3 +40,4 @@ spec:
           - name: wiki-repos
             persistentVolumeClaim:
               claimName: patchdemo-wiki-repos-pvc
+{{- end }}
