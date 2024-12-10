@@ -6,7 +6,7 @@ include "header.php";
 $presetLabels = [
 	'all' => [
 		'title' => 'All',
-		'description' => 'Selects all repos except WikiLambda, support for this extension is in the works',
+		'description' => 'Selects all repos',
 	],
 	'wikimedia' => [
 		'title' => 'Wikimedia',
@@ -29,7 +29,6 @@ $auth = Authentication::getInstance();
 $authorized = !$auth->useOauth() || $auth->isSignedIn();
 $canCreate = !$config['readOnly'] && $authorized;
 $mediawikiCore = 'mediawiki/core';
-$wikiLambda = 'mediawiki/extensions/WikiLambda';
 $branches = get_branches_sorted( $mediawikiCore );
 
 $branchOptions = array_map( static function ( $branch ) {
