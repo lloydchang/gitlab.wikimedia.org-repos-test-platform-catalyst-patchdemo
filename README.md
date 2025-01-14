@@ -1,4 +1,4 @@
-<img src="https://gitlab.wikimedia.org/repos/qte/catalyst/patchdemo/-/raw/master/images/icon.svg" alt="Patch demo" width="50" valign="middle"> &nbsp; <img src="https://gitlab.wikimedia.org/repos/qte/catalyst/patchdemo/-/raw/master/images/wordmark.svg" alt="Patch demo" width="160" valign="middle">
+<img src="https://gitlab.wikimedia.org/repos/test-platform/catalyst/patchdemo/-/raw/master/images/icon.svg" alt="Patch demo" width="50" valign="middle"> &nbsp; <img src="https://gitlab.wikimedia.org/repos/test-platform/catalyst/patchdemo/-/raw/master/images/wordmark.svg" alt="Patch demo" width="160" valign="middle">
 
 ---
 

@@ -57,7 +57,7 @@ deploy-staging:
   variables:
     IMAGE_TAG: ${CI_COMMIT_SHORT_SHA}
   script:
-    - kubectl config use-context repos/qte/catalyst/catalyst-api:api-deploy-agent
+    - kubectl config use-context repos/test-platform/catalyst/catalyst-api:api-deploy-agent
     - helm repo add bitnami https://charts.bitnami.com/bitnami
     - |
       helm upgrade --install --dependency-update --namespace patchdemo-staging --create-namespace \
@@ -92,7 +92,7 @@ deploy-production:
   variables:
     IMAGE_TAG: ${CI_COMMIT_SHORT_SHA}
   script:
-    - kubectl config use-context repos/qte/catalyst/catalyst-api:api-deploy-agent
+    - kubectl config use-context repos/test-platform/catalyst/catalyst-api:api-deploy-agent
     - helm repo add bitnami https://charts.bitnami.com/bitnami
     - |
       helm upgrade --install --dependency-update --namespace patchdemo --create-namespace \
