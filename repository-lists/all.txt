@@ -88,6 +88,8 @@ mediawiki/extensions/Translate extensions/Translate
 mediawiki/extensions/UniversalLanguageSelector extensions/UniversalLanguageSelector
 mediawiki/extensions/UploadWizard extensions/UploadWizard
 mediawiki/extensions/UrlShortener extensions/UrlShortener
+mediawiki/extensions/Wikibase extensions/Wikibase
+mediawiki/extensions/WikibaseLexeme extensions/WikibaseLexeme
 mediawiki/extensions/WikiEditor extensions/WikiEditor
 mediawiki/extensions/wikihiero extensions/wikihiero
 mediawiki/extensions/WikimediaIncubator extensions/WikimediaIncubator

@@ -566,10 +566,32 @@ function get_repo_label( string $repo ): string {
 	return preg_replace( '`^mediawiki/(extensions/)?`', '', $repo );
 }
 
+// pretend that earlier REL1_* branches of these extensions do not exist
+$earliestRelBranches = [
+	// T291617
+	'mediawiki/extensions/Wikibase' => 'REL1_44',
+	// T291617
+	'mediawiki/extensions/WikibaseLexeme' => 'REL1_44',
+];
+
 function get_branches( string $repo ): array {
+	global $earliestRelBranches;
+
 	$gitcmd = "git --git-dir=" . __DIR__ . "/repositories/$repo/.git";
 	// basically `git branch -r`, but without the silly parts
 	$branches = explode( "\n", shell_exec( "$gitcmd for-each-ref refs/remotes/origin/ --format='%(refname:short)'" ) ?: '' );
+
+	$earliestRelBranch = $earliestRelBranches[ $repo ] ?? null;
+	if ( $earliestRelBranch !== null ) {
+		$branches = array_values( array_filter( $branches, static function ( string $branch ) use ( $earliestRelBranch ) {
+			if ( !str_starts_with( $branch, 'origin/REL' ) ) {
+				return true;
+			}
+			$relBranch = substr( $branch, strlen( 'origin/' ) );
+			return version_compare( $relBranch, $earliestRelBranch, '>=' );
+		} ) );
+	}
+
 	return $branches;
 }
 

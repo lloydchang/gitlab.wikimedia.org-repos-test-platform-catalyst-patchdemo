@@ -121,8 +121,8 @@
 - mediawiki/extensions/VipsScaler
 - mediawiki/extensions/VisualEditor
 - mediawiki/extensions/WebAuthn
-# - mediawiki/extensions/Wikibase
-# - mediawiki/extensions/WikibaseLexeme
+- mediawiki/extensions/Wikibase
+- mediawiki/extensions/WikibaseLexeme
 - mediawiki/extensions/WikiEditor
 - mediawiki/extensions/wikihiero
 - mediawiki/extensions/WikiLove

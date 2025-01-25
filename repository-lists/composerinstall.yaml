@@ -8,3 +8,5 @@
 - mediawiki/extensions/TemplateStyles
 - mediawiki/extensions/IPInfo
 - mediawiki/extensions/UrlShortener
+- mediawiki/extensions/Wikibase
+- mediawiki/extensions/WikibaseLexeme
