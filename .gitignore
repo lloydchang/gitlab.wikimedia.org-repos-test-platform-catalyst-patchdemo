@@ -6,3 +6,4 @@ vendor
 node_modules
 # local development files
 helm/patchdemo/values.local.yaml
+_skaffold_env.yaml

@@ -21,15 +21,50 @@ Limitations
 ----
 * Runs MediaWiki only – no RESTBase and other fancy stuff
 
-Setup
-----
-Tested on Debian 11.
+## Local development
 
-* Put all these files in `/var/www/html`
-* Run `sudo setup.sh`
-* Visit http://localhost in your browser
+### On Local Kubernetes Cluster
 
-For deployment on Wikmedia's Cloud VPS, read this [additional documentation](WMCS.md).
+#### Prerequisites
+
+1. install [golang 1.23](https://go.dev/doc/install)
+1. (optional: for debugging) install delve with `go install github.com/go-delve/delve/cmd/dlv@latest`
+1. install [skaffold](https://skaffold.dev/docs/install/)
+1. install jg (apt or brew installable)
+1. install [minikube](https://minikube.sigs.k8s.io/docs/start/?arch=%2Flinux%2Fx86-64%2Fstable%2Fbinary+download)
+1. install [kubectl](https://kubernetes.io/docs/tasks/tools/)
+1. install [helm](https://helm.sh/docs/intro/install/)
+1. (optional: for cluster visibility) install [k9s](https://k9scli.io/topics/install/)
+
+#### Running
+
+Run:
+
+```
+./dev
+```
+
+from the repo directory and wait for the deployment to become stable.
+
+`dev` does the following:
+
+- ensures minikube is started with the ingress addon
+- builds a development version of the patchdemo container images for local use with minikube
+- configures and deploys the patchdemo helm chart on minikube
+  - adds minikubes kubeconfig to the chart values
+  - sets up ingress from your local machine into the cluster
+    - open up `_skaffold_env.yaml` `ingress.hostname` to see the URL you can point curl, postman, or your browser to
+- forwards the delve debug port to port 40000 on the local machine
+
+#### Visiting local patchdemo
+
+Find out your minikube's IP with `minikube ip`. You can then visit patchdemo at `http://patchdemo.$(minikube ip).nip.io`.
+
+## Catalyst design diagram
+
+The following diagram shows the three layers Catalyst is structured around:
+
+![alt arch](docs/Catalyst.png "Catalyst")
 
 FAQ
 ----

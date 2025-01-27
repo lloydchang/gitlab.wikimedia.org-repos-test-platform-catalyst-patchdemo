@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+# check if minikube is installed
+if ! command -v minikube &> /dev/null; then
+  echo "Minikube is not installed. Please install it and try again."
+  exit 1
+fi
+
+# check if minikube api server is running
+if [[ $(minikube status -f {{.APIServer}}) != "Running" ]]; then
+  echo "Minikube is not running. Starting with `minikube start`"
+  minikube start
+fi
+
+# check if minikube ingress addon is installed
+if [[ $(minikube addons list -o json | jq -r .ingress.Status) != "enabled" ]]; then
+  echo "Minikube ingress addon is not enabled. Enabling with `minikube addons enable ingress`"
+  minikube addons enable ingress
+fi
+
+# update git modules
+git submodule update --init --recursive
+
+cat <<EOF > _skaffold_env.yaml
+ingress:
+  hostname: patchdemo.$(minikube ip).nip.io
+app:
+  catalystDomainName: demos.$(minikube ip).nip.io
+EOF
+helm repo add bitnami https://charts.bitnami.com/bitnami
+skaffold debug --port-forward=debug
