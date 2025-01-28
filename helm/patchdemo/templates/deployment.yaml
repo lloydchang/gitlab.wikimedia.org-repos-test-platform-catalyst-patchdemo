@@ -52,6 +52,20 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
+  name: {{ include "patchdemo.fullname" . }}-repositories
+  annotations:
+    helm.sh/resource-policy: keep
+spec:
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 15Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
   name: {{ include "patchdemo.fullname" . }}
 spec:
   accessModes:
@@ -177,7 +191,9 @@ spec:
                   echo "Waiting for $repo to be available in repo pool"
                   sleep 30
                 done
-                git clone --no-checkout https://gerrit.wikimedia.org/r/$repo.git $repo --reference $REPO_POOL_MOUNT_PATH/$repo
+                if [ ! -d "$repo" ]; then
+                  git clone --no-checkout https://gerrit.wikimedia.org/r/$repo.git $repo --reference $REPO_POOL_MOUNT_PATH/$repo
+                fi
               done < ../repository-lists/config/repos.cfg
               cd ..
           env:
@@ -223,7 +239,8 @@ spec:
           persistentVolumeClaim:
             claimName: {{ include "patchdemo.fullname" . }}-sessions
         - name: repositories
-          emptyDir: { }
+          persistentVolumeClaim:
+            claimName: {{ include "patchdemo.fullname" . }}-repositories
 {{- if .Values.wikiReposPool.enabled }}
         - name: repo-pool
           persistentVolumeClaim:
