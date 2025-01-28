@@ -28,4 +28,4 @@ app:
   catalystDomainName: demos.$(minikube ip).nip.io
 EOF
 helm repo add bitnami https://charts.bitnami.com/bitnami
-skaffold debug --port-forward=debug
+skaffold dev

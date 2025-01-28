@@ -12,6 +12,10 @@ build:
             - "**/*.php"
             - "**/*.html"
             - "**/*.sh"
+      sync:
+        manual:
+          - src: "**/*"
+            dest: /var/www/html
 
 deploy:
   helm:

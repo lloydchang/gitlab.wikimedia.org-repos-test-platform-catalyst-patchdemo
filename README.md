@@ -28,9 +28,8 @@ Limitations
 #### Prerequisites
 
 1. install [golang 1.23](https://go.dev/doc/install)
-1. (optional: for debugging) install delve with `go install github.com/go-delve/delve/cmd/dlv@latest`
 1. install [skaffold](https://skaffold.dev/docs/install/)
-1. install jg (apt or brew installable)
+1. install jq (apt or brew installable)
 1. install [minikube](https://minikube.sigs.k8s.io/docs/start/?arch=%2Flinux%2Fx86-64%2Fstable%2Fbinary+download)
 1. install [kubectl](https://kubernetes.io/docs/tasks/tools/)
 1. install [helm](https://helm.sh/docs/intro/install/)
