@@ -29,6 +29,7 @@ $announce = !empty( $_POST['announce'] );
 $landingPage = trim( $_POST['landingPage'] ) ? trim( $_POST['landingPage'] ) : null;
 $language = trim( $_POST['language'] );
 $buildDocs = !empty( $_POST['docs'] );
+$configVars = trim( $_POST['configvars'] );
 
 $wiki = substr( md5( $branch . $patches . time() ), 0, 10 );
 $server = get_server();
@@ -706,6 +707,7 @@ if ( $useCatalystBackend ) {
 			'LANGUAGE' => $language,
 			'REPOSITORIES' => $reposString,
 			'DEFAULT_SKIN' => $defaultSkin,
+			'CONFIG_VARS' => $configVars,
 			'DB_USER' => getenv( 'DB_USER' ),
 			'DB_PASS' => getenv( 'DB_PASS' ),
 			'DB_DATABASE' => getenv( 'DB_DATABASE' ),

@@ -302,6 +302,17 @@ if ( $config['readOnly'] ) {
 						]
 					),
 					new OOUI\FieldLayout(
+						new OOUI\MultilineTextInputWidget( [
+							'name' => 'configvars',
+							'rows' => 5,
+							'placeholder' => '$wgMySetting = true;'
+						] ),
+						[
+							'label' => 'MediaWiki configuration variables',
+							'align' => 'left'
+						]
+					),
+					new OOUI\FieldLayout(
 					// Placeholder, will be replaced by a ToggleButtonWidget in JS
 						new OOUI\ButtonWidget( [
 							'icon' => 'bell',

@@ -31,7 +31,11 @@ include_once "settings.d/core.php";
 foreach( glob( __DIR__ . "/settings.d/*.php" ) as $conffile ) {
 	include_once $conffile;
 }
+// Always load config overrides last
+include_once "DemoSettings.php";
 ' >> $PATCHDEMO/wikis/$NAME/w/LocalSettings.php
+
+echo "$CONFIG_VARS" > $PATCHDEMO/wikis/$NAME/w/DemoSettings.php
 
 # apply core/extension/skin/service-specific settings
 while IFS=' ' read -r repo dir; do
