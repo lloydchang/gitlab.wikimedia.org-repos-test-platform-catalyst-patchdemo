@@ -161,7 +161,7 @@ if ( $config['readOnly'] ) {
 							'classes' => [ 'form-backend' ],
 							'name' => 'backend',
 							'value' => 1,
-							'selected' => !$catalystBackendDisabled,
+							'selected' => false,
 							'disabled' => $catalystBackendDisabled,
 						] ),
 						[
