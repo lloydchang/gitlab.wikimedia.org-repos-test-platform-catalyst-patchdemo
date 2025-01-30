@@ -100,10 +100,28 @@ if ( $config['readOnly'] ) {
 		$cannotUseCatalystBackend :
 		$useCatalystBackend;
 
+	$editing = false;
+	$editWikiData = [];
+	if ( isset( $_GET['editWiki'] ) ) {
+		$editing = true;
+		$editWiki = $_GET['editWiki'];
+		$editWikiData = get_wiki_data( $editWiki );
+		if ( !$auth->canDelete( $editWikiData['creator'] ) ) {
+			error( '<p>You are not allowed to edit this wiki.</p>' );
+		}
+		$headerText = "Edit wiki $editWiki";
+	} elseif ( isset( $_GET['copiedFrom'] ) ) {
+		$headerText = "Create a new wiki based on {$_GET['copiedFrom']}";
+	} else {
+		$headerText = 'Create a new wiki';
+	}
+
+	echo '<h2 class="mainHeader">' . htmlspecialchars( $headerText ) . '</h2>';
+
 	echo new OOUI\FormLayout( [
 		'infusable' => true,
 		'method' => 'POST',
-		'action' => 'new.php',
+		'action' => $editing ? 'edit.php' : 'new.php',
 		'id' => 'new-form',
 		'classes' => ( $canCreate ? [] : [ 'form-disabled' ] ),
 		'items' => [
@@ -115,7 +133,9 @@ if ( $config['readOnly'] ) {
 							'classes' => [ 'form-branch' ],
 							'name' => 'branch',
 							'options' => $branchOptions,
-							'value' => !empty( $_GET['branch' ] ) ? 'origin/' . $_GET['branch' ] : null
+							'value' => isset( $editWikiData['branch'] ) ? 'origin/' . $editWikiData['branch'] : (
+								!empty( $_GET['branch' ] ) ? 'origin/' . $_GET['branch' ] : null
+							)
 						] ),
 						[
 							'label' => 'Start with version:',
@@ -128,7 +148,9 @@ if ( $config['readOnly'] ) {
 							'name' => 'patches',
 							'rows' => 2,
 							'placeholder' => "e.g. 456123",
-							'value' => !empty( $_GET['patches'] ) ? str_replace( ',', "\n", $_GET['patches'] ) : null
+							'value' => isset( $editWikiData['patches'] ) ? implode( "\n", $editWikiData['patches'] ) : (
+								!empty( $_GET['patches'] ) ? str_replace( ',', "\n", $_GET['patches'] ) : null
+							)
 						] ),
 						[
 							'classes' => [ 'form-patches-layout' ],
@@ -145,8 +167,10 @@ if ( $config['readOnly'] ) {
 								'classes' => [ 'form-announce' ],
 								'name' => 'announce',
 								'value' => 1,
-								'selected' => true
+								'selected' => true,
+								'disabled' => $editing,
 							] ),
+							// TODO list announced tasks here
 							[
 								'classes' => [ 'form-announce-layout' ],
 								'label' => 'Announce wiki on Phabricator:',
@@ -160,9 +184,9 @@ if ( $config['readOnly'] ) {
 						new OOUI\CheckboxInputWidget( [
 							'classes' => [ 'form-backend' ],
 							'name' => 'backend',
-							'value' => 1,
+							'value' => isset( $editWikiData['backend'] ) ? $editWikiData['backend'] === 'catalyst' : 1,
 							'selected' => false,
-							'disabled' => $catalystBackendDisabled,
+							'disabled' => $catalystBackendDisabled || $editing,
 						] ),
 						[
 							'label' => $catalystBackendLabel,
@@ -174,7 +198,8 @@ if ( $config['readOnly'] ) {
 							'classes' => [ 'form-preset' ],
 							'name' => 'preset',
 							'options' => $presetOptions,
-							'value' => 'wikimedia',
+							'value' => $editWikiData['repos']['preset'] ?? 'wikimedia',
+							'disabled' => $editing,
 						] ),
 						[
 							'label' => 'Choose configuration preset:',
@@ -186,7 +211,10 @@ if ( $config['readOnly'] ) {
 							'classes' => [ 'form-repos' ],
 							'name' => 'repos[]',
 							'options' => $repoOptions,
-							'value' => get_repo_presets()[ 'wikimedia' ],
+							'value' => isset( $editWikiData['repos'] ) ? (
+								$editWikiData['repos']['preset'] === 'custom' ? $editWikiData['repos']['repos'] : get_repo_presets()[ $editWikiData['repos']['preset'] ]
+							) : get_repo_presets()[ 'wikimedia' ],
+							'disabled' => $editing,
 						] ),
 						[
 							'label' => 'Choose included repos:',
@@ -201,7 +229,8 @@ if ( $config['readOnly'] ) {
 							'classes' => [ 'form-instantCommons' ],
 							'name' => 'instantCommons',
 							'value' => 1,
-							'selected' => true
+							'selected' => true,
+							'disabled' => $editing,
 						] ),
 						[
 							'label' => 'Load images from Commons',
@@ -217,7 +246,8 @@ if ( $config['readOnly'] ) {
 							'options' => [
 								[ 'data' => 'quick', 'label' => 'QuickInstantCommons' ],
 								[ 'data' => 'full', 'label' => 'InstantCommons' ],
-							]
+							],
+							'disabled' => $editing,
 						] ),
 						[
 							'label' => 'Method for loading images from Commons',
@@ -230,7 +260,7 @@ if ( $config['readOnly'] ) {
 					),
 					new OOUI\FieldLayout(
 						new ComboBoxInputWidget( [
-							'placeholder' => 'Main Page',
+							'placeholder' => 'Main Page', // FIXME this should be a preselection not a placeholder
 							'classes' => [ 'form-landingPage' ],
 							'name' => 'landingPage',
 							'options' => array_map( static function ( string $page ) {
@@ -239,7 +269,8 @@ if ( $config['readOnly'] ) {
 							'menu' => [
 								'filterFromInput' => true
 							],
-							'value' => !empty( $_GET['landingPage' ] ) ? $_GET['landingPage' ] : null
+							'value' => $editWikiData['landingPage'] ?? ( !empty( $_GET['landingPage' ] ) ? $_GET['landingPage' ] : null ),
+							'disabled' => $editing,
 						] ),
 						[
 							'label' => 'Landing page:',
@@ -252,7 +283,8 @@ if ( $config['readOnly'] ) {
 						new OOUI\TextInputWidget( [
 							'name' => 'language',
 							'value' => 'en',
-							'classes' => [ 'form-language' ]
+							'classes' => [ 'form-language' ],
+							'disabled' => $editing,
 						] ),
 						[
 							'label' => 'Language code',
@@ -266,7 +298,8 @@ if ( $config['readOnly'] ) {
 							'name' => 'proxy',
 							'value' => 1,
 							'selected' => false,
-							'classes' => [ 'form-proxy' ]
+							'classes' => [ 'form-proxy' ],
+							'disabled' => $editing,
 						] ),
 						[
 							'label' => 'Proxy articles from wikipedia.org',
@@ -280,7 +313,8 @@ if ( $config['readOnly'] ) {
 							'name' => 'docs',
 							'value' => 1,
 							'selected' => false,
-							'classes' => [ 'form-docs' ]
+							'classes' => [ 'form-docs' ],
+							'disabled' => $editing,
 						] ),
 						[
 							'label' => "Build core documentation",
@@ -292,7 +326,8 @@ if ( $config['readOnly'] ) {
 							'name' => 'tempuser',
 							'value' => 1,
 							'selected' => true,
-							'classes' => [ 'form-tempuser' ]
+							'classes' => [ 'form-tempuser' ],
+							'disabled' => $editing,
 						] ),
 						[
 							'label' => "Enable temporary user account creation (IP\u{00A0}Masking)",
@@ -317,7 +352,7 @@ if ( $config['readOnly'] ) {
 					new OOUI\FieldLayout(
 						new OOUI\ButtonInputWidget( [
 							'classes' => [ 'form-submit' ],
-							'label' => 'Create demo',
+							'label' => $editing ? 'Update demo' : 'Create demo',
 							'type' => 'submit',
 							// 'disabled' => true,
 							'flags' => [ 'progressive', 'primary' ]
@@ -333,6 +368,12 @@ if ( $config['readOnly'] ) {
 						new OOUI\HiddenInputWidget( [
 							'name' => 'csrf_token',
 							'value' => $auth->getCsrfToken(),
+						] )
+					),
+					new OOUI\FieldLayout(
+						new OOUI\HiddenInputWidget( [
+							'name' => 'wiki',
+							'value' => $editing ? $editWiki : ''
 						] )
 					),
 				] )
@@ -425,9 +466,6 @@ while ( $data = $results->fetch_assoc() ) {
 	}
 
 	$actions = [];
-	if ( $canDelete ) {
-		$actions[] = '<a href="delete.php?wiki=' . $wiki . '">Delete</a>';
-	}
 	if ( $canCreate ) {
 		$patchList = array_map( static function ( $data ) {
 			return htmlspecialchars( $data['r'] );
@@ -439,16 +477,43 @@ while ( $data = $results->fetch_assoc() ) {
 			$wikiData[ 'repos' ][ 'preset' ] === 'custom'
 		) {
 			$repos = $wikiData[ 'repos' ];
-			$actions[] = '<a class="copyWiki" href="?' .
-				http_build_query( [
+			$actions[] = new OOUI\ButtonWidget( [
+				'icon' => 'copy',
+				'classes' => [ 'copyWiki' ],
+				'href' => '?' . http_build_query( [
+					'copiedFrom' => $wiki,
 					'patches' => implode( ',', $patchList ),
 					'branch' => $wikiData[ 'branch' ],
 					'preset' => $repos[ 'preset' ] !== 'unknown' ? $repos[ 'preset' ] : null,
 					'repos' => isset( $repos[ 'repos' ] ) ? implode( ',', $repos[ 'repos' ] ) : null,
 					'landingPage' => $wikiData[ 'landingPage' ],
-				], '', '&amp;' ) .
-				'">Copy</a>';
+				], '' ),
+				'title' => 'Copy',
+				'framed' => false
+			] );
 		}
+	}
+	if ( $canDelete ) {
+		$actions[] = new OOUI\ButtonWidget( [
+			'icon' => 'edit',
+			'href' => '?' . http_build_query( [
+				'editWiki' => $wiki
+			] ),
+			'title' => 'Edit',
+			'framed' => false,
+		] );
+		$actions[] = new OOUI\ButtonWidget( [
+			'icon' => 'trash',
+			'href' => "delete.php?wiki=$wiki",
+			'title' => 'Delete',
+			'framed' => false,
+		] );
+	}
+	if ( $actions ) {
+		$actionsGroup = new OOUI\ButtonGroupWidget( [
+			'items' => $actions,
+			'classes' => [ 'actions' ]
+		] );
 	}
 	if ( !$data['ready'] ) {
 		$classes[] = 'notReady';
@@ -511,7 +576,7 @@ while ( $data = $results->fetch_assoc() ) {
 			break;
 	}
 
-	$rows .= '<tr class="' . implode( ' ', $classes ) . '">' .
+	$rows .= '<tr data-wiki="' . htmlspecialchars( $wiki ) . '" class="' . implode( ' ', $classes ) . '">' .
 		'<td data-label="Wiki" class="wiki">' .
 			'<span class="wikiAnchor" id="' . substr( $wiki, 0, 10 ) . '"></span>' .
 			get_wiki_link( $wiki, $wikiData['landingPage'], $wikiData['ready'] ) .
@@ -523,7 +588,7 @@ while ( $data = $results->fetch_assoc() ) {
 		'<td data-label="Backend" class="backend">' . $wikiData[ 'backend' ] . '</td>' .
 		( $auth->useOAuth() ? '<td data-label="Creator">' . ( $creator ? user_link( $creator ) : '?' ) . '</td>' : '' ) .
 		( $auth->canAdmin() ? '<td data-label="Time to create">' . ( $wikiData['timeToCreate'] ? format_duration( $wikiData['timeToCreate'] ) : '' ) . '</td>' : '' ) .
-		( $canCreate ? '<td data-label="Actions">' . implode( '&nbsp;&middot;&nbsp;', $actions ) . '</td>' : '' ) .
+		( $canCreate ? '<td data-label="Actions">' . $actionsGroup . '</td>' : '' ) .
 	'</tr>';
 
 	if ( $username && $username === $creator && $closed ) {

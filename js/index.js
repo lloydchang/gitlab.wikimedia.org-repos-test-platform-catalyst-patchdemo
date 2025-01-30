@@ -20,6 +20,7 @@
 		const patchesLayout = OO.ui.infuse( $( '.form-patches-layout' ) );
 		const backendInput = $formBackend.length ? OO.ui.infuse( $formBackend ) : null;
 		const mediawikiCore = 'mediawiki/core';
+		const $mainHeader = $( '.mainHeader' );
 
 		const setupSubmit = () => {
 			form.addEventListener( 'submit', ( e ) => {
@@ -230,7 +231,7 @@
 			reposInput.emit( 'change' );
 		} );
 
-		$( '.copyWiki' ).on( 'click', function ( e ) {
+		$( '.copyWiki a' ).on( 'click', function ( e ) {
 			const params = new URL( this.href ).searchParams;
 			patchesInput.setValue( params.get( 'patches' ) ? params.get( 'patches' ).split( ',' ) : [] );
 			branchSelect.setValue( 'origin/' + params.get( 'branch' ) );
@@ -242,10 +243,16 @@
 					reposInput.setValue( repos.split( ',' ) );
 				}
 			}
-			branchSelect.scrollElementIntoView( { padding: { top: $( 'header' ).height() + 10 } } );
 			landingPageInput.setValue( params.get( 'landingPage' ) );
+
+			const wikiID = $( this ).closest( 'tr' ).data( 'wiki' );
+			$mainHeader.text( 'Create a new wiki based on ' + wikiID );
+
+			OO.ui.Element.static.scrollIntoView( $mainHeader[ 0 ], { padding: { top: $( 'header' ).height() + 10 } } );
 			e.preventDefault();
 		} );
+
+		// TODO do something similar for the edit button
 	}
 
 	let $lastMatch = $( [] );

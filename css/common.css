@@ -342,6 +342,11 @@ summary > .oo-ui-labelElement-label:not( .oo-ui-inline-help ) {
 	content: ', ';
 }
 
+.wikis .actions .oo-ui-buttonElement:first-child {
+	/* Undo negative margin-left from OOUI */
+	margin-left: 0;
+}
+
 @media ( max-width: 720px ) {
 	.oo-ui-fieldLayout-align-left > .oo-ui-fieldLayout-body {
 		flex-wrap: wrap;

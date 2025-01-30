@@ -12,6 +12,8 @@ build:
             - "**/*.php"
             - "**/*.html"
             - "**/*.sh"
+            - "**/*.js"
+            - "**/*.css"
       sync:
         manual:
           - src: "**/*"
