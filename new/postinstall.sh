@@ -81,13 +81,6 @@ if [ -d $PATCHDEMO/wikis/$NAME/w/build/codex ]; then
 	#mv $PATCHDEMO/wikis/$NAME/w/build/codex/packages/codex-docs/docs/.vitepress/dist $PATCHDEMO/wikis/$NAME/w/build/codex/docs
 fi
 
-# NPM install+build for the Chart extension
-if [ -d $PATCHDEMO/wikis/$NAME/w/extensions/Chart ]; then
-	cd $PATCHDEMO/wikis/$NAME/w/extensions/Chart
-	npm ci
-	npm run build
-fi
-
 # grant FlaggedRevs editor rights to the default account
 if [ -d $PATCHDEMO/wikis/$NAME/w/extensions/FlaggedRevs ]; then
 	php $PATCHDEMO/wikis/$NAME/w/maintenance/createAndPromote.php "Patch Demo" --force --custom-groups editor
