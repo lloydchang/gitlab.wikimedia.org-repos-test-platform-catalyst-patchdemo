@@ -38,7 +38,7 @@ mariadb:
   auth:
     database: patchdemo
     username: patchdemo
-    password: patchdemo
+    password: hunter2
     rootPassword: secretpassword
   initdbScripts:
     setup.sql: |

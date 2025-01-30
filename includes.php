@@ -400,11 +400,21 @@ function format_streamed_log( string $timestamp, string $log ): string {
 function format_log_command( string $cmd, array $env = [] ): string {
 	$prefix = '';
 	foreach ( $env as $key => $value ) {
-		$value = escapeshellarg( $value );
+		$value = escapeshellarg( redact( $value ) );
 		$prefix .= "$key=$value ";
 	}
 	return '<span class="logPrefix">' . htmlspecialchars( $prefix ) . '</span> \\' . "\n" .
 		'<span class="logCmd">' . htmlspecialchars( $cmd ) . '</span>' . "\n";
+}
+
+function redact( string $text ): string {
+	$redactedWords = [
+		getenv( 'DB_PASS' ),
+		getenv( 'CATALYST_API_TOKEN' ),
+		getenv( 'OAUTH_CONSUMER_SECRET' ),
+		getenv( 'CONDUIT_API_KEY' )
+	];
+	return str_replace( $redactedWords, '[REDACTED]', $text );
 }
 
 function shell_echo( string $cmd, array $env = [] ): int {
@@ -416,7 +426,7 @@ function shell_echo( string $cmd, array $env = [] ): int {
 	$process->setPty( true );
 	$error = $process->run( static function ( $type, $buffer ) {
 		global $ansiConverter;
-		echo $ansiConverter->convert( $buffer );
+		echo redact( $ansiConverter->convert( $buffer ) );
 	} );
 	echo '</pre>';
 	return $error;
