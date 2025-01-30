@@ -58,6 +58,11 @@ class EnvironmentRequest implements JsonSerializable {
 		return $this;
 	}
 
+	public function withMwConfigVars( array $configVars ): EnvironmentRequest {
+		$this->setCoreValue( "mwConfigVars", $configVars );
+		return $this;
+	}
+
 	public function withExtension( string $extension, string $branch, array $refs = [] ): EnvironmentRequest {
 		return $this->withComponent( "extensions", $extension, $branch, $refs );
 	}

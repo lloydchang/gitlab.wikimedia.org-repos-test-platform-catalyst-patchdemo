@@ -132,6 +132,21 @@ class Catalyst {
 		);
 	}
 
+	public function updateEnvironment( string $id, EnvironmentRequest $env ): array {
+		return $this->withErr(
+			function () use ( $id, $env ) {
+				$envJson = json_encode( $env, JSON_THROW_ON_ERROR );
+				return $this->httpClient->request( 'POST', "$this->baseUrl/environments/$id/refresh", [
+					'headers' => [ 'Content-Type' => 'application/json' ],
+					'body' => $envJson,
+				] )->toArray();
+			},
+			static function ( $e ) {
+				throw $e;
+			}
+		);
+	}
+
 	public function getEnvironment( int $id ): ?array {
 		return $this->withErr(
 			function () use ( $id ) {
