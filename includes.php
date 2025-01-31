@@ -38,8 +38,12 @@ $is404 = basename( $_SERVER['SCRIPT_NAME'] ) === '404.php';
 include_once 'Authentication.php';
 
 // get the service name of mariadb from the environment variables
-$mysqli = new mysqli( getenv( 'DB_HOST' ), getenv( 'DB_USER' ), getenv( 'DB_PASS' ),
-	getenv( 'DB_DATABASE' ) );
+$mysqli = new mysqli(
+	getenv( 'DB_HOST' ) ?: 'localhost',
+	getenv( 'DB_USER' ) ?: 'patchdemo',
+	getenv( 'DB_PASS' ) ?: 'patchdemo',
+	getenv( 'DB_DATABASE' ) ?: 'patchdemo'
+);
 if ( $mysqli->connect_error ) {
 	error( $mysqli->connect_error );
 }
