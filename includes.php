@@ -23,6 +23,7 @@ require_once "Catalyst.php";
 include 'config.default.php';
 if ( file_exists( 'config.php' ) ) {
 	include 'config.php';
+	// TODO: Make this recursive
 	$config = array_merge( $config, $localConfig );
 }
 

@@ -98,6 +98,26 @@ class Authentication {
 		return $username && in_array( $username, $admins, true );
 	}
 
+	public function can_configure(): bool {
+		if ( !$this->useOAuth() ) {
+			// Unauthenticated site
+			return true;
+		}
+		$username = $this->getUserName();
+		$admins = $this->config[ 'admins' ];
+		$configurers = $this->config[ 'configurers' ];
+		if ( $username && in_array( $username, $admins, true ) ) {
+			return true;
+		}
+		$configurersMatch = $this->config[ 'configurersMatch' ];
+		foreach ( $configurersMatch as $pattern ) {
+			if ( preg_match( $pattern, $username ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * Whether the current user can delete a wiki created by the given user.
 	 * @param string|null $creator The wiki creator. If null, only admins can delete the wiki.

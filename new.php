@@ -29,6 +29,7 @@ $announce = !empty( $_POST['announce'] );
 $landingPage = trim( $_POST['landingPage'] ) ? trim( $_POST['landingPage'] ) : null;
 $language = trim( $_POST['language'] );
 $buildDocs = !empty( $_POST['docs'] );
+$siteConfig = $auth->can_configure() ? trim( $_POST['siteConfig'] ) : '';
 
 $wiki = substr( md5( $branch . $patches . time() ), 0, 10 );
 $server = get_server();
@@ -454,6 +455,17 @@ foreach ( $linkedTasks as $task ) {
 	$mainPage .= "\n:* [{$config['phabricatorUrl']}/T$task T$task]";
 }
 
+if ( $siteConfig ) {
+	$mainPage .= "\n;Extra config\n";
+	$tag = 'pre';
+	$attrs = '';
+	if ( in_array( 'mediawiki/extensions/SyntaxHighlight_GeSHi', $allowedRepos ) ) {
+		$tag = 'syntaxhighlight';
+		$attrs = ' lang="php"';
+	}
+	$mainPage .= "<$tag$attrs style=\"margin-left: 1.6em\">\n$siteConfig\n</$tag>";
+}
+
 $baseEnv = [
 	'PATCHDEMO' => __DIR__,
 	'NAME' => $wiki,
@@ -705,6 +717,7 @@ if ( $useCatalystBackend ) {
 			'SERVERPATH' => $serverPath,
 			'LANGUAGE' => $language,
 			'REPOSITORIES' => $reposString,
+			'SITECONFIG' => $siteConfig,
 			'DEFAULT_SKIN' => $defaultSkin,
 			'DB_USER' => getenv( 'DB_USER' ),
 			'DB_PASS' => getenv( 'DB_PASS' ),

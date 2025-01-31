@@ -23,7 +23,14 @@ $config = [
 		'key' => getenv( 'OAUTH_CONSUMER_KEY' ),
 		'secret' => getenv( 'OAUTH_CONSUMER_SECRET' ),
 		// OAuth admins can delete any wiki
-		'admins' => getenv( 'ADMIN_USERS' ) ? explode( ',', getenv( 'ADMIN_USERS' ) ) : []
+		'admins' => getenv( 'ADMIN_USERS' ) ? explode( ',', getenv( 'ADMIN_USERS' ) ) : [],
+		// These users can override site configs. This is the same level of trust as V+2,
+		// as those users can also execute arbitrary code.
+		'configurers' => [],
+		// Same as above, but regexes e.g. / \(WMF\)$/
+		'configurersMatch' => [],
+		// Instructions to request 'configurers' user status, e.g. "File a request <a href=...>here</a>."
+		'configurersRequestHtml' => '',
 	],
 	// Conduit API key for bot cross-posting to Phabricator
 	'conduitApiKey' => getenv( 'CONDUIT_API_KEY' ),

@@ -197,6 +197,25 @@ if ( $config['readOnly'] ) {
 						]
 					),
 					new OOUI\FieldLayout(
+						$auth->can_configure() ?
+							new OOUI\MultilineTextInputWidget( [
+								'classes' => [ 'form-siteConfig' ],
+								'name' => 'siteConfig',
+								'placeholder' => "e.g. \$wgSitename = 'Test wiki';",
+								'rows' => 3,
+							] ) :
+							new OOUI\LabelWidget( [
+								'classes' => [ 'form-siteConfig-message' ],
+								'label' => new OOUI\HtmlSnippet( 'Only approved users can modify site config. ' . $config['oauth']['configurersRequestHtml'] ),
+							] ),
+						[
+							'label' => 'Extra site config',
+							'help' => new OOUI\HtmlSnippet( 'This config will be <strong>public</strong> on the wiki\'s main page.' ),
+							'helpInline' => true,
+							'align' => 'left',
+						]
+					),
+					new OOUI\FieldLayout(
 						new OOUI\CheckboxInputWidget( [
 							'classes' => [ 'form-instantCommons' ],
 							'name' => 'instantCommons',
