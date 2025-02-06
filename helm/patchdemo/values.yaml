@@ -35,6 +35,8 @@ wikiReposPool:
   hostPath: "/mnt/k3s-data/wiki-repos"
 
 mariadb:
+  primary:
+    resourcesPreset: medium
   auth:
     database: patchdemo
     username: patchdemo
