@@ -18,11 +18,32 @@ window.PatchSelectWidget = function PatchSelectWidget( config ) {
 		name: config.name
 	} );
 
+	// PatchSelectAutocompleteInput and PatchSelectWidget need access
+	// to the same $element at construction time, so it needs to be created early.
+	const $element = $( '<div>' );
+
+	const options = Object.keys( pd.userPatches ).map( ( r ) => ( {
+		data: r,
+		label: r + ': ' + pd.userPatches[ r ]
+	} ) );
+
+	const inputWidget = new window.PatchSelectAutocompleteInput( options, Object.assign( {
+		placeholder: config.placeholder,
+		classes: [ 'oo-ui-tagMultiselectWidget-input' ],
+		allowSuggestionsWhenEmpty: true,
+		$overlay: $element,
+		$container: $element
+	}, config.input ) );
+
+	inputWidget.getLookupMenu().on( 'choose', this.addTagFromInput.bind( this ) );
+
 	// Parent constructor
 	window.PatchSelectWidget.super.call( this, Object.assign( {
+		$element: $element,
 		allowArbitrary: true,
 		allowDisplayInvalidTags: true,
-		selected: config.value && config.value.split( '\n' )
+		selected: config.value && config.value.split( '\n' ),
+		inputWidget: inputWidget
 	}, config ) );
 
 	// Assume that a whole patch number was pasted
@@ -217,4 +238,32 @@ window.PatchSelectWidget.prototype.onTagSelect = function ( item ) {
 		// 3. Focus the input
 		this.focus();
 	}
+};
+
+window.PatchSelectAutocompleteInput = function ( options, config ) {
+	// Parent constructor
+	window.PatchSelectAutocompleteInput.super.call( this, config );
+
+	// Mixin constructor
+	OO.ui.mixin.LookupElement.call( this, config );
+
+	this.options = options;
+};
+
+OO.inheritClass( window.PatchSelectAutocompleteInput, OO.ui.TextInputWidget );
+OO.mixinClass( window.PatchSelectAutocompleteInput, OO.ui.mixin.LookupElement );
+
+window.PatchSelectAutocompleteInput.prototype.getRequestData = function () {
+	const value = this.getValue();
+	return $.Deferred().resolve(
+		// eslint-disable-next-line es-x/no-array-prototype-includes
+		this.options.filter( ( item ) => item.label.includes( value ) )
+	).promise();
+};
+
+window.PatchSelectAutocompleteInput.prototype.getLookupMenuOptionsFromData = function ( data ) {
+	return data.length ? [
+		new OO.ui.MenuSectionOptionWidget( { label: 'Recently used' } ),
+		...data.map( ( item ) => new OO.ui.MenuOptionWidget( item ) )
+	] : [];
 };

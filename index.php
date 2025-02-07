@@ -375,6 +375,7 @@ if ( $auth->isSignedIn() ) {
 $rows = '';
 $closedWikis = 0;
 $wikiPatches = [];
+$userPatches = [];
 $username = $auth->getUserName();
 
 $stmt = $mysqli->prepare( '
@@ -429,8 +430,8 @@ while ( $data = $results->fetch_assoc() ) {
 		$actions[] = '<a href="delete.php?wiki=' . $wiki . '">Delete</a>';
 	}
 	if ( $canCreate ) {
-		$patchList = array_map( static function ( $data ) {
-			return htmlspecialchars( $data['r'] );
+		$patchList = array_map( static function ( $d ) {
+			return htmlspecialchars( $d['r'] );
 		}, $wikiData['patchList'] );
 
 		if (
@@ -448,6 +449,14 @@ while ( $data = $results->fetch_assoc() ) {
 					'landingPage' => $wikiData[ 'landingPage' ],
 				], '', '&amp;' ) .
 				'">Copy</a>';
+		}
+	}
+	if ( $creator === $username ) {
+		foreach ( $wikiData[ 'patchList' ] as $d ) {
+			$r = $d['r'];
+			if ( !isset( $userPatches[ $r ] ) ) {
+				$userPatches[ $r ] = $d[ 'subject' ];
+			}
 		}
 	}
 	if ( !$data['ready'] ) {
@@ -566,6 +575,7 @@ echo '<table class="wikis">' .
 $windowData = '<script>
 window.pd = window.pd || {};
 pd.wikiPatches = ' . json_encode_clean( $wikiPatches ) . ';
+pd.userPatches = ' . json_encode_clean( $userPatches ) . ';
 pd.config = ' . json_encode_clean( [
 	'phabricatorUrl' => $config['phabricatorUrl'],
 	'gerritUrl' => $config['gerritUrl'],
