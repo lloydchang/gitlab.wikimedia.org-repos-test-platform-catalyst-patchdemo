@@ -518,11 +518,6 @@ if ( $useCatalystBackend ) {
 				echo "<script>console.error( '$console_msg' );</script>";
 		}
 	}
-
-	$repoPool = getenv( 'REPO_POOL_HOST_PATH' );
-	if ( $repoPool ) {
-		$env->useRepositoryPool( $repoPool );
-	}
 	$res = $catalystApi->postEnvironment( $env );
 	$catalystId = $res["id"];
 	wiki_add_catalyst_id( $wiki, $catalystId );

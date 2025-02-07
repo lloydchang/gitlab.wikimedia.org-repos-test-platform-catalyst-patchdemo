@@ -139,8 +139,6 @@ spec:
               value: "{{ .Values.app.adminUsers }}"
             - name: CONDUIT_API_KEY
               value: "{{ .Values.app.conduitApiKey }}"
-            - name: REPO_POOL_HOST_PATH
-              value: "{{ .Values.wikiReposPool.hostPath }}"
           volumeMounts:
             - name: wikis
               mountPath: /var/www/html/wikis
