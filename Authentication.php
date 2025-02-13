@@ -71,9 +71,7 @@ class Authentication {
 		if ( !$this->useOAuth() ) {
 			return '';
 		}
-		if ( empty( $_SESSION['csrf_token'] ) ) {
-			$_SESSION['csrf_token'] = bin2hex( random_bytes( 32 ) );
-		}
+
 		return $_SESSION['csrf_token'];
 	}
 
@@ -156,5 +154,9 @@ class Authentication {
 				$_SESSION['request_secret'] = $token->secret;
 			}
 		}
+		if ( empty( $_SESSION['csrf_token'] ) ) {
+			$_SESSION['csrf_token'] = bin2hex( random_bytes( 32 ) );
+		}
+		session_write_close();
 	}
 }
