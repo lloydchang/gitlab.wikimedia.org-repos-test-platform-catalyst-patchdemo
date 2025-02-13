@@ -379,7 +379,7 @@ $userPatches = [];
 $username = $auth->getUserName();
 
 $stmt = $mysqli->prepare( '
-	SELECT wiki, creator, UNIX_TIMESTAMP( created ) created, backend, patches, branch, repos, announcedTasks, landingPage, timeToCreate, deleted, ready
+	SELECT wiki, creator, UNIX_TIMESTAMP( created ) created, backend, patches, branch, repos, announcedTasks, landingPage, timeToCreate, deleted, ready, catalystId
 	FROM wikis
 	WHERE !deleted
 	ORDER BY IF( creator = ?, 1, 0 ) DESC, created DESC
@@ -459,7 +459,19 @@ while ( $data = $results->fetch_assoc() ) {
 			}
 		}
 	}
-	if ( !$data['ready'] ) {
+	$catalystWikiStatus = null;
+	if ( $wikiData['backend'] == 'catalyst' ) {
+		$catalyst_environment = $catalystApi->getEnvironment( $wikiData['catalystId'] );
+		$catalystWikiStatus = $catalyst_environment['status'];
+		switch ( $catalystWikiStatus ) {
+			case 'starting':
+				$classes[] = 'notReady';
+				break;
+			case 'failed':
+				$classes[] = 'failed';
+				break;
+		}
+	} elseif ( !$data['ready'] ) {
 		$classes[] = 'notReady';
 	}
 	$repos = '';
@@ -520,10 +532,11 @@ while ( $data = $results->fetch_assoc() ) {
 			break;
 	}
 
+	$wikiReady = $wikiData['ready'] || $catalystWikiStatus == 'running';
 	$rows .= '<tr class="' . implode( ' ', $classes ) . '">' .
 		'<td data-label="Wiki" class="wiki">' .
 			'<span class="wikiAnchor" id="' . substr( $wiki, 0, 10 ) . '"></span>' .
-			get_wiki_link( $wiki, $wikiData['landingPage'], $wikiData['ready'] ) .
+			get_wiki_link( $wiki, $wikiData['landingPage'], $wikiReady ) .
 		'</td>' .
 		'<td data-label="Patches" class="patches">' . $patches . '</td>' .
 		'<td data-label="Linked tasks" class="linkedTasks">' . $linkedTasks . '</td>' .
