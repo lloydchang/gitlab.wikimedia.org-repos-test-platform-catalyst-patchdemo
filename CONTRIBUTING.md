@@ -1,1 +1,1 @@
-When your merge request is ready, please a tag a user with the role "Maintainer" in order to get your code merged and deployed!
+When your merge request is ready, please a tag a user with the role "Owner" in order to get your code merged and deployed!
