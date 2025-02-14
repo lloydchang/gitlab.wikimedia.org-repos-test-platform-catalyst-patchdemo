@@ -35,9 +35,12 @@ test-nodejs:
     - npm run build --if-present
     - npm test
 
-.default_rules:
+.protected_rules:
   rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED
+    - if: $CI_PROJECT_NAMESPACE == "repos/test-platform/catalyst" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED
+  manual_rules:
+    - if: $CI_PROJECT_NAMESPACE == "repos/test-platform/catalyst" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED
+      when: manual
 
 publish:
   stage: publish
@@ -49,7 +52,7 @@ publish:
   tags:
     - trusted
   rules:
-    - !reference [.default_rules, rules]
+    - !reference [.protected_rules, rules]
 
 deploy-staging:
   stage: deploy
@@ -85,7 +88,7 @@ deploy-staging:
   environment:
     name: patchdemo-staging
   rules: 
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED
+    - !reference [.protected_rules, rules]
 
 deploy-production:
   stage: deploy
@@ -121,5 +124,4 @@ deploy-production:
   environment:
     name: patchdemo-production
   rules:
-  - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED
-    when: manual
+    - !reference [.protected_rules, manual_rules]
