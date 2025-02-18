@@ -475,9 +475,11 @@ function get_repo_name( string $repo ): string {
 // build catalyst api query here
 if ( $useCatalystBackend ) {
 	$bareBranch = substr( $branch, strlen( 'origin/' ) );
-	$env = ( new EnvironmentRequest( 'wiki-' . $wiki, 'mediawiki' ) )
+	$env = ( new EnvironmentRequest( 'wiki-' . $wiki ) )
 			->withBranch( $bareBranch )
 			->withIngress( $wiki . '.' . $config['catalystDomainName'] )
+			->withAdminUser( 'Patch Demo' )
+			->withDefaultPassword( 'patchdemo1' )
 			->useInstantCommons( $useInstantCommons )
 			->withMainPageText( $mainPage )
 			->withLanguage( $language )

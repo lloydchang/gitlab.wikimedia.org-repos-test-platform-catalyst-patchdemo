@@ -3,12 +3,10 @@
 class EnvironmentRequest implements JsonSerializable {
 
 	private string $name;
-	private string $chartName;
 	private array $values;
 
-	public function __construct( string $name, string $chart ) {
+	public function __construct( string $name ) {
 		$this->name = $name;
-		$this->chartName = $chart;
 
 		$this->values = [];
 	}
@@ -20,6 +18,16 @@ class EnvironmentRequest implements JsonSerializable {
 
 	public function withIngress( string $ingress ): EnvironmentRequest {
 		$this->setCoreValue( "ingress", $ingress );
+		return $this;
+	}
+
+	public function withAdminUser( string $admin ): EnvironmentRequest {
+		$this->setCoreValue( "user", $admin );
+		return $this;
+	}
+
+	public function withDefaultPassword( string $pass ): EnvironmentRequest {
+		$this->setCoreValue( "password", $pass );
 		return $this;
 	}
 
@@ -91,7 +99,7 @@ class EnvironmentRequest implements JsonSerializable {
 	public function jsonSerialize(): mixed {
 		return [
 			"name" => $this->name,
-			"chartName" => $this->chartName,
+			"chartName" => "mediawiki",
 			"values" => $this->values,
 		];
 	}
