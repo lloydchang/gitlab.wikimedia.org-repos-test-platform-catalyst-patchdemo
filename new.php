@@ -547,7 +547,7 @@ if ( $useCatalystBackend ) {
 	} else {
 		$status_check_time = time();
 		do {
-			sleep( 10 );
+			sleep( 2 );
 			$catalyst_environment = $catalystApi->getEnvironment( $catalystId );
 			$wiki_status = $catalyst_environment["status"];
 		} while ( $wiki_status != 'running' && time() - $status_check_time < 60 );
