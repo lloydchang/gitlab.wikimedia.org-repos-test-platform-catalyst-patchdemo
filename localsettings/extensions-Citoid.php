@@ -1,3 +1,1 @@
-<?php
-
-$wgCitoidFullRestbaseURL = 'https://www.mediawiki.org/api/rest_';
+shared-repo-config/localsettings/extensions-Citoid.php

@@ -1,7 +1,1 @@
-<?php
-
-$wgGroupPermissions['sysop']['flow-create-board'] = true;
-
-if ( file_exists( 'extensions/VisualEditor/extension.json' ) ) {
-	$wgDefaultUserOptions['flow-editor'] = 'visualeditor';
-}
+shared-repo-config/localsettings/extensions-Flow.php

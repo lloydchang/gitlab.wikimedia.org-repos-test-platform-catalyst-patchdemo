@@ -1,4 +1,1 @@
-<?php
-
-// Needed for Liftwing / ORES to work with a known wiki ID.
-$wgOresWikiId = 'enwiki';
+shared-repo-config/localsettings/extensions-ORES.php

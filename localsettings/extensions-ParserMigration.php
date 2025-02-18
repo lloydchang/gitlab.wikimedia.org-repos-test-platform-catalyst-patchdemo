@@ -1,3 +1,1 @@
-<?php
-
-$wgParserMigrationEnableQueryString = true;
+shared-repo-config/localsettings/extensions-ParserMigration.php

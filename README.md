@@ -21,6 +21,13 @@ Limitations
 ----
 * Runs MediaWiki only – no RESTBase and other fancy stuff
 
+## Submodules
+This repo contains a submodule: 
+[shared-repo-config](https://gitlab.wikimedia.org/repos/test-platform/catalyst/shared-repo-config)
+
+Adding new services/extensions/skins, changes to npm packages, and changes to some provisioning scripts may require you 
+to make changes in the submodule repository. 
+
 ## Local development
 
 ### On Local Kubernetes Cluster

@@ -1,4 +1,1 @@
-<?php
-
-$wgInboxSkipRegularEmail = true;
-$wgInboxHideProductionWarningBanner = true;
+shared-repo-config/localsettings/extensions-Inbox.php

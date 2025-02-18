@@ -1,3 +1,1 @@
-<?php
-
-$wgPageViewInfoWikimediaDomain = "$wgLanguageCode.wikipedia.org";
+shared-repo-config/localsettings/extensions-PageViewInfo.php

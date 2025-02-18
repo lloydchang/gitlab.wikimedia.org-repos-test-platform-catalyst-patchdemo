@@ -1,1 +1,1 @@
-Phonos
+shared-repo-config/pages/extensions-Phonos.txt

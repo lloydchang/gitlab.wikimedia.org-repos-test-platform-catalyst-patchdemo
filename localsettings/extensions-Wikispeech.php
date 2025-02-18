@@ -1,3 +1,1 @@
-<?php
-
-$wgWikispeechSpeechoidUrl = 'https://wikispeech-tts-dev.wmflabs.org/';
+shared-repo-config/localsettings/extensions-Wikispeech.php

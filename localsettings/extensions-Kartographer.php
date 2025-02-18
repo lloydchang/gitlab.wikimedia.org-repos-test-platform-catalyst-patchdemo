@@ -1,4 +1,1 @@
-<?php
-
-$wgKartographerMapServer = 'https://kartotherian.wmflabs.org';
-$wgKartographerStaticMapframe = true;
+shared-repo-config/localsettings/extensions-Kartographer.php

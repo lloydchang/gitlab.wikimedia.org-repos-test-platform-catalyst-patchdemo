@@ -1,3 +1,1 @@
-<?php
-
-$wgEchoPerUserBlacklist = true;
+shared-repo-config/localsettings/extensions-Echo.php

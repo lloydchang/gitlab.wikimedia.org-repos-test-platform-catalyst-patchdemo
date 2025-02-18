@@ -1,3 +1,1 @@
-<?php
-
-$wgPhonosEngine = 'larynx';
+shared-repo-config/localsettings/extensions-Phonos.php

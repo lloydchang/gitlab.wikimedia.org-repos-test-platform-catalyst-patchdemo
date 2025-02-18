@@ -1,4 +1,1 @@
-<?php
-
-$wgReportIncidentRecipientEmails = [ 'a@example.com' ];
-$wgReportIncidentEmailFromAddress = 'b@example.com';
+shared-repo-config/localsettings/extensions-ReportIncident.php

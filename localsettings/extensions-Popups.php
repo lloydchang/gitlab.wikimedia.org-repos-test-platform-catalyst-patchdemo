@@ -1,4 +1,1 @@
-<?php
-
-$wgPopupsReferencePreviews = true;
-$wgPopupsReferencePreviewsBetaFeature = false;
+shared-repo-config/localsettings/extensions-Popups.php

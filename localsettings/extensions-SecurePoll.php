@@ -1,4 +1,1 @@
-<?php
-
-$wgGroupPermissions['electionadmin'] = [];
-$wgGroupPermissions['sysop']['securepoll-create-poll'] = true;
+shared-repo-config/localsettings/extensions-SecurePoll.php

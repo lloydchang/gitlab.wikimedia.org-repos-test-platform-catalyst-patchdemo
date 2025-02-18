@@ -1,3 +1,1 @@
-<?php
-
-$wgMinervaApplyKnownTemplateHacks = true;
+shared-repo-config/localsettings/skins-MinervaNeue.php

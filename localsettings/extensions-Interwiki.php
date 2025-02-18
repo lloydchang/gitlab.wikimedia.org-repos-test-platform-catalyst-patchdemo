@@ -1,3 +1,1 @@
-<?php
-
-$wgGroupPermissions['sysop']['interwiki'] = true;
+shared-repo-config/localsettings/extensions-Interwiki.php

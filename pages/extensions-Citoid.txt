@@ -1,5 +1,1 @@
-MediaWiki:Citoid-template-type-map.json
-Template:Cite_book
-Template:Cite_journal
-Template:Cite_news
-Template:Cite_web
+shared-repo-config/pages/extensions-Citoid.txt

@@ -1,4 +1,1 @@
-<?php
-
-// InstantCommons
-$wgUseInstantCommons = true;
+shared-repo-config/localsettings/feature-instantCommons.php

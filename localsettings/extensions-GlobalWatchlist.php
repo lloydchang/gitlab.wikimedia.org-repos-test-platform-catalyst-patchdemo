@@ -1,3 +1,1 @@
-<?php
-
-$wgGlobalWatchlistDevMode = true;
+shared-repo-config/localsettings/extensions-GlobalWatchlist.php
