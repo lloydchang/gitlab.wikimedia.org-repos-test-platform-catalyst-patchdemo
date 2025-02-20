@@ -53,7 +53,8 @@
 - mediawiki/extensions/GlobalUsage
 - mediawiki/extensions/GlobalUserPage
 - mediawiki/extensions/Graph
-- mediawiki/extensions/GrowthExperiments
+# Do not check by default until T386930 is investigated
+# - mediawiki/extensions/GrowthExperiments
 - mediawiki/extensions/GuidedTour
 - mediawiki/extensions/ImageMap
 - mediawiki/extensions/InputBox
