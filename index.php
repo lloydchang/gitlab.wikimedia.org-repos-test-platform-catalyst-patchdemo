@@ -593,10 +593,6 @@ pd.config = ' . json_encode_clean( [
 	'phabricatorUrl' => $config['phabricatorUrl'],
 	'gerritUrl' => $config['gerritUrl'],
 ] ) . ';';
-if ( isset( $catalystRepos ) ) {
-	$windowData .= '
-pd.catalystRepos = ' . json_encode_clean( $catalystRepos ) . ';';
-}
 $windowData .= '
 </script>';
 
