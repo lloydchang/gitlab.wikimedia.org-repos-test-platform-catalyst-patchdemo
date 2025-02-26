@@ -192,6 +192,12 @@ summary > .oo-ui-labelElement-label:not( .oo-ui-inline-help ) {
 	height: 5em;
 }
 
+.form-patches-horizontal {
+	flex-wrap: nowrap;
+	column-gap: 5%;
+	margin-top: 5px;
+}
+
 @media ( min-width: 721px ) {
 	.enableNotifications {
 		margin-left: 40%;

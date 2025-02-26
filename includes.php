@@ -58,17 +58,17 @@ function stream_response() {
 	}
 }
 
-function insert_wiki_data( string $wiki, string $creator, int $created, string $backend, string $branch, ?string $landingPage ) {
+function insert_wiki_data( string $wiki, string $creator, int $created, string $backend, string $branch, ?string $landingPage, int $keepWiki ) {
 	global $mysqli;
 	$stmt = $mysqli->prepare( '
 		INSERT INTO wikis
-		(wiki, creator, created, backend, branch, landingPage)
-		VALUES(?, ?, FROM_UNIXTIME(?), ?, ?, ?)
+		(wiki, creator, created, backend, branch, landingPage, keepWiki)
+		VALUES(?, ?, FROM_UNIXTIME(?), ?, ?, ?, ?)
 	' );
 	if ( !$stmt ) {
 		echo $mysqli->error;
 	}
-	$stmt->bind_param( 'ssisss', $wiki, $creator, $created, $backend, $branch, $landingPage );
+	$stmt->bind_param( 'ssisssi', $wiki, $creator, $created, $backend, $branch, $landingPage, $keepWiki );
 	$stmt->execute();
 	$stmt->close();
 }
@@ -180,7 +180,7 @@ function get_wiki_data_from_row( array $data ): array {
 	return $data;
 }
 
-function get_wiki_url( string $wiki, ?string $landingPage ): string {
+function get_wiki_url( string $wiki, ?string $landingPage = null ): string {
 	global $config, $mysqli;
 	$stmt = $mysqli->prepare( 'SELECT backend FROM wikis WHERE wiki = ?' );
 	$stmt->bind_param( 's', $wiki );
@@ -512,12 +512,13 @@ function delete_wiki( string $wiki, string $serverUri = null ): ?string {
 	}
 
 	foreach ( $wikiData['announcedTasks'] as $task ) {
+		$wikiUrl = get_wiki_url( $wiki );
 		$creator = $wikiData['creator'];
 		post_phab_comment(
 			'T' . $task,
 			"Test wiki on [[ $serverUri | Patch demo ]] " . ( $creator ? ' by ' . $creator : '' ) . " using patch(es) linked to this task was **deleted**:\n" .
 			"\n" .
-			"~~[[ $serverUri/wikis/$wiki/w/ ]]~~"
+			"~~[[ $wikiUrl ]]~~"
 		);
 	}
 

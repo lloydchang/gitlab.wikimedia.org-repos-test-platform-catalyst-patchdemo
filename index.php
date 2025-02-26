@@ -91,7 +91,7 @@ if ( $config['readOnly'] ) {
 	$catalystRepos = get_catalyst_repos();
 	$catalystBackendDisabled = ( count( $catalystRepos ) < 1 );
 	$useCatalystBackend = new OOUI\HtmlSnippet(
-		'Use (<a href="https://wikitech.wikimedia.org/wiki/Catalyst">Catalyst</a>) Kubernetes backend (beta)'
+		'Use (<a href="https://wikitech.wikimedia.org/wiki/Catalyst">Catalyst</a>) Kubernetes backend (beta):'
 	);
 	$cannotUseCatalystBackend = new OOUI\HtmlSnippet(
 		'Could not reach <a href="https://wikitech.wikimedia.org/wiki/Catalyst">Catalyst</a> api - option disabled.'
@@ -99,6 +99,39 @@ if ( $config['readOnly'] ) {
 	$catalystBackendLabel = $catalystBackendDisabled ?
 		$cannotUseCatalystBackend :
 		$useCatalystBackend;
+
+	$keepCheckbox =
+		new OOUI\FieldLayout(
+			new OOUI\CheckboxInputWidget( [
+				'classes' => [ 'form-keep' ],
+				'name' => 'keep',
+				'value' => 1,
+				'selected' => false,
+			] ),
+			[
+				'label' => 'Keep wiki running after patches merge:',
+				'align' => 'top',
+			]
+		);
+
+	$config['conduitApiKey'] ? $patchRelatedItems = [
+		new OOUI\FieldLayout(
+			new OOUI\CheckboxInputWidget( [
+				'classes' => [ 'form-announce' ],
+				'name' => 'announce',
+				'value' => 1,
+				'selected' => true
+			] ),
+			[
+				'classes' => [ 'form-announce-layout' ],
+				'label' => 'Announce wiki on Phabricator:',
+				'help' => 'Any tasks linked to from patches applied will get a comment announcing this wiki.',
+				'helpInline' => true,
+				'align' => 'top',
+			]
+		),
+		$keepCheckbox
+	] : $patchRelatedItems = [ $keepCheckbox ];
 
 	echo new OOUI\FormLayout( [
 		'infusable' => true,
@@ -139,23 +172,12 @@ if ( $config['readOnly'] ) {
 							'align' => 'left',
 						]
 					),
-					$config['conduitApiKey'] ?
-						new OOUI\FieldLayout(
-							new OOUI\CheckboxInputWidget( [
-								'classes' => [ 'form-announce' ],
-								'name' => 'announce',
-								'value' => 1,
-								'selected' => true
-							] ),
-							[
-								'classes' => [ 'form-announce-layout' ],
-								'label' => 'Announce wiki on Phabricator:',
-								'help' => 'Any tasks linked to from patches applied will get a comment announcing this wiki.',
-								'helpInline' => true,
-								'align' => 'left',
-							]
-						) :
-						null,
+					new OOUI\HorizontalLayout( [
+							'label' => null,
+							'classes' => [ 'form-patches-horizontal' ],
+							'items' => $patchRelatedItems,
+						]
+					),
 					new OOUI\FieldLayout(
 						new OOUI\CheckboxInputWidget( [
 							'classes' => [ 'form-backend' ],
@@ -461,15 +483,19 @@ while ( $data = $results->fetch_assoc() ) {
 	}
 	$catalystWikiStatus = null;
 	if ( $wikiData['backend'] == 'catalyst' ) {
-		$catalyst_environment = $catalystApi->getEnvironment( $wikiData['catalystId'] );
-		$catalystWikiStatus = $catalyst_environment['status'];
-		switch ( $catalystWikiStatus ) {
-			case 'starting':
-				$classes[] = 'notReady';
-				break;
-			case 'failed':
-				$classes[] = 'failed';
-				break;
+		if ( $wikiData['catalystId'] == null ) {
+			$classes[] = 'failed';
+		} else {
+			$catalyst_environment = $catalystApi->getEnvironment( $wikiData['catalystId'] );
+			$catalystWikiStatus = $catalyst_environment['status'];
+			switch ( $catalystWikiStatus ) {
+				case 'starting':
+					$classes[] = 'notReady';
+					break;
+				case 'failed':
+					$classes[] = 'failed';
+					break;
+			}
 		}
 	} elseif ( !$data['ready'] ) {
 		$classes[] = 'notReady';

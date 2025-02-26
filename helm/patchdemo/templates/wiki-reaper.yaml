@@ -1,0 +1,35 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "patchdemo.fullname" . }}-wiki-reaper
+spec:
+  schedule: "0 0 * * *"
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: wiki-reaper
+              image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              command: ["/bin/sh", "-c"]
+              args: ["cd /var/www/html && php reapWikis.php"]
+              env:
+                - name: DB_USER
+                  value: "{{ .Values.mariadb.auth.username }}"
+                - name: DB_PASS
+                  value: "{{ .Values.mariadb.auth.password }}"
+                - name: DB_HOST
+                  value: "{{ .Release.Name }}-{{ .Values.app.db.host }}"
+                - name: DB_DATABASE
+                  value: "{{ .Values.mariadb.auth.database }}"
+                - name: SERVER_URL
+                  value: "{{ .Values.app.serverUrl }}"
+                - name: CATALYST_API_URL
+                  value: "{{ .Values.app.catalystApiUrl }}"
+                - name: CATALYST_API_TOKEN
+                  value: "{{ .Values.app.catalystApiToken }}"
+          restartPolicy: Never
+

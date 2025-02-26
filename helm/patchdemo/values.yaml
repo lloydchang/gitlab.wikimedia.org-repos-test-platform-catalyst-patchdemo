@@ -24,7 +24,8 @@ app:
   statusUrl: ''
   requireVerified: true
   oauthUrl: 'https://meta.wikimedia.org/w/index.php?title=Special:OAuth'
-  oauthCallback: https://patchdemo.wmcloud.org
+  # the server url is also the oauth callback url
+  serverUrl: https://patchdemo.wmcloud.org
   oauthConsumerKey: ''
   oauthConsumerSecret: ''
   adminUsers: 'SDunlap-WMF,JNuche (WMF),JHuneidi (WMF),CCicalese (WMF),ESanders (WMF),Ed g2s,Matma Rex'
@@ -112,5 +113,8 @@ mariadb:
 
       ALTER TABLE `wikis`
           ADD COLUMN IF NOT EXISTS `catalystId` SMALLINT UNSIGNED NULL DEFAULT NULL AFTER `backend`;
+      
+      ALTER TABLE `wikis`
+          ADD COLUMN IF NOT EXISTS `keepWiki` BIT NOT NULL DEFAULT 1 AFTER `created`;
 
 

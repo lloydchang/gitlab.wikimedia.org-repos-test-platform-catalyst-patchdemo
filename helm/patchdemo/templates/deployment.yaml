@@ -129,8 +129,8 @@ spec:
               value: "{{ .Values.app.requireVerified }}"
             - name: OAUTH_URL
               value: "{{ .Values.app.oauthUrl }}"
-            - name: OAUTH_CALLBACK
-              value: "{{ .Values.app.oauthCallback }}"
+            - name: SERVER_URL
+              value: "{{ .Values.app.serverUrl }}"
             - name: OAUTH_CONSUMER_KEY
               value: "{{ .Values.app.oauthConsumerKey }}"
             - name: OAUTH_CONSUMER_SECRET

@@ -29,6 +29,7 @@ $announce = !empty( $_POST['announce'] );
 $landingPage = trim( $_POST['landingPage'] ) ? trim( $_POST['landingPage'] ) : null;
 $language = trim( $_POST['language'] );
 $buildDocs = !empty( $_POST['docs'] );
+$keepWiki = (int)!empty( $_POST['keep'] );
 
 $wiki = substr( md5( $branch . $patches . time() ), 0, 10 );
 $server = get_server();
@@ -65,7 +66,7 @@ set_time_limit( 0 );
 
 // Create an entry for the wiki before we have resolved patches.
 // Will be updated later.
-insert_wiki_data( $wiki, $creator, $created, $backend, $branchDesc, $landingPage );
+insert_wiki_data( $wiki, $creator, $created, $backend, $branchDesc, $landingPage, $keepWiki );
 
 function warn( string $warnHtml ) {
 	$warnJson = json_encode_clean( $warnHtml );

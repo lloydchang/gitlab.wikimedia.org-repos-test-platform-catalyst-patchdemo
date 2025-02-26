@@ -19,7 +19,7 @@ $config = [
 	// wikis, and can delete their own wikis.
 	'oauth' => [
 		'url' => getenv( 'OAUTH_URL' ),
-		'callback' => getenv( 'OAUTH_CALLBACK' ),
+		'callback' => getenv( 'SERVER_URL' ),
 		'key' => getenv( 'OAUTH_CONSUMER_KEY' ),
 		'secret' => getenv( 'OAUTH_CONSUMER_SECRET' ),
 		// OAuth admins can delete any wiki
