@@ -42,8 +42,7 @@ echo '
 							) .
 					'</div>
 					<div id="catalystHeader" class="source" hidden>
-						<strong>The Kubernetes (Catalyst) backend is currently experimental, and does not support 
-						every skin, extension, and option.</strong>
+						<strong>The Kubernetes (Catalyst) backend is currently experimental.</strong>
 					</div>
 				</div>
 			</div>
