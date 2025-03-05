@@ -146,7 +146,7 @@ fi
 
 # Update Main_Page
 # Done after content import in case MediaWiki:Mainpage is changed
-MAINPAGETITLE=$( echo 'echo Title::newMainPage()->getPrefixedText();' | php $PATCHDEMO/wikis/$NAME/w/maintenance/eval.php 2> /dev/null )
+MAINPAGETITLE=$( echo 'echo \MediaWiki\Title\Title::newMainPage()->getPrefixedText();' | php $PATCHDEMO/wikis/$NAME/w/maintenance/eval.php 2> /dev/null )
 echo "$MAINPAGE" | php $PATCHDEMO/wikis/$NAME/w/maintenance/edit.php "$MAINPAGETITLE" || echo "Can't edit main page"
 
 # update caches after import
