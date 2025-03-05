@@ -88,11 +88,12 @@ class EnvironmentRequest implements JsonSerializable {
 	}
 
 	private function withComponent( string $type, string $component, string $branch, array $refs ): EnvironmentRequest {
-		$compConfig = [ "enable" => true, "branch" => $branch ];
+		$compConfig = [ "name" => $component, "enable" => true, "branch" => $branch ];
 		if ( $refs ) {
 			$compConfig += [ "patches" => $refs ];
 		}
-		$this->values[$type][$component] = $compConfig;
+		$this->values[$type] ??= [];
+		$this->values[$type][] = $compConfig;
 		return $this;
 	}
 
