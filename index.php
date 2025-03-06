@@ -118,7 +118,7 @@ if ( $config['readOnly'] ) {
 							'value' => !empty( $_GET['branch' ] ) ? 'origin/' . $_GET['branch' ] : null
 						] ),
 						[
-							'label' => 'Start with version:',
+							'label' => 'Start with version',
 							'align' => 'left',
 						]
 					),
@@ -133,7 +133,7 @@ if ( $config['readOnly'] ) {
 						[
 							'classes' => [ 'form-patches-layout' ],
 							'infusable' => true,
-							'label' => 'Then, apply patches:',
+							'label' => 'Then, apply patches',
 							'help' => 'Gerrit changeset number or Change-Id, one per line',
 							'helpInline' => true,
 							'align' => 'left',
@@ -149,7 +149,7 @@ if ( $config['readOnly'] ) {
 							] ),
 							[
 								'classes' => [ 'form-announce-layout' ],
-								'label' => 'Announce wiki on Phabricator:',
+								'label' => 'Announce wiki on Phabricator',
 								'help' => 'Any tasks linked to from patches applied will get a comment announcing this wiki.',
 								'helpInline' => true,
 								'align' => 'left',
@@ -177,7 +177,7 @@ if ( $config['readOnly'] ) {
 							'value' => 'wikimedia',
 						] ),
 						[
-							'label' => 'Choose configuration preset:',
+							'label' => 'Choose configuration preset',
 							'align' => 'left',
 						]
 					),
@@ -189,7 +189,7 @@ if ( $config['readOnly'] ) {
 							'value' => get_repo_presets()[ 'wikimedia' ],
 						] ),
 						[
-							'label' => 'Choose included repos:',
+							'label' => 'Choose included repos',
 							'help' => new OOUI\HtmlSnippet( 'If your extension is not listed, please create a <a href="https://phabricator.wikimedia.org/maniphest/task/edit/form/1/?title=Add%20[Extension]%20to%20PatchDemo&description=Repository%20link:%20[gitlab/gerrit%20link]&projects=PatchDemo">new task</a>.' ),
 							'helpInline' => true,
 							'align' => 'inline',
@@ -242,7 +242,7 @@ if ( $config['readOnly'] ) {
 							'value' => !empty( $_GET['landingPage' ] ) ? $_GET['landingPage' ] : null
 						] ),
 						[
-							'label' => 'Landing page:',
+							'label' => 'Landing page',
 							'help' => 'The page linked to from this page, and any announcement posts.',
 							'helpInline' => true,
 							'align' => 'left',
@@ -395,6 +395,12 @@ if ( !$results ) {
 }
 $shownMyWikis = false;
 $shownOtherWikis = false;
+$catalyst_environments = $catalystApi->getEnvironments();
+$catalyst_environments_statuses = [];
+foreach ( $catalyst_environments as $env ) {
+	$catalyst_environments_statuses[$env['id']] = $env['status'];
+}
+
 while ( $data = $results->fetch_assoc() ) {
 	$wikiData = get_wiki_data_from_row( $data );
 	$wiki = $data['wiki'];
@@ -460,19 +466,29 @@ while ( $data = $results->fetch_assoc() ) {
 		}
 	}
 	$catalystWikiStatus = null;
+	$statusText = '';
 	if ( $wikiData['backend'] == 'catalyst' ) {
-		$catalyst_environment = $catalystApi->getEnvironment( $wikiData['catalystId'] );
-		$catalystWikiStatus = $catalyst_environment['status'];
+		$catalystWikiStatus = $wikiData['catalystId'] !== null
+			? ( $catalyst_environments_statuses[ $wikiData['catalystId'] ] ?? 'unknown' )
+			: 'unknown';
+
 		switch ( $catalystWikiStatus ) {
 			case 'starting':
 				$classes[] = 'notReady';
+				$statusText = 'Creating...';
 				break;
 			case 'failed':
 				$classes[] = 'failed';
+				$statusText = 'Failed';
+				break;
+			case 'unknown':
+				$classes[] = 'notReady';
+				$statusText = 'Unknown Wiki';
 				break;
 		}
 	} elseif ( !$data['ready'] ) {
 		$classes[] = 'notReady';
+		$statusText = 'Creating...';
 	}
 	$repos = '';
 	$preset = $wikiData[ 'repos' ][ 'preset' ];
@@ -537,6 +553,7 @@ while ( $data = $results->fetch_assoc() ) {
 		'<td data-label="Wiki" class="wiki">' .
 			'<span class="wikiAnchor" id="' . substr( $wiki, 0, 10 ) . '"></span>' .
 			get_wiki_link( $wiki, $wikiData['landingPage'], $wikiReady ) .
+			( $statusText !== '' ? '<div class="status-text">' . $statusText . '</div>' : '' ) .
 		'</td>' .
 		'<td data-label="Patches" class="patches">' . $patches . '</td>' .
 		'<td data-label="Linked tasks" class="linkedTasks">' . $linkedTasks . '</td>' .

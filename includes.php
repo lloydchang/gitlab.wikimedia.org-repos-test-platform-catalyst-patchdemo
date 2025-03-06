@@ -180,7 +180,7 @@ function get_wiki_data_from_row( array $data ): array {
 	return $data;
 }
 
-function get_wiki_url( string $wiki, ?string $landingPage ): string {
+function get_wiki_url( string $wiki, ?string $landingPage = null ): string {
 	global $config, $mysqli;
 	$stmt = $mysqli->prepare( 'SELECT backend FROM wikis WHERE wiki = ?' );
 	$stmt->bind_param( 's', $wiki );
@@ -513,11 +513,12 @@ function delete_wiki( string $wiki, string $serverUri = null ): ?string {
 
 	foreach ( $wikiData['announcedTasks'] as $task ) {
 		$creator = $wikiData['creator'];
+		$wikiUrl = get_wiki_url( $wiki );
 		post_phab_comment(
 			'T' . $task,
 			"Test wiki on [[ $serverUri | Patch demo ]] " . ( $creator ? ' by ' . $creator : '' ) . " using patch(es) linked to this task was **deleted**:\n" .
 			"\n" .
-			"~~[[ $serverUri/wikis/$wiki/w/ ]]~~"
+			"~~[[ $wikiUrl ]]~~"
 		);
 	}
 

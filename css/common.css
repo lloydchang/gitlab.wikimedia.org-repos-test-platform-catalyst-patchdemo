@@ -309,15 +309,8 @@ summary > .oo-ui-labelElement-label:not( .oo-ui-inline-help ) {
 	color: #999;
 }
 
-.wikis tr.failed .wiki::after {
-	content: 'Failed';
-	display: block;
+.wikis tr.failed .status-text {
 	color: #aa4a44;
-}
-
-.wikis tr.notReady .wiki::after {
-	content: 'Creating...';
-	display: block;
 }
 
 .wikis details dl {
