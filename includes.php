@@ -756,7 +756,17 @@ function get_known_pages(): array {
 		$stmt->execute();
 		$res = $stmt->get_result();
 		while ( $data = $res->fetch_assoc() ) {
-			$page = str_replace( '_', ' ', trim( $data[ 'landingPage' ] ) );
+			$page = trim( $data[ 'landingPage' ] );
+			$url = parse_url( $page );
+			if ( isset( $url[ 'path'] ) ) {
+				$page = str_replace( '_', ' ', $url[ 'path'] );
+				if ( isset( $url[ 'query' ] ) ) {
+					$page .= '?' . $url[ 'query' ];
+				}
+				if ( isset( $url[ 'fragment' ] ) ) {
+					$page .= '#' . $url[ 'fragment' ];
+				}
+			}
 			if ( !in_array( $page, $pages, true ) ) {
 				$pages[] = $page;
 			}
