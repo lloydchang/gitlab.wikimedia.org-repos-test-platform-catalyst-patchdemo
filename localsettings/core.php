@@ -56,7 +56,17 @@ $wgFavicon = "$wgResourceBasePath/favicon.ico";
 $wgLogo = "$wgResourceBasePath/logo.svg";
 // Add a button for a convenient link back to the wiki management interface
 $wgFooterIcons['patchdemo']['patchdemo'] = [
-	'src' => "$wgResourceBasePath/poweredby.svg",
+	'src' => "$wgResourceBasePath/icon.svg",
+	'width' => 25,
+	'height' => 25,
+	'sources' => [
+		[
+			'media' => '(min-width: 500px)',
+			'srcset' => "$wgResourceBasePath/poweredby.svg",
+			'width' => 88,
+			'height' => 31,
+		]
+	],
 	'url' => "$basePath/../..",
 	'alt' => 'This is a Patch demo wiki',
 ];
