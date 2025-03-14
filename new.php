@@ -528,10 +528,10 @@ if ( $useCatalystBackend ) {
 		static function ( $logs ) use ( $start, $end, $repoCount, &$n, &$repoProgress ) {
 			foreach ( $logs as $log ) {
 				$logMsg = $log['log'];
-				if ( str_contains( $logMsg, 'Cloning' ) ) {
+				if ( str_contains( $logMsg, 'Preparing worktree' ) ) {
 					$repoProgress += ( $end - $start ) / $repoCount;
 					$n++;
-					set_progress( $repoProgress, "Cloning repositories ($n/$repoCount)..." );
+					set_progress( $repoProgress, "Preparing worktree ($n/$repoCount)..." );
 				} elseif ( str_contains( $logMsg, 'composer install' ) ) {
 					set_progress( 60, "Running composer..." );
 				} elseif ( str_contains( $logMsg, 'apt-get install -y npm' ) ) {
