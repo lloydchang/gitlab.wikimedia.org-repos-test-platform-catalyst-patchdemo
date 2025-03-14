@@ -75,6 +75,7 @@ deploy-staging:
         --set mariadb.auth.password=${DB_PASS} \
         --set mariadb.auth.rootPassword=${DB_ROOT_PASS} \
         --set mariadb.auth.database=${DB_DATABASE} \
+        --set app.adminUsers="${PATCHDEMO_ADMINS}" \
         --set app.db.host=${DB_HOST} \
         --set app.catalystApiUrl="https://staging-api.catalyst.wmcloud.org" \
         --set app.catalystApiToken=${CATALYST_API_TOKEN} \
@@ -112,6 +113,7 @@ deploy-production:
         --set mariadb.auth.rootPassword=${DB_ROOT_PASS} \
         --set mariadb.auth.database=${DB_DATABASE} \
         --set app.db.host=${DB_HOST} \
+        --set app.adminUsers="${PATCHDEMO_ADMINS}" \
         --set app.catalystApiUrl="https://api.catalyst.wmcloud.org" \
         --set app.catalystApiToken=${CATALYST_API_TOKEN} \
         --set app.oauthCallback="https://patchdemo.wmcloud.org/" \
