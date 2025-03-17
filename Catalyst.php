@@ -45,18 +45,12 @@ class Catalyst {
 	}
 
 	public function streamLogs( string $id, string $containerName, callable $handlerFn ): ?string {
-		$start_time = time();
-		do {
-			// keep trying in case pod is initializing
-			sleep( 5 );
-			$source = $this->eventSourceHttpClient->connect(
-				"$this->baseUrl/environments/$id/logs?stream=$containerName"
-			);
-			$needs_retry = in_array( $source->getStatusCode(), [ 503, 400 ] );
-			if ( time() - $start_time > 60 && $needs_retry ) {
-				return $this->errorMessageForStream( $source->getContent() );
-			}
-		} while ( $needs_retry );
+		$source = $this->eventSourceHttpClient->connect(
+			"$this->baseUrl/environments/$id/logs?stream=$containerName"
+		);
+		if ( $source->getStatusCode() != 200 ) {
+			return $this->errorMessageForStream( $source->getContent() );
+		}
 		$error_content = null;
 		while ( $source && !$error_content ) {
 			$error_content = $this->withErr(
