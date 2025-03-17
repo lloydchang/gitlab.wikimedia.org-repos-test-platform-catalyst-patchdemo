@@ -92,10 +92,12 @@ class Catalyst {
 		);
 	}
 
-	public function getEnvironments(): array {
+	public function getEnvironments( bool $requestLatestStatus = false ): array {
 		return $this->withErr(
-			function () {
-				return $this->httpClient->request( 'GET', "$this->baseUrl/environments" )->toArray();
+			function () use ( $requestLatestStatus ) {
+				return $this->httpClient->request( 'GET', "$this->baseUrl/environments", [
+					'query' => [ 'latestStatus' => $requestLatestStatus ],
+				] )->toArray();
 			},
 			static function ( $_ ) {
 				return [];
@@ -126,10 +128,12 @@ class Catalyst {
 		);
 	}
 
-	public function getEnvironment( int $id ): ?array {
+	public function getEnvironment( int $id, bool $requestLatestStatus = false ): ?array {
 		return $this->withErr(
-			function () use ( $id ) {
-				$res = $this->httpClient->request( 'GET', "$this->baseUrl/environments/$id" )->getContent();
+			function () use ( $id, $requestLatestStatus ) {
+				$res = $this->httpClient->request( 'GET', "$this->baseUrl/environments/$id", [
+					'query' => [ 'latestStatus' => $requestLatestStatus ],
+				] )->getContent();
 				return json_decode( $res, true, 32, JSON_THROW_ON_ERROR );
 			},
 			static function () {

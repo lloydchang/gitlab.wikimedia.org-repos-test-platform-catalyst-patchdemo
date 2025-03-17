@@ -549,7 +549,7 @@ if ( $useCatalystBackend ) {
 		$status_check_time = time();
 		do {
 			sleep( 2 );
-			$catalyst_environment = $catalystApi->getEnvironment( $catalystId );
+			$catalyst_environment = $catalystApi->getEnvironment( $catalystId, true );
 			$wiki_status = $catalyst_environment["status"];
 		} while ( $wiki_status != 'running' && time() - $status_check_time < 60 );
 
