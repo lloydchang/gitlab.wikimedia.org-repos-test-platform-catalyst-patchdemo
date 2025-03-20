@@ -65,6 +65,7 @@ mediawiki/extensions/Popups extensions/Popups
 mediawiki/extensions/ProofreadPage extensions/ProofreadPage
 mediawiki/extensions/QuickInstantCommons extensions/QuickInstantCommons
 mediawiki/extensions/QuickSurveys extensions/QuickSurveys
+mediawiki/extensions/ReadingLists extensions/ReadingLists
 mediawiki/extensions/RelatedArticles extensions/RelatedArticles
 mediawiki/extensions/Renameuser extensions/Renameuser
 mediawiki/extensions/ReplaceText extensions/ReplaceText
