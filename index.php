@@ -395,7 +395,7 @@ if ( !$results ) {
 }
 $shownMyWikis = false;
 $shownOtherWikis = false;
-$catalyst_environments = $catalystApi->getEnvironments( true );
+$catalyst_environments = $catalystApi->getEnvironments();
 $catalyst_environments_statuses = [];
 foreach ( $catalyst_environments as $env ) {
 	$catalyst_environments_statuses[$env['id']] = $env['status'];
