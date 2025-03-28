@@ -1,8 +1,10 @@
 <?php
+require_once "Banner.php";
 
 OOUI\Theme::setSingleton( new OOUI\WikimediaUITheme() );
 
 $auth = Authentication::getInstance();
+$bannerData = Banner::getBannerData();
 
 echo '<!DOCTYPE html>
 <html lang="en" class="client-nojs">
@@ -43,7 +45,13 @@ echo '
 					'</div>
 					<div id="catalystHeader" class="source" hidden>
 						<strong>The Kubernetes (Catalyst) backend is currently experimental.</strong>
-					</div>
+					</div>';
+if ( Banner::isBannerWithinDateRange() ) {
+	echo '<div id="patchDemoAnnouncementHeader" class="source">
+						<strong>Whats new : ' . $bannerData['bannerText'] . '</strong> <a href= "' . htmlspecialchars( $bannerData['bannerUrl'] ) . '"> (' . $bannerData['linkPreviewText'] . '). </a> 
+					</div>';
+}
+echo '				
 				</div>
 			</div>
 		</header>

@@ -21,6 +21,7 @@ include_once 'errorutils.php';
 require_once "Catalyst.php";
 
 include 'config.default.php';
+include 'Banner.php';
 if ( file_exists( 'config.php' ) ) {
 	include 'config.php';
 	$config = array_merge( $config, $localConfig );
