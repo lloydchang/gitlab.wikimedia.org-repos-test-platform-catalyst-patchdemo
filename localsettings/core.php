@@ -55,21 +55,31 @@ $wgFavicon = "$wgResourceBasePath/favicon.ico";
 // Legacy logo setting for older releases
 $wgLogo = "$wgResourceBasePath/logo.svg";
 // Add a button for a convenient link back to the wiki management interface
-$wgFooterIcons['patchdemo']['patchdemo'] = [
-	'src' => "$wgResourceBasePath/icon.svg",
-	'width' => 25,
-	'height' => 25,
-	'sources' => [
-		[
-			'media' => '(min-width: 500px)',
-			'srcset' => "$wgResourceBasePath/poweredby.svg",
-			'width' => 88,
-			'height' => 31,
-		]
-	],
-	'url' => "$basePath/../..",
-	'alt' => 'This is a Patch demo wiki',
-];
+if ( version_compare( MW_VERSION, '1.44', '<' ) ) {
+	$wgFooterIcons['patchdemo']['patchdemo'] = [
+		'src' => "$wgResourceBasePath/poweredby.svg",
+		'url' => "$basePath/../..",
+		'alt' => 'This is a Patch demo wiki',
+	];
+} else {
+	// 'sources' was introduced in https://gerrit.wikimedia.org/r/c/mediawiki/core/+/1113827
+	// (causes an error in earlier versions: T391170)
+	$wgFooterIcons['patchdemo']['patchdemo'] = [
+		'src' => "$wgResourceBasePath/icon.svg",
+		'width' => 25,
+		'height' => 25,
+		'sources' => [
+			[
+				'media' => '(min-width: 500px)',
+				'srcset' => "$wgResourceBasePath/poweredby.svg",
+				'width' => 88,
+				'height' => 31,
+			]
+		],
+		'url' => "$basePath/../..",
+		'alt' => 'This is a Patch demo wiki',
+	];
+}
 
 // Email settings
 $wgAllowHTMLEmail = true;
