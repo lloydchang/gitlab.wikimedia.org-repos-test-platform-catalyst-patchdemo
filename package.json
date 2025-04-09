@@ -4,7 +4,7 @@
 		"test": "eslint . && stylelint **/*.css"
 	},
 	"devDependencies": {
-		"eslint-config-wikimedia": "^0.28.2",
+		"eslint-config-wikimedia": "^0.29.1",
 		"stylelint-config-wikimedia": "^0.15.0"
 	},
 	"dependencies": {
