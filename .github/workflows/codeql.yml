@@ -46,6 +46,10 @@ jobs:
         - language: actions
           build-mode: none
         - language: javascript-typescript
+        # Why doesn't CodeQL support auditing PHP #12376
+        # https://github.com/github/codeql/issues/12376
+        # CodeQL for php #14000
+        # https://github.com/github/codeql/issues/14000
           build-mode: none
         # CodeQL supports the following values keywords for 'language': 'actions', 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby', 'swift'
         # Use `c-cpp` to analyze code written in C, C++ or both
