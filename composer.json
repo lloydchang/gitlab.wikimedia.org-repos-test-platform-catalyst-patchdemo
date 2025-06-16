@@ -6,7 +6,7 @@
 		"symfony/process": "^5.4",
 		"symfony/service-contracts": "^2.5",
 		"symfony/yaml": "^5.4",
-		"oojs/oojs-ui": "^0.47",
+		"oojs/oojs-ui": "^0.52",
 		"zolli/phabricator-php-api": "^2.0",
 		"sensiolabs/ansi-to-html": "^1.2"
 	},
